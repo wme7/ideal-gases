@@ -1,6 +1,9 @@
 function [x, rho, ux, p, e, z, t, Mach, entro] = ...
     QEulerExact(rho1, u1, t1, rho4, u4, t4, tEnd, n, h, statistic)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SPDX-License-Identifier: MIT
+% Copyright (c) 2014 Manuel A. Diaz
+%
 % Exact Riemann Solver for Classical and Quantum ideal gases
 %
 % This is a slight modification of the original code by 譚夢寧 (2015).

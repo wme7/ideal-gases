@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2014 Manuel A. Diaz
+
 """Plot quantum Euler Riemann solutions for visual verification.
 
 Ports the workflow of ``matlab/PlotQEuler.m`` using :func:`euler.quantum_euler_gas`.

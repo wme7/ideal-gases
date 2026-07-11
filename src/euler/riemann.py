@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2014 Manuel A. Diaz
+
 """Exact Riemann solvers for classical and quantum Euler gases.
 
 This module ports ``matlab/QEulerExactToro.m`` (Toro, 1999) with kinetic

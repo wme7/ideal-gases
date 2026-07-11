@@ -2,7 +2,8 @@
 %       Plot Quantum Euler Solutions in classical and quantum regimes
 %
 %               Coded by Manuel Diaz, NTU, 2014.12.23.
-%                   Copyright (c) 2014, Manuel Diaz.
+%               SPDX-License-Identifier: MIT
+%               Copyright (c) 2014 Manuel A. Diaz
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

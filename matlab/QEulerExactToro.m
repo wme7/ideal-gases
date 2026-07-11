@@ -1,6 +1,9 @@
 function [x, rho, ux, p, e, z, t, Mach, entro] = ...
     QEulerExactToro(rhoL, uL, tL, rhoR, uR, tR, tEnd, n, h, statistic)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SPDX-License-Identifier: MIT
+% Copyright (c) 2014 Manuel A. Diaz
+%
 % Exact Riemann Solver for Classical and Quantum ideal gases
 %
 % This is an extension of the original code by 譚夢寧 (2015) using Toro's 

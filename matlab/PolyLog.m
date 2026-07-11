@@ -3,7 +3,8 @@ function g = PolyLog(n,z)
 %               Fractinal PolyLogarithms: PolyLog(n,z)
 %
 %               Coded by Manuel Diaz, NTU, 2014.12.23.
-%                   Copyright (c) 2014, Manuel Diaz.
+%               SPDX-License-Identifier: MIT
+%               Copyright (c) 2014 Manuel A. Diaz
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % We extend matlab definition of polylog to enable the computation of

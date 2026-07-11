@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2014 Manuel A. Diaz
+
 """Classical and quantum Euler solvers."""
 
 from euler.polylog import polylog

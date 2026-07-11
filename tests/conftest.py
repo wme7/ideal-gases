@@ -4,6 +4,9 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2014 Manuel A. Diaz
+
 import numpy as np
 import pytest
 from mpmath import fp

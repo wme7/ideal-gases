@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2014 Manuel A. Diaz
+
 """Fractional PolyLogarithm function: PolyLog(n, z).
 
 This module provides a vectorized implementation of the fractional 

@@ -1,4 +1,5 @@
-// Copyright (c) 2014, Manuel Diaz. All rights reserved.
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2014 Manuel A. Diaz
 
 #include "polylog.h"
 
