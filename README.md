@@ -42,7 +42,7 @@ tests/        pytest suite
 
 ```python
 import numpy as np
-from euler import adiabatic_index, euler_gas
+from euler import euler_gas
 
 x = np.linspace(0.0, 1.0, 101)
 result = euler_gas(
@@ -52,14 +52,16 @@ result = euler_gas(
     rho_r=0.125,
     u_r=0.0,
     p_r=0.1,
-    t_end=0.25,
+    t_end=0.2,
     gamma=1.4,
     x=x,
     x0=0.5,
 )
-
-print(result.rho.min(), result.rho.max())
 ```
+
+Using `matplotlib`, the results can be plotted as follows:
+
+![Classical Sod shock tube](figures/classical_sod_shock_tube.png)
 
 ### Quantum Euler (FD / BE / MB)
 
@@ -88,6 +90,10 @@ result = quantum_euler_gas(
 
 `RiemannResult` fields: `x`, `rho`, `ux`, `p`, `e`, `z` (fugacity), `t` (temperature), `mach`, `entropy`.
 
+Graphically, the results for the three statistics can be plotted as follows:
+
+![Quantum Euler](figures/quantum_sod_shock_tube_gamma2.png)
+
 In the classical limit, MB statistics with `h → 0` recover the ideal-gas behaviour (pressures `p = rho * theta`).
 
 ### Polylogarithm
@@ -101,6 +107,79 @@ polylog(1.5, np.linspace(0.2, 0.9, 50)) # array
 ```
 
 Integer orders use an analytic branch; non-integer orders use the Bhagat/Kuhnert approximations from `matlab/PolyLog.m`.
+
+## Command-line interface
+
+After `uv sync`, the `qeuler` command exports exact solution profiles to CSV or JSON for use in other languages and tools.
+
+### Classical Sod shock tube
+
+```bash
+qeuler solve classical \
+  --rho-l 1 --u-l 0 --p-l 1 \
+  --rho-r 0.125 --u-r 0 --p-r 0.1 \
+  --t-end 0.25 --gamma 1.4 \
+  --nx 101 -o sod.csv
+```
+
+### Quantum Euler
+
+```bash
+qeuler solve quantum \
+  --rho-l 1 --u-l 0 --t-l 1 \
+  --rho-r 0.125 --u-r 0 --t-r 0.25 \
+  --t-end 0.20 --n 2 --h 0.1 --statistic FD \
+  -o qeuler_fd.csv
+```
+
+Write separate files for FD, MB, and BE with `--all-statistics` (e.g. `qeuler_case7_FD.csv`, `qeuler_case7_MB.csv`, `qeuler_case7_BE.csv`):
+
+```bash
+qeuler solve quantum ... --all-statistics -o qeuler_case7
+```
+
+### Toro classical tests (1–6)
+
+```bash
+qeuler toro 1 -o toro_test1.csv
+qeuler list --toro
+```
+
+### Quantum benchmark cases (1–8)
+
+```bash
+qeuler quantum-example 7 --all-statistics -o qeuler_eg7
+qeuler list --quantum
+```
+
+### JSON config files
+
+Define a problem in JSON and run it with `qeuler run` or pass `--config` to `qeuler solve`:
+
+```bash
+qeuler run --config case.json
+qeuler solve classical --config case.json -o override.csv
+```
+
+Example `case.json`:
+
+```json
+{
+  "mode": "quantum",
+  "left": {"rho": 1.0, "u": 0.0, "theta": 1.0},
+  "right": {"rho": 0.125, "u": 0.0, "theta": 0.25},
+  "t_end": 0.20,
+  "n": 2.0,
+  "h": 0.1,
+  "statistic": "FD",
+  "all_statistics": true,
+  "format": "json",
+  "output": "qeuler_case7",
+  "domain": {"x_min": 0.0, "x_max": 1.0, "x0": 0.5, "nx": 101}
+}
+```
+
+Use `--format json` (or a `.json` output path) for JSON instead of CSV. CLI flags override values from the config file.
 
 ## Plotting benchmark solutions
 
@@ -169,4 +248,4 @@ The `matlab/` directory keeps the original solvers (`QEulerExact.m`, `QEulerExac
 
 MIT License. See [LICENSE](LICENSE) for the full text.
 
-Copyright (c) 2014 Manuel A. Diaz
+Copyright (c) 2026 Manuel A. Diaz

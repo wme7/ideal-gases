@@ -38,5 +38,8 @@ dev = [
     "ty>=0.0.58",
 ]
 
+[project.scripts]
+qeuler = "euler.cli:main"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
