@@ -4,7 +4,7 @@ function g = PolyLog(n,z)
 %
 %               Coded by Manuel Diaz, NTU, 2014.12.23.
 %                   Copyright (c) 2014, Manuel Diaz.
-%                           All rights reserved.
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % We extend matlab definition of polylog to enable the computation of
 % fractional values of 'n' by using numerical approximations of the
@@ -17,17 +17,14 @@ function g = PolyLog(n,z)
 % [2] Maximilian Kuhnert. "Enhanced computation of polylogarithm aka de
 %     jonquieres function." Matlab File Exchange #37229, polylog.m
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% This program and its subprograms may be freely used, modified and
-% distributed under the GNU General Public License: 
-% http://www.gnu.org/copyleft/gpl.html   
-%
 % Basic Assumptions:
 % n: is a positive rational or interger value.
 % z: can be is a single value or vector array.
-%
+
 %% Solution Procedure
-if mod(n,1)==0; 
-    g = real(polylog(n,z)); % if n:integer, the use matlab built in polylog function
+if mod(n,1)==0
+    % if n:integer, the use matlab built in polylog function
+    g = polylog(n,z); % Requires Symbolic Math Toolbox
 else
 % 4 approximations are given for PolyLog(n,z) depending on the value of z
 id1=find(z>=0.55); z1=z(id1);         %Range 1:  0.55 >= z >= 1.0 : BE int

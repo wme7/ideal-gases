@@ -1,0 +1,40 @@
+[project]
+name = "euler"
+version = "0.1.0"
+description = "Compute classical and quantum Euler solutions"
+readme = "README.md"
+authors = [
+    { name = "Manuel A. Diaz", email = "manuel.ade@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "numpy>=2.5.1",
+]
+
+[build-system]
+requires = [
+    "scikit-build-core>=0.10",
+    "pybind11>=2.13",
+]
+build-backend = "scikit_build_core.build"
+
+[tool.scikit-build]
+cmake.source-dir = "cpp"
+wheel.packages = ["src/euler"]
+
+[tool.scikit-build.cmake.define]
+BUILD_PYTHON_BINDINGS = "ON"
+BUILD_CPP_TESTS = "OFF"
+
+[dependency-groups]
+dev = [
+    "matplotlib>=3.11.0",
+    "mpmath>=1.3",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.15.21",
+    "ty>=0.0.58",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

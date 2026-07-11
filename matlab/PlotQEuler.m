@@ -1,4 +1,10 @@
-%% Plot Quantum Euler Solutions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%       Plot Quantum Euler Solutions in classical and quantum regimes
+%
+%               Coded by Manuel Diaz, NTU, 2014.12.23.
+%                   Copyright (c) 2014, Manuel Diaz.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % clear memory and close figures
 clear; clc; close all;
@@ -26,68 +32,68 @@ mark=['s','+','o','x','v','none'];
 ms = 5;
 
 % save to path
-path = '/home/manuel/Dropbox/Apps/Texpad/MyPresentations/Euler-Quantum/QEuler_MyExactSolutions/';
+path = './';
 
 %% Plot selected example
-example = 8;
+example = 7;
 
 switch example
     case 1 % Sod's shock-tube problem
         n = 5;      % degress of freedom (DoF)
         h = 1.0;    % plank constant
         tEnd=0.1;   % output time
-        [~,rhoBE,uxBE,pBE,eBE,zBE,tBE]=QuantumEulerExact(1,0,1,0.125,0,0.1/0.125,tEnd,n,h,'BE');
-        [~,rhoMB,uxMB,pMB,eMB,zMB,tMB]=QuantumEulerExact(1,0,1,0.125,0,0.1/0.125,tEnd,n,h,'MB');
-        [x,rhoFD,uxFD,pFD,eFD,zFD,tFD]=QuantumEulerExact(1,0,1,0.125,0,0.1/0.125,tEnd,n,h,'FD');
+        [~,rhoBE,uxBE,pBE,eBE,zBE,tBE]=QEulerExact(1,0,1,0.125,0,0.1/0.125,tEnd,n,h,'BE');
+        [~,rhoMB,uxMB,pMB,eMB,zMB,tMB]=QEulerExact(1,0,1,0.125,0,0.1/0.125,tEnd,n,h,'MB');
+        [x,rhoFD,uxFD,pFD,eFD,zFD,tFD]=QEulerExact(1,0,1,0.125,0,0.1/0.125,tEnd,n,h,'FD');
 	case 2 % Sod's shock-tube problem
         n = 5;      % degress of freedom (DoF)
         h = 2;      % plank constant
         tEnd=0.1;   % output time
-        [~,rhoBE,uxBE,pBE,eBE,zBE,tBE]=QuantumEulerExact(1,0,1,0.125,0,0.1/0.125,tEnd,n,h,'BE');
-        [~,rhoMB,uxMB,pMB,eMB,zMB,tMB]=QuantumEulerExact(1,0,1,0.125,0,0.1/0.125,tEnd,n,h,'MB');
-        [x,rhoFD,uxFD,pFD,eFD,zFD,tFD]=QuantumEulerExact(1,0,1,0.125,0,0.1/0.125,tEnd,n,h,'FD');
+        [~,rhoBE,uxBE,pBE,eBE,zBE,tBE]=QEulerExact(1,0,1,0.125,0,0.1/0.125,tEnd,n,h,'BE');
+        [~,rhoMB,uxMB,pMB,eMB,zMB,tMB]=QEulerExact(1,0,1,0.125,0,0.1/0.125,tEnd,n,h,'MB');
+        [x,rhoFD,uxFD,pFD,eFD,zFD,tFD]=QEulerExact(1,0,1,0.125,0,0.1/0.125,tEnd,n,h,'FD');
 	case 3 % Sod's shock-tube problem
         n = 5;      % degress of freedom (DoF)
         h = 2.65;	% plank constant
         tEnd=0.1;   % output time
-        [~,rhoBE,uxBE,pBE,eBE,zBE,tBE]=QuantumEulerExact(1,0,1,0.125,0,0.1/0.125,tEnd,n,h,'BE');
-        [~,rhoMB,uxMB,pMB,eMB,zMB,tMB]=QuantumEulerExact(1,0,1,0.125,0,0.1/0.125,tEnd,n,h,'MB');
-        [x,rhoFD,uxFD,pFD,eFD,zFD,tFD]=QuantumEulerExact(1,0,1,0.125,0,0.1/0.125,tEnd,n,6.0,'FD');
+        [~,rhoBE,uxBE,pBE,eBE,zBE,tBE]=QEulerExactToro(1,0,1,0.125,0,0.1/0.125,tEnd,n,h,'BE');
+        [~,rhoMB,uxMB,pMB,eMB,zMB,tMB]=QEulerExactToro(1,0,1,0.125,0,0.1/0.125,tEnd,n,h,'MB');
+        [x,rhoFD,uxFD,pFD,eFD,zFD,tFD]=QEulerExactToro(1,0,1,0.125,0,0.1/0.125,tEnd,n,6.0,'FD');
     case 4 % Hu and Jin Problems in classical regime
         n = 3;      % degress of freedom (DoF)
         h = 1.0;    % plank constant
         tEnd=0.18;  % output time
-        [~,rhoBE,uxBE,pBE,eBE,zBE,tBE]=QuantumEulerExact(1,0,1,0.4,0,0.6,tEnd,n,h,'BE');
-        [~,rhoMB,uxMB,pMB,eMB,zMB,tMB]=QuantumEulerExact(1,0,1,0.4,0,0.6,tEnd,n,h,'MB');
-        [x,rhoFD,uxFD,pFD,eFD,zFD,tFD]=QuantumEulerExact(1,0,1,0.4,0,0.6,tEnd,n,h,'FD');
+        [~,rhoBE,uxBE,pBE,eBE,zBE,tBE]=QEulerExact(1,0,1,0.4,0,0.6,tEnd,n,h,'BE');
+        [~,rhoMB,uxMB,pMB,eMB,zMB,tMB]=QEulerExact(1,0,1,0.4,0,0.6,tEnd,n,h,'MB');
+        [x,rhoFD,uxFD,pFD,eFD,zFD,tFD]=QEulerExact(1,0,1,0.4,0,0.6,tEnd,n,h,'FD');
     case 5 % Hu and Jin Problems in Degenerate regime
         n = 3;      % degress of freedom (DoF)
         h = 3.3;    % plank constant
         tEnd=0.18;  % output time
-        [~,rhoBE,uxBE,pBE,eBE,zBE,tBE]=QuantumEulerExact(1,0,1,0.4,0,0.6,tEnd,n,h,'BE');
-        [~,rhoMB,uxMB,pMB,eMB,zMB,tMB]=QuantumEulerExact(1,0,1,0.4,0,0.6,tEnd,n,h,'MB');
-        [x,rhoFD,uxFD,pFD,eFD,zFD,tFD]=QuantumEulerExact(1,0,1,0.4,0,0.6,tEnd,n,6.0,'FD');
+        [~,rhoBE,uxBE,pBE,eBE,zBE,tBE]=QEulerExact(1,0,1,0.4,0,0.6,tEnd,n,h,'BE');
+        [~,rhoMB,uxMB,pMB,eMB,zMB,tMB]=QEulerExact(1,0,1,0.4,0,0.6,tEnd,n,h,'MB');
+        [x,rhoFD,uxFD,pFD,eFD,zFD,tFD]=QEulerExact(1,0,1,0.4,0,0.6,tEnd,n,6.0,'FD');
     case 6 % Yang and Shi Degenerate regime problem.
         n = 3;    	% degress of freedom (DoF)
         h = 6.0;      % plank constant
         tEnd=0.10;  % output time
-        [~,rhoBE,uxBE,pBE,eBE,zBE,tBE]=QuantumEulerExact(3.086455,0,8.053324,3.084272,0,8.067390,tEnd,n,h,'BE');
-        [~,rhoMB,uxMB,pMB,eMB,zMB,tMB]=QuantumEulerExact(3.086455,0,8.053324,3.084272,0,8.067390,tEnd,n,h,'MB');
-        [x,rhoFD,uxFD,pFD,eFD,zFD,tFD]=QuantumEulerExact(3.086455,0,8.053324,3.084272,0,8.067390,tEnd,n,h,'FD');
+        [~,rhoBE,uxBE,pBE,eBE,zBE,tBE]=QEulerExact(3.086455,0,8.053324,3.084272,0,8.067390,tEnd,n,h,'BE');
+        [~,rhoMB,uxMB,pMB,eMB,zMB,tMB]=QEulerExact(3.086455,0,8.053324,3.084272,0,8.067390,tEnd,n,h,'MB');
+        [x,rhoFD,uxFD,pFD,eFD,zFD,tFD]=QEulerExact(3.086455,0,8.053324,3.084272,0,8.067390,tEnd,n,h,'FD');
     case 7 % Filbet and Jing (2010).
         n = 2;    	% degress of freedom (DoF)
         h = 0.1;    % plank constant
         tEnd=0.20;  % output time
-        [~,rhoBE,uxBE,pBE,eBE,zBE,tBE]=QuantumEulerExact(1,0,1,0.125,0,0.25,tEnd,n,h,'BE');
-        [~,rhoMB,uxMB,pMB,eMB,zMB,tMB]=QuantumEulerExact(1,0,1,0.125,0,0.25,tEnd,n,h,'MB');
-        [x,rhoFD,uxFD,pFD,eFD,zFD,tFD]=QuantumEulerExact(1,0,1,0.125,0,0.25,tEnd,n,h,'FD');
+        [~,rhoBE,uxBE,pBE,eBE,zBE,tBE]=QEulerExactToro(1,0,1,0.125,0,0.25,tEnd,n,h,'BE');
+        [~,rhoMB,uxMB,pMB,eMB,zMB,tMB]=QEulerExactToro(1,0,1,0.125,0,0.25,tEnd,n,h,'MB');
+        [x,rhoFD,uxFD,pFD,eFD,zFD,tFD]=QEulerExactToro(1,0,1,0.125,0,0.25,tEnd,n,h,'FD');
 	case 8 % Filbet and Jing (2010).
         n = 2;    	% degress of freedom (DoF)
         h = 3.0;    % plank constant
         tEnd=0.20;  % output time
-        [~,rhoBE,uxBE,pBE,eBE,zBE,tBE]=QuantumEulerExact(1,0,1,0.125,0,0.25,tEnd,n,h,'BE');
-        [~,rhoMB,uxMB,pMB,eMB,zMB,tMB]=QuantumEulerExact(1,0,1,0.125,0,0.25,tEnd,n,h,'MB');
-        [x,rhoFD,uxFD,pFD,eFD,zFD,tFD]=QuantumEulerExact(1,0,1,0.125,0,0.25,tEnd,n,h,'FD');
+        [~,rhoBE,uxBE,pBE,eBE,zBE,tBE]=QEulerExactToro(1,0,1,0.125,0,0.25,tEnd,n,h,'BE');
+        [~,rhoMB,uxMB,pMB,eMB,zMB,tMB]=QEulerExactToro(1,0,1,0.125,0,0.25,tEnd,n,h,'MB');
+        [x,rhoFD,uxFD,pFD,eFD,zFD,tFD]=QEulerExactToro(1,0,1,0.125,0,0.25,tEnd,n,h,'FD');
 end
 
 %% Plot Individial pictures
@@ -118,7 +124,7 @@ subplot(3,6,12); plot(x,zMB,color(4)); title('$z$-MB'); axis('square','tight'); 
 subplot(3,6,18); plot(x,zBE,color(2)); title('$z$-BE'); axis('square','tight'); xlabel('$x$'); 
 
 % Export plot to *.eps figure.
-print('-depsc',[path,'QEuler_Eg',num2str(example),'_AllPlots.eps']);
+print('-dpng',[path,'QEuler_Eg',num2str(example),'_AllPlots.png']);
 
 %% compute aparent gamma value
 gammaBE = (n+2)/n*( PolyLog(n/2+1, zFD)).*( PolyLog(n/2-1, zFD))./( PolyLog(n/2, zFD)).^2;
@@ -127,13 +133,13 @@ gammaFD = (n+2)/n*(-PolyLog(n/2+1,-zBE)).*(-PolyLog(n/2-1,-zBE))./(-PolyLog(n/2,
 
 %% Plot Comparative figures
 figure(2)
-
-subplot(3,2,1); plot(x,rhoBE,color(2),x,rhoMB,color(4),x,rhoFD,color(3)); ylabel('$\rho$'); xlabel('$x$'); %axis('square');
-subplot(3,2,2); plot(x,uxBE,color(2),x,uxMB,color(4),x,uxFD,color(3)); ylabel('$u_x$'); xlabel('$x$'); %axis('square');
-subplot(3,2,4); plot(x,pBE,color(2),x,pMB,color(4),x,pFD,color(3)); ylabel('$p$'); xlabel('$x$'); %axis('square');
-subplot(3,2,3); plot(x,eBE,color(2),x,eMB,color(4),x,eFD,color(3)); ylabel('$e$'); xlabel('$x$'); %axis('square');
-subplot(3,2,5); plot(x,zBE,color(2),x,zMB,color(4),x,zFD,color(3)); ylabel('$z$'); xlabel('$x$'); %axis('square');
-subplot(3,2,6); plot(x,tBE,color(2),x,tMB,color(4),x,tFD,color(3)); ylabel('$\theta$'); xlabel('$x$'); %axis('square');
+statistic = {'BE', 'MB', 'FD'}; % place outside on top
+subplot(3,2,1); plot(x,rhoBE,color(2),x,rhoMB,color(4),x,rhoFD,color(3)); ylabel('$\rho$'); xlabel('$x$'); legend(statistic,'Location','best');
+subplot(3,2,2); plot(x,uxBE,color(2),x,uxMB,color(4),x,uxFD,color(3)); ylabel('$u_x$'); xlabel('$x$'); legend(statistic,'Location','best');
+subplot(3,2,4); plot(x,pBE,color(2),x,pMB,color(4),x,pFD,color(3)); ylabel('$p$'); xlabel('$x$'); legend(statistic,'Location','best');
+subplot(3,2,3); plot(x,eBE,color(2),x,eMB,color(4),x,eFD,color(3)); ylabel('$e$'); xlabel('$x$'); legend(statistic,'Location','best');
+subplot(3,2,5); plot(x,zBE,color(2),x,zMB,color(4),x,zFD,color(3)); ylabel('$z$'); xlabel('$x$'); legend(statistic,'Location','best');
+subplot(3,2,6); plot(x,tBE,color(2),x,tMB,color(4),x,tFD,color(3)); ylabel('$\theta$'); xlabel('$x$'); legend(statistic,'Location','best');
 
 % Export plot to *.eps figure.
-print('-depsc',[path,'QEuler_Eg',num2str(example),'_TogetherPlots.eps']);
+print('-dpng',[path,'QEuler_Eg',num2str(example),'_TogetherPlots.png']);

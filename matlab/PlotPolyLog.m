@@ -3,7 +3,7 @@
 %
 %               Coded by Manuel Diaz, NTU, 2014.12.23.
 %                   Copyright (c) 2014, Manuel Diaz.
-%                           All rights reserved.
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % 1. Set z range
@@ -64,4 +64,4 @@ hleg = legend( ...
 set(hleg,'FontAngle','italic','FontSize',14)
 
 % 4. Export plot to *.eps figure
-print('-depsc','PolyLogPlot.eps');
+print('-dpng','PolyLogPlot.png');
