@@ -56,10 +56,27 @@ int main() {
   ok &= ExpectNear(batch[2], 0.582240526465, 1e-9, "batch Li_2(0.5)");
 
   ok &= quantum::IsIntegerOrder(2.0);
+  ok &= quantum::IsIntegerOrder(-2.0);
   ok &= !quantum::IsIntegerOrder(2.5);
 
   ok &= ExpectNear(quantum::PolyLog(2.5, 0.3), 0.31794896947833, 1e-12,
                    "fractional PolyLog(2.5, 0.3)");
+
+  ok &= ExpectNear(quantum::PolyLog(-1.0, 0.5), 2.0, 1e-12, "Li_{-1}(0.5)");
+  ok &= ExpectNear(quantum::PolyLog(-2.0, 0.5), 6.0, 1e-9, "Li_{-2}(0.5)");
+  ok &= ExpectNear(quantum::PolyLog(-2.0, 10.0), -0.15089163237311384, 1e-9,
+                   "Li_{-2}(10)");
+  ok &= ExpectNear(quantum::PolyLog(-3.0, -0.3), 0.011554217289310626, 1e-9,
+                   "Li_{-3}(-0.3)");
+  ok &= ExpectNear(quantum::PolyLog(-2.0, 0.9), 1710.0, 1e-6, "Li_{-2}(0.9)");
+  ok &= ExpectNear(quantum::PolyLog(-3.0, 2.0), 26.0, 1e-9, "Li_{-3}(2)");
+
+  ok &= ExpectNear(
+      quantum::PolyLog(-2.0, 10.0) + quantum::PolyLog(-2.0, 0.1), 0.0, 1e-9,
+      "negative integer inversion identity m=2");
+  ok &= ExpectNear(
+      quantum::PolyLog(-3.0, 2.0) - quantum::PolyLog(-3.0, 0.5), 0.0, 1e-9,
+      "negative integer inversion identity m=3");
 
   return ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

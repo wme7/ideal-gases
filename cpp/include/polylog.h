@@ -15,14 +15,14 @@
 
 namespace quantum {
 
-// Returns true when n is a non-negative integer representable as int.
+// Returns true when n is an integer representable as int.
 bool IsIntegerOrder(double n);
 
 // Computes PolyLog(n, z) for a scalar argument.
 //
-// n must be positive. For integer n the result matches real(polylog(n, z))
-// from MATLAB. For non-integer n the Bhagat/Kuhnert approximations from
-// matlab/PolyLog.m are used.
+// For integer n (including negative integers) the result matches
+// real(polylog(n, z)) from mpmath/MATLAB. For non-integer n the
+// Bhagat/Kuhnert approximations from matlab/PolyLog.m are used.
 double PolyLog(double n, double z);
 
 // Evaluates PolyLog(n, z) for every element of z.

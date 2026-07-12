@@ -36,16 +36,18 @@ def polylog(n: float, z: ArrayLike | float) -> NDArray[np.float64] | float:
     Parameters
     ----------
     n:
-        Polylogarithm order. Integer values use the analytic branch; non-integer
-        values use the Bhagat/Kuhnert approximations from ``matlab/PolyLog.m``.
+        Polylogarithm order. Integer values (including negative integers) use the
+        analytic branch; non-integer values use the Bhagat/Kuhnert
+        approximations from ``matlab/PolyLog.m``.
     z:
         Scalar or array-like argument.
 
     Returns
     -------
     float or ndarray
-        ``real(polylog(n, z))`` for integer ``n``, otherwise the fractional
-        approximation from the MATLAB reference implementation.
+        ``real(polylog(n, z))`` for integer ``n`` (positive or negative),
+        otherwise the fractional approximation from the MATLAB reference
+        implementation.
     """
     if np.isscalar(z):
         return float(_polylog_scalar(n, float(z)))

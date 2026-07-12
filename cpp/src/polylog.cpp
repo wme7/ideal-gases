@@ -20,6 +20,7 @@ constexpr double kRange3LowerBound = -50.0;
 constexpr int kMaxSeriesTerms = 10'000;
 constexpr double kSeriesTolerance = 1e-15;
 constexpr double kSeriesRadius = 0.75;
+constexpr double kIntegerSeriesRadius = 1.0;
 constexpr double kInversionRadius = 1.4;
 
 constexpr std::array<int, 8> kRationalCoefficients = {
@@ -50,14 +51,26 @@ double Binomial(int n, int k) {
 }
 
 double BernoulliNumber(int n) {
-  static constexpr std::array<double, 10> kBernoulli = {
-      1.0, -0.5, 1.0 / 6.0, 0.0, -1.0 / 30.0, 0.0,
-      1.0 / 42.0, 0.0, -1.0 / 30.0, 0.0,
-  };
-  if (n < 0 || static_cast<std::size_t>(n) >= kBernoulli.size()) {
+  if (n < 0) {
     return 0.0;
   }
-  return kBernoulli[static_cast<std::size_t>(n)];
+  if (n == 1) {
+    return -0.5;
+  }
+  if (n % 2 == 1) {
+    return 0.0;
+  }
+
+  static std::vector<double> table = {1.0};
+  while (static_cast<int>(table.size()) <= n) {
+    const int m = static_cast<int>(table.size());
+    double sum = 0.0;
+    for (int k = 0; k < m; ++k) {
+      sum += Binomial(m + 1, k) * table[static_cast<std::size_t>(k)];
+    }
+    table.push_back(-sum / static_cast<double>(m + 1));
+  }
+  return table[static_cast<std::size_t>(n)];
 }
 
 std::complex<double> BernoulliPoly(int n,
@@ -180,6 +193,10 @@ std::complex<double> PolylogContinuation(int n,
   return value;
 }
 
+double InversionSign(int n) {
+  return (n % 2 == 0) ? -1.0 : 1.0;
+}
+
 double PolylogUnitCircle(int n, double z) {
   const std::complex<double> cz(z, 0.0);
   const std::complex<double> log_z = std::log(cz);
@@ -204,15 +221,73 @@ double PolylogUnitCircle(int n, double z) {
       (Harmonic(n - 1) - std::log(-log_z));
   sum += final_term;
 
-  if (z < 0.0) {
-    return sum.real();
-  }
   return sum.real();
+}
+
+double PolylogUnitCircleNegative(int n, double z) {
+  const std::complex<double> cz(z, 0.0);
+  const std::complex<double> log_z = std::log(cz);
+  const int positive_order = -n;
+
+  std::complex<double> sum =
+      Factorial(positive_order) * std::pow(-log_z, n - 1);
+  std::complex<double> log_power(1.0, 0.0);
+
+  for (int k = 0; k < positive_order + 64; ++k) {
+    const double bernoulli = BernoulliNumber(k - n + 1);
+    if (bernoulli != 0.0) {
+      const int denominator_index = k - n + 1;
+      const std::complex<double> term =
+          bernoulli * log_power /
+          (Factorial(k) * static_cast<double>(denominator_index));
+      if (std::abs(term) < kSeriesTolerance * (std::abs(sum) + 1.0) &&
+          k > 0) {
+        break;
+      }
+      sum -= term;
+    }
+    log_power *= log_z;
+  }
+
+  return sum.real();
+}
+
+double IntegerPolylogNegative(int n, double z) {
+  if (z == 0.0) {
+    return 0.0;
+  }
+  if (z == 1.0) {
+    return std::numeric_limits<double>::infinity();
+  }
+  if (n == -1) {
+    if (z >= 1.0) {
+      return std::numeric_limits<double>::infinity();
+    }
+    const double denom = 1.0 - z;
+    return z / (denom * denom);
+  }
+
+  const std::complex<double> cz(z, 0.0);
+  const double abs_z = std::abs(z);
+
+  if (abs_z <= kSeriesRadius) {
+    return RealPart(PolylogSeriesComplex(n, cz));
+  }
+  if (abs_z >= kInversionRadius) {
+    return RealPart(InversionSign(n) * PolylogSeriesComplex(n, 1.0 / cz));
+  }
+  return PolylogUnitCircleNegative(n, z);
 }
 
 double IntegerPolylog(int n, double z) {
   if (n == 0) {
+    if (z == 1.0) {
+      return std::numeric_limits<double>::infinity();
+    }
     return z / (1.0 - z);
+  }
+  if (n < 0) {
+    return IntegerPolylogNegative(n, z);
   }
   if (n == 1) {
     if (z >= 1.0) {
@@ -224,13 +299,13 @@ double IntegerPolylog(int n, double z) {
   const std::complex<double> cz(z, 0.0);
   const double abs_z = std::abs(z);
 
-  if (abs_z <= kSeriesRadius) {
+  if (abs_z <= kIntegerSeriesRadius) {
     return RealPart(PolylogSeriesComplex(n, cz));
   }
   if (abs_z >= kInversionRadius) {
-    const double sign = ((n + 1) % 2 == 0) ? 1.0 : -1.0;
     const std::complex<double> inversion =
-        sign * PolylogSeriesComplex(n, 1.0 / cz) + PolylogContinuation(n, cz);
+        InversionSign(n) * PolylogSeriesComplex(n, 1.0 / cz) +
+        PolylogContinuation(n, cz);
     return RealPart(inversion);
   }
   return PolylogUnitCircle(n, z);
@@ -265,7 +340,7 @@ void ComputeFermiDiracSums(double nu, double z,
 
 double EvaluateRationalApproximation(
     double n, double z, const std::array<double, 9>& integral_values,
-    bool negate) {
+    bool negate, bool alternating_signs) {
   double numerator = 0.0;
   double denominator = 0.0;
   double z_power = 1.0;
@@ -273,7 +348,8 @@ double EvaluateRationalApproximation(
   for (std::size_t i = 0; i < kRationalCoefficients.size(); ++i) {
     const double coeff = static_cast<double>(kRationalCoefficients[i]);
     const double base_power = Power(static_cast<double>(kRationalBases[i]), n);
-    const double sign = (i % 2 == 0) ? 1.0 : -1.0;
+    const double sign =
+        alternating_signs ? ((i % 2 == 0) ? 1.0 : -1.0) : 1.0;
 
     numerator += sign * coeff * base_power * z_power *
                  integral_values[8 - static_cast<int>(i)];
@@ -310,13 +386,13 @@ double EvaluateRange1(double n, double z) {
 double EvaluateRange2(double n, double z) {
   std::array<double, 9> be_values = {};
   ComputeBoseEinsteinSums(n, z, &be_values);
-  return EvaluateRationalApproximation(n, z, be_values, false);
+  return EvaluateRationalApproximation(n, z, be_values, false, true);
 }
 
 double EvaluateRange3(double n, double z) {
   std::array<double, 9> fd_values = {};
   ComputeFermiDiracSums(n, std::abs(z), &fd_values);
-  return EvaluateRationalApproximation(n, std::abs(z), fd_values, true);
+  return EvaluateRationalApproximation(n, std::abs(z), fd_values, true, false);
 }
 
 double EvaluateRange4(double n, double z) {
@@ -345,7 +421,9 @@ double FractionalPolylog(double n, double z) {
 }  // namespace
 
 bool IsIntegerOrder(double n) {
-  if (n < 0.0 || n > static_cast<double>(std::numeric_limits<int>::max())) {
+  const double max_int = static_cast<double>(std::numeric_limits<int>::max());
+  const double min_int = static_cast<double>(std::numeric_limits<int>::min());
+  if (n < min_int || n > max_int) {
     return false;
   }
   const double rounded = std::floor(n + 0.5);

@@ -61,7 +61,7 @@ result = euler_gas(
 
 Using `matplotlib`, the results can be plotted as follows:
 
-![Classical Sod shock tube](figures/classical_sod_shock_tube.png)
+![Classical Sod shock tube](./figures/classical_sod_shock_tube.png)
 
 ### Quantum Euler (FD / BE / MB)
 
@@ -92,7 +92,7 @@ result = quantum_euler_gas(
 
 Graphically, the results for the three statistics can be plotted as follows:
 
-![Quantum Euler](figures/quantum_sod_shock_tube_gamma2.png)
+![Quantum Euler](./figures/quantum_sod_shock_tube_gamma2.png)
 
 In the classical limit, MB statistics with `h → 0` recover the ideal-gas behaviour (pressures `p = rho * theta`).
 
@@ -106,7 +106,17 @@ polylog(2, 0.5)                         # scalar
 polylog(1.5, np.linspace(0.2, 0.9, 50)) # array
 ```
 
-Integer orders use an analytic branch; non-integer orders use the Bhagat/Kuhnert approximations from `matlab/PolyLog.m`.
+Integer orders (including negative integers) use an analytic branch; non-integer orders use the Bhagat/Kuhnert approximations from `matlab/PolyLog.m`.
+
+The plot below reproduces `matlab/PlotPolyLog.m` (orders from \(-7/2\) to \(7/2\)):
+
+![Polylogarithms](./figures/polylogarithms.png)
+
+Generate it with:
+
+```bash
+uv run python scripts/plot_polylogarithm.py --output figures/polylogarithms.png
+```
 
 ## Command-line interface
 
