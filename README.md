@@ -6,7 +6,7 @@ This repository ports the MATLAB reference implementation (Diaz, 2014) to Python
 
 ## Requirements
 
-- Python 3.14+
+- Python 3.11+
 - A C++17 compiler (for the pybind11 extension)
 - [uv](https://docs.astral.sh/uv/) (recommended) or pip
 
@@ -18,7 +18,7 @@ cd QEuler
 uv sync
 ```
 
-This installs the `euler` package in editable mode and builds the `_polylog` C++ extension via scikit-build-core.
+This installs the `ideal-gases` distribution (import name `ideal_gases`) in editable mode and builds the `_polylog` C++ extension via scikit-build-core.
 
 To include dev tools (pytest, matplotlib, mpmath, ruff):
 
@@ -32,7 +32,7 @@ uv sync --group dev
 cpp/          C++ polylog library and pybind11 bindings
 matlab/       Original MATLAB reference solvers and plotting scripts
 scripts/      Python utilities (e.g. solution plots)
-src/euler/    Python package
+src/ideal_gases/    Python package
 tests/        pytest suite
 ```
 
@@ -42,10 +42,10 @@ tests/        pytest suite
 
 ```python
 import numpy as np
-from euler import euler_gas
+from ideal_gases import classical_gas
 
 x = np.linspace(0.0, 1.0, 101)
-result = euler_gas(
+result = classical_gas(
     rho_l=1.0,
     u_l=0.0,
     p_l=1.0,
@@ -69,10 +69,10 @@ Left and right states are given in terms of density `rho`, velocity `u`, and tem
 
 ```python
 import numpy as np
-from euler import quantum_euler_gas
+from ideal_gases import quantum_gas
 
 x = np.linspace(0.0, 1.0, 101)
-result = quantum_euler_gas(
+result = quantum_gas(
     rho_l=1.0,
     u_l=0.0,
     t_l=1.0,
@@ -100,7 +100,7 @@ In the classical limit, MB statistics with `h → 0` recover the ideal-gas behav
 
 ```python
 import numpy as np
-from euler import polylog
+from ideal_gases import polylog
 
 polylog(2, 0.5)                         # scalar
 polylog(1.5, np.linspace(0.2, 0.9, 50)) # array
@@ -120,12 +120,12 @@ uv run python scripts/plot_polylogarithm.py --output figures/polylogarithms.png
 
 ## Command-line interface
 
-After `uv sync`, the `qeuler` command exports exact solution profiles to CSV or JSON for use in other languages and tools.
+After `uv sync`, the `euler` command exports exact solution profiles to CSV or JSON for use in other languages and tools.
 
 ### Classical Sod shock tube
 
 ```bash
-qeuler solve classical \
+euler solve classical \
   --rho-l 1 --u-l 0 --p-l 1 \
   --rho-r 0.125 --u-r 0 --p-r 0.1 \
   --t-end 0.25 --gamma 1.4 \
@@ -135,40 +135,40 @@ qeuler solve classical \
 ### Quantum Euler
 
 ```bash
-qeuler solve quantum \
+euler solve quantum \
   --rho-l 1 --u-l 0 --t-l 1 \
   --rho-r 0.125 --u-r 0 --t-r 0.25 \
   --t-end 0.20 --n 2 --h 0.1 --statistic FD \
-  -o qeuler_fd.csv
+  -o euler_fd.csv
 ```
 
-Write separate files for FD, MB, and BE with `--all-statistics` (e.g. `qeuler_case7_FD.csv`, `qeuler_case7_MB.csv`, `qeuler_case7_BE.csv`):
+Write separate files for FD, MB, and BE with `--all-statistics` (e.g. `euler_case7_FD.csv`, `euler_case7_MB.csv`, `euler_case7_BE.csv`):
 
 ```bash
-qeuler solve quantum ... --all-statistics -o qeuler_case7
+euler solve quantum ... --all-statistics -o euler_case7
 ```
 
 ### Toro classical tests (1–6)
 
 ```bash
-qeuler toro 1 -o toro_test1.csv
-qeuler list --toro
+euler toro 1 -o toro_test1.csv
+euler list --toro
 ```
 
 ### Quantum benchmark cases (1–8)
 
 ```bash
-qeuler quantum-example 7 --all-statistics -o qeuler_eg7
-qeuler list --quantum
+euler quantum-example 7 --all-statistics -o euler_eg7
+euler list --quantum
 ```
 
 ### JSON config files
 
-Define a problem in JSON and run it with `qeuler run` or pass `--config` to `qeuler solve`:
+Define a problem in JSON and run it with `euler run` or pass `--config` to `euler solve`:
 
 ```bash
-qeuler run --config case.json
-qeuler solve classical --config case.json -o override.csv
+euler run --config case.json
+euler solve classical --config case.json -o override.csv
 ```
 
 Example `case.json`:
@@ -184,7 +184,7 @@ Example `case.json`:
   "statistic": "FD",
   "all_statistics": true,
   "format": "json",
-  "output": "qeuler_case7",
+  "output": "euler_case7",
   "domain": {"x_min": 0.0, "x_max": 1.0, "x0": 0.5, "nx": 101}
 }
 ```
@@ -217,12 +217,12 @@ Outputs per example:
 ## Public API
 
 ```python
-from euler import (
+from ideal_gases import (
     RiemannResult,
     adiabatic_index,
-    euler_gas,
+    classical_gas,
     polylog,
-    quantum_euler_gas,
+    quantum_gas,
 )
 ```
 
@@ -230,8 +230,8 @@ from euler import (
 |--------|------|
 | `polylog(n, z)` | Fast polylogarithm (scalar or NumPy array) |
 | `adiabatic_index(n)` | Returns γ = (n + 2) / n |
-| `euler_gas(...)` | Classical ideal-gas exact Riemann solver |
-| `quantum_euler_gas(...)` | Quantum EOS + Toro exact Riemann solver |
+| `classical_gas(...)` | Classical ideal-gas exact Riemann solver |
+| `quantum_gas(...)` | Quantum EOS + Toro exact Riemann solver |
 | `RiemannResult` | Solution profiles on the spatial grid |
 
 ## Tests

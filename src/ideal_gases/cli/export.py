@@ -12,7 +12,7 @@ from typing import Any, Literal
 
 import numpy as np
 
-from euler.riemann import RiemannResult
+from ideal_gases.riemann import RiemannResult
 
 OutputFormat = Literal["csv", "json"]
 

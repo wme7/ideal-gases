@@ -65,4 +65,4 @@ hleg = legend( ...
 set(hleg,'FontAngle','italic','FontSize',14)
 
 % 4. Export plot to *.eps figure
-print('-dpng','PolyLogPlot.png');
+print('-depsc','PolyLogPlot.eps');

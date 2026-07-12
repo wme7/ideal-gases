@@ -15,7 +15,7 @@ from typing import Callable, Literal
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
 
-from euler.polylog import polylog
+from ideal_gases.polylog import polylog
 
 Statistic = Literal["FD", "BE", "MB"]
 
@@ -27,8 +27,8 @@ DEFAULT_X0 = 0.5
 __all__ = [
     "RiemannResult",
     "adiabatic_index",
-    "euler_gas",
-    "quantum_euler_gas",
+    "classical_gas",
+    "quantum_gas",
 ]
 
 
@@ -72,7 +72,7 @@ def adiabatic_index(n_gas_dofs: float) -> float:
     return (n_gas_dofs + 2.0) / n_gas_dofs
 
 
-def euler_gas(
+def classical_gas(
     rho_l: float,
     u_l: float,
     p_l: float,
@@ -106,7 +106,7 @@ def euler_gas(
     )
 
 
-def quantum_euler_gas(
+def quantum_gas(
     rho_l: float,
     u_l: float,
     t_l: float,

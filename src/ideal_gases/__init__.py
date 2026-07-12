@@ -3,18 +3,18 @@
 
 """Classical and quantum Euler solvers."""
 
-from euler.polylog import polylog
-from euler.riemann import (
+from ideal_gases.polylog import polylog
+from ideal_gases.riemann import (
     RiemannResult,
     adiabatic_index,
-    euler_gas,
-    quantum_euler_gas,
+    classical_gas,
+    quantum_gas,
 )
 
 __all__ = [
     "RiemannResult",
     "adiabatic_index",
-    "euler_gas",
     "polylog",
-    "quantum_euler_gas",
+    "classical_gas",
+    "quantum_gas",
 ]

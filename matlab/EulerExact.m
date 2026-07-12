@@ -1,5 +1,5 @@
 function [x, rho, ux, p, e, z, t, Mach, entro] = ...
-    QEulerExact(rho1, u1, t1, rho4, u4, t4, tEnd, n, h, statistic)
+    EulerExact(rho1, u1, t1, rho4, u4, t4, tEnd, n, h, statistic)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SPDX-License-Identifier: MIT
 % Copyright (c) 2014 Manuel A. Diaz
@@ -20,7 +20,7 @@ function [x, rho, ux, p, e, z, t, Mach, entro] = ...
 %   Samples on x = 0:0.002:1 with discontinuity at x = 0.5.
 %
 % Example usage:
-%   [x,rho,ux,p,e,z,t,Mach,entro] = QEulerExact(...
+%   [x,rho,ux,p,e,z,t,Mach,entro] = EulerExact(...
 %       rhoL,uL,tL,rhoR,uR,tR,tEnd,n,h,statistic)
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

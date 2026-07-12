@@ -35,11 +35,8 @@ if(BUILD_PYTHON_BINDINGS)
   pybind11_add_module(_polylog bindings/polylog_bindings.cpp)
   target_link_libraries(_polylog PRIVATE quantum_polylog)
 
-  if(DEFINED SKBUILD_PROJECT_NAME)
-    install(TARGETS _polylog LIBRARY DESTINATION ${SKBUILD_PROJECT_NAME})
-  else()
-    install(TARGETS _polylog LIBRARY DESTINATION euler)
-  endif()
+  # Install into the Python package directory (import name ``ideal_gases``).
+  install(TARGETS _polylog LIBRARY DESTINATION ideal_gases)
 endif()
 
 if(BUILD_CPP_TESTS)

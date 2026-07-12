@@ -4,7 +4,7 @@
 import numpy as np
 import pytest
 
-from euler import polylog
+from ideal_gases import polylog
 
 
 INTEGER_SCALAR_CASES = [

@@ -1,9 +1,9 @@
 import numpy as np
-from euler import euler_gas
+from ideal_gases import classical_gas
 from matplotlib import pyplot as plt
 
 x = np.linspace(0.0, 1.0, 101)
-result = euler_gas(
+result = classical_gas(
     rho_l=1.0,
     u_l=0.0,
     p_l=1.0,

@@ -1,5 +1,5 @@
 function [x, rho, ux, p, e, z, t, Mach, entro] = ...
-    QEulerExactToro(rhoL, uL, tL, rhoR, uR, tR, tEnd, n, h, statistic)
+    EulerExactToro(rhoL, uL, tL, rhoR, uR, tR, tEnd, n, h, statistic)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SPDX-License-Identifier: MIT
 % Copyright (c) 2014 Manuel A. Diaz
@@ -21,7 +21,7 @@ function [x, rho, ux, p, e, z, t, Mach, entro] = ...
 %   Samples on x = 0:0.002:1 with discontinuity at x = 0.5.
 %
 % Example usage:
-%   [x,rho,ux,p,e,z,t,Mach,entro] = QEulerExactToro(...
+%   [x,rho,ux,p,e,z,t,Mach,entro] = EulerExactToro(...
 %       rhoL,uL,tL,rhoR,uR,tR,tEnd,n,h,statistic)
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -97,7 +97,7 @@ function [x, rho, ux, p, e, z, t, Mach, entro] = ...
             end
 
         otherwise
-            error('QEulerExactToro:Unknownstatistic', ...
+            error('EulerExactToro:Unknownstatistic', ...
                 'Unknown quantum gas statistic "%s".', statistic);
     end
 
@@ -186,7 +186,7 @@ function sol = riemannExactState(rhoL, uL, pL, rhoR, uR, pR, gamma)
     end
 
     if iter == maxIter && change > 1e-3
-        error('QEulerExactToro:StarPressure', ...
+        error('EulerExactToro:StarPressure', ...
             'Newton iteration did not converge (|f| = %.3e).', change);
     end
 
@@ -260,7 +260,7 @@ function [rho, u, pOut] = sampleAtPoint(sol, xi, x0, t, gamma)
             return;
 
         otherwise
-            error('QEulerExactToro:UnknownCase', 'Unknown Riemann case "%s".', sol.caseId);
+            error('EulerExactToro:UnknownCase', 'Unknown Riemann case "%s".', sol.caseId);
     end
 end
 

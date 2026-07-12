@@ -9,7 +9,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from euler.cli.commands import (
+from ideal_gases.cli.commands import (
     cmd_list,
     cmd_quantum_example,
     cmd_run_config,
@@ -50,7 +50,7 @@ def _add_output_args(parser: argparse.ArgumentParser) -> None:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="qeuler",
+        prog="euler",
         description="Exact classical and quantum Euler Riemann solvers.",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)

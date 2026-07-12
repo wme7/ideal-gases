@@ -4,7 +4,7 @@
 import numpy as np
 import pytest
 
-from euler.riemann import adiabatic_index, euler_gas, quantum_euler_gas
+from ideal_gases.riemann import adiabatic_index, classical_gas, quantum_gas
 
 
 def test_adiabatic_index_monatomic() -> None:
@@ -12,7 +12,7 @@ def test_adiabatic_index_monatomic() -> None:
 
 
 def test_classical_sod_shock_tube() -> None:
-    result = euler_gas(
+    result = classical_gas(
         rho_l=1.0,
         u_l=0.0,
         p_l=1.0,
@@ -39,7 +39,7 @@ def test_quantum_mb_matches_classical_pressures() -> None:
     rho_l, rho_r = 1.0, 0.5
     x = np.linspace(0.0, 1.0, 41)
 
-    classical = euler_gas(
+    classical = classical_gas(
         rho_l=rho_l,
         u_l=0.0,
         p_l=rho_l * t_l,
@@ -50,7 +50,7 @@ def test_quantum_mb_matches_classical_pressures() -> None:
         gamma=adiabatic_index(n),
         x=x,
     )
-    quantum = quantum_euler_gas(
+    quantum = quantum_gas(
         rho_l=rho_l,
         u_l=0.0,
         t_l=t_l,
@@ -70,7 +70,7 @@ def test_quantum_mb_matches_classical_pressures() -> None:
 
 
 def test_quantum_fd_runs() -> None:
-    result = quantum_euler_gas(
+    result = quantum_gas(
         rho_l=1.0,
         u_l=0.0,
         t_l=1.0,

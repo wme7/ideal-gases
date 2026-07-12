@@ -4,7 +4,7 @@
 
 """Plot quantum Euler Riemann solutions for visual verification.
 
-Ports the workflow of ``matlab/PlotQEuler.m`` using :func:`euler.quantum_euler_gas`.
+Ports the workflow of ``matlab/PlotQEuler.m`` using :func:`ideal_gases.quantum_gas`.
 """
 
 from __future__ import annotations
@@ -16,8 +16,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from numpy.typing import NDArray
 
-from euler.cli.presets.quantum import QUANTUM_EXAMPLES, QuantumExample
-from euler.riemann import RiemannResult, quantum_euler_gas
+from ideal_gases.cli.presets.quantum import QUANTUM_EXAMPLES, QuantumExample
+from ideal_gases.riemann import RiemannResult, quantum_gas
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -54,7 +54,7 @@ def _solve_example(
 
     for statistic in STATISTICS:
         h = config.h_fd if statistic == "FD" and config.h_fd is not None else config.h
-        solutions[statistic] = quantum_euler_gas(
+        solutions[statistic] = quantum_gas(
             rho_l=config.rho_l,
             u_l=config.u_l,
             t_l=config.t_l,

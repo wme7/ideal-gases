@@ -6,11 +6,11 @@ from pathlib import Path
 
 import pytest
 
-from euler.cli import main
-from euler.cli.config import load_config
-from euler.cli.export import result_to_csv, result_to_json
-from euler.cli.grid import build_grid, validate_x0
-from euler.riemann import euler_gas
+from ideal_gases.cli import main
+from ideal_gases.cli.config import load_config
+from ideal_gases.cli.export import result_to_csv, result_to_json
+from ideal_gases.cli.grid import build_grid, validate_x0
+from ideal_gases.riemann import classical_gas
 
 
 def test_build_grid_with_dx() -> None:
@@ -166,7 +166,7 @@ def test_cli_list_presets(capsys: pytest.CaptureFixture[str]) -> None:
 
 
 def test_export_helpers_round_trip(tmp_path: Path) -> None:
-    result = euler_gas(
+    result = classical_gas(
         rho_l=1.0,
         u_l=0.0,
         p_l=1.0,

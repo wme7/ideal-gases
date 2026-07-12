@@ -4,7 +4,7 @@
 
 """Plot fractional polylogarithms for visual verification.
 
-Ports the workflow of ``matlab/PlotPolyLog.m`` using :func:`euler.polylog`.
+Ports the workflow of ``matlab/PlotPolyLog.m`` using :func:`ideal_gases.polylog`.
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from numpy.typing import NDArray
 
-from euler import polylog
+from ideal_gases import polylog
 
 ROOT = Path(__file__).resolve().parents[1]
 

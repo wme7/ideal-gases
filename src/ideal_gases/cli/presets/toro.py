@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from euler.riemann import DEFAULT_DX, DEFAULT_X0
+from ideal_gases.riemann import DEFAULT_DX, DEFAULT_X0
 
 
 @dataclass(frozen=True)

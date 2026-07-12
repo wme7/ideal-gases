@@ -8,7 +8,7 @@ from __future__ import annotations
 import numpy as np
 from numpy.typing import NDArray
 
-from euler.riemann import DEFAULT_DX, DEFAULT_X0
+from ideal_gases.riemann import DEFAULT_DX, DEFAULT_X0
 
 
 def build_grid(

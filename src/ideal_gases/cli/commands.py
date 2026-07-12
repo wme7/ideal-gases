@@ -9,7 +9,7 @@ import argparse
 from pathlib import Path
 from typing import Any
 
-from euler.cli.config import (
+from ideal_gases.cli.config import (
     ClassicalConfig,
     ClassicalState,
     DomainConfig,
@@ -18,22 +18,22 @@ from euler.cli.config import (
     SolverConfig,
     load_config,
 )
-from euler.cli.export import (
+from ideal_gases.cli.export import (
     OutputFormat,
     output_path_for_statistic,
     resolve_columns,
     resolve_output_format,
     write_result,
 )
-from euler.cli.grid import build_grid, validate_x0
-from euler.cli.presets.quantum import QUANTUM_EXAMPLES
-from euler.cli.presets.toro import TORO_TESTS
-from euler.riemann import (
+from ideal_gases.cli.grid import build_grid, validate_x0
+from ideal_gases.cli.presets.quantum import QUANTUM_EXAMPLES
+from ideal_gases.cli.presets.toro import TORO_TESTS
+from ideal_gases.riemann import (
     RiemannResult,
     Statistic,
     adiabatic_index,
-    euler_gas,
-    quantum_euler_gas,
+    classical_gas,
+    quantum_gas,
 )
 
 STATISTICS: tuple[Statistic, ...] = ("FD", "MB", "BE")
@@ -123,7 +123,7 @@ def _solve_classical(
     gamma: float,
 ) -> RiemannResult:
     x = _grid_from_domain(domain)
-    return euler_gas(
+    return classical_gas(
         rho_l=left.rho,
         u_l=left.u,
         p_l=left.p,
@@ -149,7 +149,7 @@ def _solve_quantum(
     statistic: Statistic,
 ) -> RiemannResult:
     x = _grid_from_domain(domain)
-    return quantum_euler_gas(
+    return quantum_gas(
         rho_l=left.rho,
         u_l=left.u,
         t_l=left.theta,

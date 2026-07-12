@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal
 
-from euler.riemann import DEFAULT_DX, DEFAULT_X0, Statistic
+from ideal_gases.riemann import DEFAULT_DX, DEFAULT_X0, Statistic
 
 SolverMode = Literal["classical", "quantum"]
 

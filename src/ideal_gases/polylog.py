@@ -17,8 +17,8 @@ from typing import overload
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
 
-from euler._polylog import polylog as _polylog_scalar
-from euler._polylog import polylog_1d as _polylog_array_1d
+from ideal_gases._polylog import polylog as _polylog_scalar
+from ideal_gases._polylog import polylog_1d as _polylog_array_1d
 
 __all__ = ["polylog"]
 

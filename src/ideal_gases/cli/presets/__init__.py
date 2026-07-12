@@ -3,8 +3,8 @@
 
 """Preset Riemann problem definitions."""
 
-from euler.cli.presets.quantum import QUANTUM_EXAMPLES, QuantumExample
-from euler.cli.presets.toro import TORO_TESTS, ToroTest
+from ideal_gases.cli.presets.quantum import QUANTUM_EXAMPLES, QuantumExample
+from ideal_gases.cli.presets.toro import TORO_TESTS, ToroTest
 
 __all__ = [
     "QUANTUM_EXAMPLES",
