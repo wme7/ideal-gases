@@ -40,6 +40,27 @@ Hooks then run on each `git commit` (trailing whitespace, YAML checks, Ruff lint
 uv run pre-commit run --all-files
 ```
 
+### CI and releasing
+
+GitHub Actions runs lint (pre-commit) and tests with coverage on Linux and macOS for every push/PR to `master` / `main`.
+
+Releases build wheels (Linux + macOS) and an sdist, then upload them to **TestPyPI** when you push a version tag:
+
+1. One-time setup on [TestPyPI](https://test.pypi.org): create an account, then add a **Trusted Publisher** for this repo — owner `wme7`, repository `ideal-gases`, workflow `publish.yml`, environment `testpypi`.
+2. In GitHub → Settings → Environments, create the environment `testpypi`.
+3. Bump `version` in `pyproject.toml` so it matches the tag (e.g. `0.1.1` ↔ `v0.1.1`).
+4. Tag and push:
+   ```bash
+   git tag v0.1.1
+   git push origin v0.1.1
+   ```
+5. Install from TestPyPI (dependencies still resolve from real PyPI):
+   ```bash
+   pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ ideal-gases
+   ```
+
+`workflow_dispatch` on the Publish workflow builds artifacts without uploading (useful dry run).
+
 ## Project layout
 
 ```

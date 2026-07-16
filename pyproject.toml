@@ -1,6 +1,6 @@
 [project]
 name = "ideal-gases"
-version = "0.1.0"
+version = "0.1.1"
 description = "Compute classical and quantum Euler solutions"
 readme = "README.md"
 authors = [
@@ -72,3 +72,10 @@ branch = true
 show_missing = true
 skip_empty = true
 fail_under = 80
+
+[tool.cibuildwheel]
+build = "cp311-* cp312-* cp313-*"
+skip = "*win* *i686* *musllinux* pp*"
+test-requires = ["pytest>=8", "matplotlib>=3.11", "mpmath>=1.3"]
+test-command = "pytest {project}/tests -q"
+environment = "MPLBACKEND=Agg"
