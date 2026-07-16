@@ -1,6 +1,6 @@
 [project]
 name = "ideal-gases"
-version = "0.1.1"
+version = "0.1.2"
 description = "Compute classical and quantum Euler solutions"
 readme = "README.md"
 authors = [
