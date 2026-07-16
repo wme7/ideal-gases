@@ -14,16 +14,30 @@ This repository ports the MATLAB reference implementation (Diaz, 2014) to Python
 
 ```bash
 git clone <repo-url>
-cd QEuler
+cd ideal-gases
 uv sync
 ```
 
 This installs the `ideal-gases` distribution (import name `ideal_gases`) in editable mode and builds the `_polylog` C++ extension via scikit-build-core.
 
-To include dev tools (pytest, matplotlib, mpmath, ruff):
+To include dev tools (pytest, matplotlib, mpmath, ruff, pre-commit):
 
 ```bash
 uv sync --group dev
+```
+
+### Pre-commit hooks
+
+Install the git hooks once after syncing the `dev` group:
+
+```bash
+uv run pre-commit install
+```
+
+Hooks then run on each `git commit` (trailing whitespace, YAML checks, Ruff lint/format). To check the whole tree:
+
+```bash
+uv run pre-commit run --all-files
 ```
 
 ## Project layout
