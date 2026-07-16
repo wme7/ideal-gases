@@ -6,11 +6,19 @@ from pathlib import Path
 
 import pytest
 
+from ideal_gases import __version__
 from ideal_gases.cli import main
 from ideal_gases.cli.config import load_config
 from ideal_gases.cli.export import result_to_csv, result_to_json
 from ideal_gases.cli.grid import build_grid, validate_x0
 from ideal_gases.riemann import classical_gas
+
+
+def test_cli_version(capsys: pytest.CaptureFixture[str]) -> None:
+    with pytest.raises(SystemExit) as exc_info:
+        main(["--version"])
+    assert exc_info.value.code == 0
+    assert capsys.readouterr().out.strip() == f"euler {__version__}"
 
 
 def test_build_grid_with_dx() -> None:

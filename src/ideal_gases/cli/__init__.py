@@ -9,6 +9,7 @@ import argparse
 import sys
 from pathlib import Path
 
+from ideal_gases import __version__
 from ideal_gases.cli.commands import (
     cmd_interactive_classical,
     cmd_interactive_quantum,
@@ -127,6 +128,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="euler",
         description="Exact classical and quantum Euler Riemann solvers.",
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
