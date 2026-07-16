@@ -17,6 +17,9 @@ add_library(quantum_polylog STATIC
   src/polylog.cpp
 )
 
+# Required when linking this static lib into the pybind11 shared module on Linux.
+set_target_properties(quantum_polylog PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
 target_include_directories(quantum_polylog
   PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
