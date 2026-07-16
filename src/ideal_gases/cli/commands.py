@@ -16,7 +16,6 @@ from ideal_gases.cli.config import (
     DomainConfig,
     QuantumConfig,
     QuantumState,
-    SolverConfig,
     load_config,
 )
 from ideal_gases.cli.export import (

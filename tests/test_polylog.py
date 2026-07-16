@@ -128,7 +128,7 @@ def _matlab_range3_reference(n: float, z: float) -> float:
 
     def fd(nu: float, zz: float, terms: int) -> float:
         total = 0.0
-        for l in range(1, terms + 1):
+        for l in range(1, terms + 1): # noqa: E741
             total += ((-1) ** (l - 1)) * (zz**l) / (l**nu)
         return total
 
