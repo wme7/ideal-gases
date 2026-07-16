@@ -3,10 +3,10 @@
 
 """Fractional PolyLogarithm function: PolyLog(n, z).
 
-This module provides a vectorized implementation of the fractional 
+This module provides a vectorized implementation of the fractional
 PolyLogarithm function: ``PolyLog(n, z)``.
 
-The implementation is based on the Bhagat/Kuhnert approximations from 
+The implementation is based on the Bhagat/Kuhnert approximations from
 ``matlab/PolyLog.m`` (Diaz, 2014).
 """
 
@@ -21,6 +21,7 @@ from ideal_gases._polylog import polylog as _polylog_scalar
 from ideal_gases._polylog import polylog_1d as _polylog_array_1d
 
 __all__ = ["polylog"]
+
 
 @overload
 def polylog(n: float, z: float) -> float: ...
@@ -50,7 +51,8 @@ def polylog(n: float, z: ArrayLike | float) -> NDArray[np.float64] | float:
         implementation.
     """
     if np.isscalar(z):
-        return float(_polylog_scalar(n, float(z)))
+        z_scalar = float(np.asarray(z, dtype=np.float64))
+        return float(_polylog_scalar(n, z_scalar))
 
     z_array = np.asarray(z, dtype=np.float64)
     flat = np.ascontiguousarray(z_array.ravel())

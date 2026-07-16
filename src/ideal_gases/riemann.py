@@ -124,9 +124,7 @@ def quantum_gas(
 ) -> RiemannResult:
     """Exact Toro Riemann solver with quantum FD/BE/MB kinetic inputs."""
     gamma = adiabatic_index(n)
-    p_l, p_r = _effective_pressures(
-        rho_l, t_l, rho_r, t_r, n, h, statistic
-    )
+    p_l, p_r = _effective_pressures(rho_l, t_l, rho_r, t_r, n, h, statistic)
     return _solve_profile(
         rho_l=rho_l,
         u_l=u_l,
@@ -184,6 +182,7 @@ def _solve_profile(
     z, t = _postprocess_quantum(statistic, n, h, rho, e)
     return RiemannResult(x_arr, rho, ux, p, e, z, t, mach, entropy)
 
+
 # ------------------------------------------------------------
 # Use mpmath for polylog (slow! use cpp polylog instead)
 # from mpmath import fp
@@ -202,12 +201,13 @@ def _solve_profile(
 #
 # ------------------------------------------------------------
 
+
 def _be(n: float, z: ArrayLike) -> NDArray[np.float64]:
     return np.asarray(polylog(n, z), dtype=np.float64)
 
 
 def _fd(n: float, z: ArrayLike) -> NDArray[np.float64]:
-    return -np.asarray(polylog(n, -z), dtype=np.float64)
+    return -np.asarray(polylog(n, -np.asarray(z)), dtype=np.float64)
 
 
 def _effective_pressures(
@@ -223,7 +223,7 @@ def _effective_pressures(
         return rho_l * t_l, rho_r * t_r
 
     q_func = _fd if statistic == "FD" else _be
-    clip_fn = _clip_be_fugacity if statistic == "BE" else None
+    clip_fn = _clip_be_fugacity_scalar if statistic == "BE" else None
 
     if rho_l > RHO_FLOOR:
         z_l = _newton_scalar(
@@ -232,8 +232,8 @@ def _effective_pressures(
             0.001,
             clip=clip_fn,
         )
-        p_l = rho_l * t_l * _safe_ratio(
-            q_func(n / 2.0 + 1.0, z_l), q_func(n / 2.0, z_l)
+        p_l = float(
+            rho_l * t_l * _safe_ratio(q_func(n / 2.0 + 1.0, z_l), q_func(n / 2.0, z_l))
         )
     else:
         p_l = 0.0
@@ -245,8 +245,8 @@ def _effective_pressures(
             0.001,
             clip=clip_fn,
         )
-        p_r = rho_r * t_r * _safe_ratio(
-            q_func(n / 2.0 + 1.0, z_r), q_func(n / 2.0, z_r)
+        p_r = float(
+            rho_r * t_r * _safe_ratio(q_func(n / 2.0 + 1.0, z_r), q_func(n / 2.0, z_r))
         )
     else:
         p_r = 0.0
@@ -292,9 +292,7 @@ def _frhot(
 ) -> NDArray[np.float64]:
     rho_arr = np.asarray(rho, dtype=np.float64)
     t_arr = np.asarray(t, dtype=np.float64)
-    return rho_arr * h**n / (2.0 * np.pi * t_arr) ** (n / 2.0) - q_func(
-        n / 2.0, z
-    )
+    return rho_arr * h**n / (2.0 * np.pi * t_arr) ** (n / 2.0) - q_func(n / 2.0, z)
 
 
 def _dfrhot(
@@ -318,9 +316,9 @@ def _frhoe(
     e_arr = np.asarray(e, dtype=np.float64)
     q_mid = q_func(n / 2.0, z)
     q_high = q_func((n + 2.0) / 2.0, z)
-    return q_mid ** ((n + 2.0) / n) / q_high - h**2 * n * rho_arr ** (
-        2.0 / n
-    ) / (4.0 * np.pi * e_arr)
+    return q_mid ** ((n + 2.0) / n) / q_high - h**2 * n * rho_arr ** (2.0 / n) / (
+        4.0 * np.pi * e_arr
+    )
 
 
 def _dfrhoe(
@@ -335,6 +333,10 @@ def _dfrhoe(
     return ((2.0 + n) / n) * (
         q_mid ** ((2.0 + n) / n - 1.0) * q_minus / (z_arr * q_plus)
     ) - q_mid ** (2.0 * (1.0 + n) / n) / (z_arr * q_plus**2)
+
+
+def _clip_be_fugacity_scalar(z: float) -> float:
+    return min(z, 0.999999999)
 
 
 def _clip_be_fugacity(z: NDArray[np.float64]) -> NDArray[np.float64]:
@@ -520,12 +522,12 @@ def _sample_standard_point(
     p_star, u_star = sol.p_star, sol.u_star
     rho_l_star, rho_r_star = sol.rho_l_star, sol.rho_r_star
 
-    left_active = abs(rho_l_star - rho_l) > 1e-8 * max(rho_l, 1.0) or abs(
-        u_star - u_l
-    ) > 1e-8
-    right_active = abs(rho_r_star - rho_r) > 1e-8 * max(rho_r, 1.0) or abs(
-        u_star - u_r
-    ) > 1e-8
+    left_active = (
+        abs(rho_l_star - rho_l) > 1e-8 * max(rho_l, 1.0) or abs(u_star - u_l) > 1e-8
+    )
+    right_active = (
+        abs(rho_r_star - rho_r) > 1e-8 * max(rho_r, 1.0) or abs(u_star - u_r) > 1e-8
+    )
 
     left_outer = left_inner = right_inner = right_outer = 0.0
 
@@ -651,13 +653,13 @@ def _star_density(
     p_star: float, p_k: float, rho_k: float, gamma: float, wave: str
 ) -> float:
     if wave == "shock":
-        return rho_k * ((gamma + 1.0) * p_star + (gamma - 1.0) * p_k) / (
-            (gamma - 1.0) * p_star + (gamma + 1.0) * p_k
+        return (
+            rho_k
+            * ((gamma + 1.0) * p_star + (gamma - 1.0) * p_k)
+            / ((gamma - 1.0) * p_star + (gamma + 1.0) * p_k)
         )
     return rho_k * (p_star / p_k) ** (1.0 / gamma)
 
 
-def _shock_speed(
-    rho_k: float, u_k: float, rho_star: float, u_star: float
-) -> float:
+def _shock_speed(rho_k: float, u_k: float, rho_star: float, u_star: float) -> float:
     return (rho_k * u_k - rho_star * u_star) / (rho_k - rho_star)

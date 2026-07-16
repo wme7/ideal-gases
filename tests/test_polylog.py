@@ -128,7 +128,7 @@ def _matlab_range3_reference(n: float, z: float) -> float:
 
     def fd(nu: float, zz: float, terms: int) -> float:
         total = 0.0
-        for l in range(1, terms + 1): # noqa: E741
+        for l in range(1, terms + 1):  # noqa: E741
             total += ((-1) ** (l - 1)) * (zz**l) / (l**nu)
         return total
 
@@ -148,7 +148,9 @@ def _matlab_range3_reference(n: float, z: float) -> float:
 
 
 @pytest.mark.parametrize(("n", "z"), FRACTIONAL_NEGATIVE_Z_CASES)
-def test_polylog_fractional_negative_z_matches_matlab_range3(n: float, z: float) -> None:
+def test_polylog_fractional_negative_z_matches_matlab_range3(
+    n: float, z: float
+) -> None:
     expected = _matlab_range3_reference(n, z)
     assert polylog(n, z) == pytest.approx(expected, rel=1e-12, abs=1e-12)
 

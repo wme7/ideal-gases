@@ -34,6 +34,7 @@ def resolve_output_format(
         return config_format
     return "csv"
 
+
 _COLUMN_ATTRS = {
     "x": "x",
     "rho": "rho",
@@ -60,7 +61,9 @@ def resolve_columns(*, quantum: bool, columns: str | None) -> tuple[str, ...]:
     return requested
 
 
-def _column_arrays(result: RiemannResult, columns: tuple[str, ...]) -> dict[str, np.ndarray]:
+def _column_arrays(
+    result: RiemannResult, columns: tuple[str, ...]
+) -> dict[str, np.ndarray]:
     data: dict[str, np.ndarray] = {}
     for col in columns:
         data[col] = getattr(result, _COLUMN_ATTRS[col])
@@ -96,9 +99,7 @@ def result_to_csv(
         writer = csv.writer(handle)
         writer.writerow(columns)
         for row_idx in range(n_points):
-            writer.writerow(
-                f"{arrays[col][row_idx]:.12g}" for col in columns
-            )
+            writer.writerow(f"{arrays[col][row_idx]:.12g}" for col in columns)
 
 
 def result_to_json(
@@ -135,6 +136,8 @@ def write_result(
     result_to_json(result, path, metadata=metadata, columns=columns)
 
 
-def output_path_for_statistic(base: Path, statistic: str, output_format: OutputFormat) -> Path:
+def output_path_for_statistic(
+    base: Path, statistic: str, output_format: OutputFormat
+) -> Path:
     suffix = ".json" if output_format == "json" else ".csv"
     return base.parent / f"{base.stem}_{statistic}{suffix}"

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Iterator
 from pathlib import Path
 from unittest.mock import patch
 
@@ -18,7 +19,7 @@ from ideal_gases.cli.interactive.defaults import INTERACTIVE_GAMMA
 
 
 @pytest.fixture(autouse=True)
-def _mock_show() -> None:
+def _mock_show() -> Iterator[None]:
     with patch("matplotlib.pyplot.show"):
         yield
 
@@ -36,7 +37,9 @@ def test_interactive_quantum_runs_with_defaults() -> None:
 def test_interactive_classical_seeds_gamma_from_cli() -> None:
     with patch(
         "ideal_gases.cli.interactive.classical.classical_gas",
-        wraps=__import__("ideal_gases.riemann", fromlist=["classical_gas"]).classical_gas,
+        wraps=__import__(
+            "ideal_gases.riemann", fromlist=["classical_gas"]
+        ).classical_gas,
     ) as solve:
         exit_code = main(
             [
@@ -55,7 +58,9 @@ def test_interactive_classical_seeds_gamma_from_cli() -> None:
 def test_interactive_classical_uses_default_gamma_without_flags() -> None:
     with patch(
         "ideal_gases.cli.interactive.classical.classical_gas",
-        wraps=__import__("ideal_gases.riemann", fromlist=["classical_gas"]).classical_gas,
+        wraps=__import__(
+            "ideal_gases.riemann", fromlist=["classical_gas"]
+        ).classical_gas,
     ) as solve:
         exit_code = main(["interactive", "classical", "--nx", "21"])
     assert exit_code == 0
@@ -79,7 +84,9 @@ def test_interactive_classical_loads_config(tmp_path: Path) -> None:
     )
     with patch(
         "ideal_gases.cli.interactive.classical.classical_gas",
-        wraps=__import__("ideal_gases.riemann", fromlist=["classical_gas"]).classical_gas,
+        wraps=__import__(
+            "ideal_gases.riemann", fromlist=["classical_gas"]
+        ).classical_gas,
     ) as solve:
         exit_code = main(
             [

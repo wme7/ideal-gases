@@ -7,8 +7,9 @@ from __future__ import annotations
 
 import argparse
 import sys
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal, overload
 
 from ideal_gases.cli.config import (
     ClassicalConfig,
@@ -55,7 +56,9 @@ from ideal_gases.riemann import (
 STATISTICS: tuple[Statistic, ...] = ("FD", "MB", "BE")
 
 
-def _resolve_gamma(*, gamma: float | None, n: float | None, default: float = 1.4) -> float:
+def _resolve_gamma(
+    *, gamma: float | None, n: float | None, default: float = 1.4
+) -> float:
     if gamma is not None:
         return gamma
     if n is not None:
@@ -212,7 +215,7 @@ def _require_output(path: Path | None, config_output: str | None) -> Path:
         return path
     if config_output is not None:
         return Path(config_output)
-    msg = "Output path is required (-o/--output or config \"output\")."
+    msg = 'Output path is required (-o/--output or config "output").'
     raise ValueError(msg)
 
 
@@ -239,7 +242,7 @@ def _single_figure_path(figure: Path) -> Path:
     return figure.with_suffix(".png")
 
 
-def _print_saved(paths: list[Path | None]) -> None:
+def _print_saved(paths: Sequence[Path | None]) -> None:
     for path in paths:
         if path is not None:
             print(f"Saved {path}", file=sys.stderr)
@@ -312,12 +315,36 @@ def _quantum_metadata(
     return metadata
 
 
+@overload
+def _merge_classical_from_args(
+    args: argparse.Namespace,
+    config: ClassicalConfig | None,
+    *,
+    require_output: Literal[True] = True,
+) -> tuple[
+    ClassicalState, ClassicalState, float, DomainConfig, float, str | None, Path
+]: ...
+
+
+@overload
+def _merge_classical_from_args(
+    args: argparse.Namespace,
+    config: ClassicalConfig | None,
+    *,
+    require_output: Literal[False],
+) -> tuple[
+    ClassicalState, ClassicalState, float, DomainConfig, float, str | None, Path | None
+]: ...
+
+
 def _merge_classical_from_args(
     args: argparse.Namespace,
     config: ClassicalConfig | None,
     *,
     require_output: bool = True,
-) -> tuple[ClassicalState, ClassicalState, float, DomainConfig, float, str | None, Path | None]:
+) -> tuple[
+    ClassicalState, ClassicalState, float, DomainConfig, float, str | None, Path | None
+]:
     if config is None and args.t_end is None:
         msg = "--t-end is required."
         raise ValueError(msg)
@@ -335,17 +362,22 @@ def _merge_classical_from_args(
         msg = "Left and right states (--rho-l, --u-l, --p-l, --rho-r, --u-r, --p-r) are required."
         raise ValueError(msg)
 
-    left = ClassicalState(
-        rho=args.rho_l if args.rho_l is not None else config.left.rho,  # type: ignore[union-attr]
-        u=args.u_l if args.u_l is not None else config.left.u,  # type: ignore[union-attr]
-        p=args.p_l if args.p_l is not None else config.left.p,  # type: ignore[union-attr]
-    )
-    right = ClassicalState(
-        rho=args.rho_r if args.rho_r is not None else config.right.rho,  # type: ignore[union-attr]
-        u=args.u_r if args.u_r is not None else config.right.u,  # type: ignore[union-attr]
-        p=args.p_r if args.p_r is not None else config.right.p,  # type: ignore[union-attr]
-    )
-    t_end = args.t_end if args.t_end is not None else config.t_end  # type: ignore[union-attr]
+    if config is None:
+        left = ClassicalState(rho=args.rho_l, u=args.u_l, p=args.p_l)
+        right = ClassicalState(rho=args.rho_r, u=args.u_r, p=args.p_r)
+        t_end = args.t_end
+    else:
+        left = ClassicalState(
+            rho=args.rho_l if args.rho_l is not None else config.left.rho,
+            u=args.u_l if args.u_l is not None else config.left.u,
+            p=args.p_l if args.p_l is not None else config.left.p,
+        )
+        right = ClassicalState(
+            rho=args.rho_r if args.rho_r is not None else config.right.rho,
+            u=args.u_r if args.u_r is not None else config.right.u,
+            p=args.p_r if args.p_r is not None else config.right.p,
+        )
+        t_end = args.t_end if args.t_end is not None else config.t_end
     domain = _resolve_domain(
         domain=config.domain if config else DomainConfig(),
         x_min=args.x_min,
@@ -355,15 +387,61 @@ def _merge_classical_from_args(
         nx=args.nx,
     )
     gamma = _resolve_gamma(
-        gamma=args.gamma if args.gamma is not None else (config.gamma if config else None),
+        gamma=args.gamma
+        if args.gamma is not None
+        else (config.gamma if config else None),
         n=args.n if args.n is not None else (config.n if config else None),
     )
-    columns = args.columns if args.columns is not None else (config.columns if config else None)
+    columns = (
+        args.columns
+        if args.columns is not None
+        else (config.columns if config else None)
+    )
     if require_output:
         output = _require_output(args.output, config.output if config else None)
     else:
         output = _optional_output(args.output, config.output if config else None)
     return left, right, t_end, domain, gamma, columns, output
+
+
+@overload
+def _merge_quantum_from_args(
+    args: argparse.Namespace,
+    config: QuantumConfig | None,
+    *,
+    require_output: Literal[True] = True,
+) -> tuple[
+    QuantumState,
+    QuantumState,
+    float,
+    DomainConfig,
+    float,
+    float,
+    Statistic,
+    bool,
+    str | None,
+    Path,
+]: ...
+
+
+@overload
+def _merge_quantum_from_args(
+    args: argparse.Namespace,
+    config: QuantumConfig | None,
+    *,
+    require_output: Literal[False],
+) -> tuple[
+    QuantumState,
+    QuantumState,
+    float,
+    DomainConfig,
+    float,
+    float,
+    Statistic,
+    bool,
+    str | None,
+    Path | None,
+]: ...
 
 
 def _merge_quantum_from_args(
@@ -405,17 +483,26 @@ def _merge_quantum_from_args(
         )
         raise ValueError(msg)
 
-    left = QuantumState(
-        rho=args.rho_l if args.rho_l is not None else config.left.rho,  # type: ignore[union-attr]
-        u=args.u_l if args.u_l is not None else config.left.u,  # type: ignore[union-attr]
-        theta=args.t_l if args.t_l is not None else config.left.theta,  # type: ignore[union-attr]
-    )
-    right = QuantumState(
-        rho=args.rho_r if args.rho_r is not None else config.right.rho,  # type: ignore[union-attr]
-        u=args.u_r if args.u_r is not None else config.right.u,  # type: ignore[union-attr]
-        theta=args.t_r if args.t_r is not None else config.right.theta,  # type: ignore[union-attr]
-    )
-    t_end = args.t_end if args.t_end is not None else config.t_end  # type: ignore[union-attr]
+    if config is None:
+        left = QuantumState(rho=args.rho_l, u=args.u_l, theta=args.t_l)
+        right = QuantumState(rho=args.rho_r, u=args.u_r, theta=args.t_r)
+        t_end = args.t_end
+        n = args.n
+        h = args.h
+    else:
+        left = QuantumState(
+            rho=args.rho_l if args.rho_l is not None else config.left.rho,
+            u=args.u_l if args.u_l is not None else config.left.u,
+            theta=args.t_l if args.t_l is not None else config.left.theta,
+        )
+        right = QuantumState(
+            rho=args.rho_r if args.rho_r is not None else config.right.rho,
+            u=args.u_r if args.u_r is not None else config.right.u,
+            theta=args.t_r if args.t_r is not None else config.right.theta,
+        )
+        t_end = args.t_end if args.t_end is not None else config.t_end
+        n = args.n if args.n is not None else config.n
+        h = args.h if args.h is not None else config.h
     domain = _resolve_domain(
         domain=config.domain if config else DomainConfig(),
         x_min=args.x_min,
@@ -424,15 +511,17 @@ def _merge_quantum_from_args(
         dx=args.dx,
         nx=args.nx,
     )
-    n = args.n if args.n is not None else config.n  # type: ignore[union-attr]
-    h = args.h if args.h is not None else config.h  # type: ignore[union-attr]
     statistic = (
         args.statistic
         if args.statistic is not None
         else (config.statistic if config else "FD")
     )
     all_statistics = args.all_statistics or (config.all_statistics if config else False)
-    columns = args.columns if args.columns is not None else (config.columns if config else None)
+    columns = (
+        args.columns
+        if args.columns is not None
+        else (config.columns if config else None)
+    )
     if require_output:
         output = _require_output(args.output, config.output if config else None)
     else:
@@ -491,7 +580,9 @@ def _merge_classical_interactive_from_args(
         config.domain if config else None,
     )
     gamma = _resolve_gamma(
-        gamma=args.gamma if args.gamma is not None else (config.gamma if config else INTERACTIVE_GAMMA),
+        gamma=args.gamma
+        if args.gamma is not None
+        else (config.gamma if config else INTERACTIVE_GAMMA),
         n=args.n if args.n is not None else (config.n if config else None),
         default=INTERACTIVE_GAMMA,
     )
@@ -546,9 +637,11 @@ def cmd_interactive_classical(args: argparse.Namespace) -> int:
         if config is not None and config.mode != "classical":
             raise ValueError('Config mode must be "classical" for this command.')
 
-        left, right, t_end, domain, gamma, figure = _merge_classical_interactive_from_args(
-            args,
-            config if isinstance(config, ClassicalConfig) else None,
+        left, right, t_end, domain, gamma, figure = (
+            _merge_classical_interactive_from_args(
+                args,
+                config if isinstance(config, ClassicalConfig) else None,
+            )
         )
         x = _grid_from_domain(domain)
         return run_classical_interactive(
@@ -601,8 +694,10 @@ def cmd_solve_classical(args: argparse.Namespace) -> int:
         if config is not None and config.mode != "classical":
             raise ValueError('Config mode must be "classical" for this command.')
 
-        left, right, t_end, domain, gamma, columns_raw, output = _merge_classical_from_args(
-            args, config if isinstance(config, ClassicalConfig) else None
+        left, right, t_end, domain, gamma, columns_raw, output = (
+            _merge_classical_from_args(
+                args, config if isinstance(config, ClassicalConfig) else None
+            )
         )
         columns = resolve_columns(quantum=False, columns=columns_raw)
         output_format = resolve_output_format(
@@ -654,7 +749,9 @@ def cmd_solve_quantum(args: argparse.Namespace) -> int:
             all_statistics,
             columns_raw,
             output,
-        ) = _merge_quantum_from_args(args, config if isinstance(config, QuantumConfig) else None)
+        ) = _merge_quantum_from_args(
+            args, config if isinstance(config, QuantumConfig) else None
+        )
         columns = resolve_columns(quantum=True, columns=columns_raw)
         output_format = resolve_output_format(
             args.format,
@@ -937,7 +1034,11 @@ def cmd_quantum_example(args: argparse.Namespace) -> int:
                 columns=columns,
             )
         else:
-            h = preset.h_fd if statistic == "FD" and preset.h_fd is not None else preset.h
+            h = (
+                preset.h_fd
+                if statistic == "FD" and preset.h_fd is not None
+                else preset.h
+            )
             result = _solve_quantum(
                 left=left,
                 right=right,
@@ -967,10 +1068,12 @@ def cmd_plot_classical(args: argparse.Namespace) -> int:
         if config is not None and config.mode != "classical":
             raise ValueError('Config mode must be "classical" for this command.')
 
-        left, right, t_end, domain, gamma, columns_raw, output = _merge_classical_from_args(
-            args,
-            config if isinstance(config, ClassicalConfig) else None,
-            require_output=False,
+        left, right, t_end, domain, gamma, columns_raw, output = (
+            _merge_classical_from_args(
+                args,
+                config if isinstance(config, ClassicalConfig) else None,
+                require_output=False,
+            )
         )
         figure = _require_figure(args.figure, args.show)
         result = _solve_classical(
@@ -1055,7 +1158,9 @@ def cmd_plot_quantum(args: argparse.Namespace) -> int:
 
         if all_statistics:
             if figure is None:
-                msg = "Figure path (-f/--figure) is required for --all-statistics plots."
+                msg = (
+                    "Figure path (-f/--figure) is required for --all-statistics plots."
+                )
                 raise ValueError(msg)
             results = _solve_quantum_all_statistics(
                 left=left,
@@ -1162,7 +1267,9 @@ def cmd_plot_run(args: argparse.Namespace) -> int:
             if output is not None:
                 columns = resolve_columns(
                     quantum=False,
-                    columns=args.columns if args.columns is not None else config.columns,
+                    columns=args.columns
+                    if args.columns is not None
+                    else config.columns,
                 )
                 output_format = resolve_output_format(
                     args.format,
@@ -1205,7 +1312,9 @@ def cmd_plot_run(args: argparse.Namespace) -> int:
 
         if config.all_statistics:
             if figure is None:
-                msg = "Figure path (-f/--figure) is required for --all-statistics plots."
+                msg = (
+                    "Figure path (-f/--figure) is required for --all-statistics plots."
+                )
                 raise ValueError(msg)
             results = _solve_quantum_all_statistics(
                 left=config.left,
@@ -1382,7 +1491,9 @@ def cmd_plot_quantum_example(args: argparse.Namespace) -> int:
 
         if all_statistics:
             if figure is None:
-                msg = "Figure path (-f/--figure) is required for --all-statistics plots."
+                msg = (
+                    "Figure path (-f/--figure) is required for --all-statistics plots."
+                )
                 raise ValueError(msg)
             results = _solve_quantum_all_statistics(
                 left=left,

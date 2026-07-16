@@ -57,7 +57,9 @@ def _require_matplotlib(*, show: bool):
     try:
         import matplotlib
     except ImportError as exc:
-        msg = "Plotting requires matplotlib. Install with: pip install ideal-gases[plot]"
+        msg = (
+            "Plotting requires matplotlib. Install with: pip install ideal-gases[plot]"
+        )
         raise RuntimeError(msg) from exc
 
     if not show:

@@ -30,7 +30,9 @@ from ideal_gases.cli.commands import (
 def _add_domain_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--x-min", type=float, default=None, help="Domain start.")
     parser.add_argument("--x-max", type=float, default=None, help="Domain end.")
-    parser.add_argument("--x0", type=float, default=None, help="Discontinuity location.")
+    parser.add_argument(
+        "--x0", type=float, default=None, help="Discontinuity location."
+    )
     parser.add_argument("--dx", type=float, default=None, help="Grid spacing.")
     parser.add_argument("--nx", type=int, default=None, help="Number of grid points.")
 
@@ -94,13 +96,21 @@ def _add_quantum_solver_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--config", type=Path, default=None, help="JSON config file.")
     parser.add_argument("--rho-l", type=float, default=None)
     parser.add_argument("--u-l", type=float, default=None)
-    parser.add_argument("--t-l", type=float, default=None, help="Left temperature theta.")
+    parser.add_argument(
+        "--t-l", type=float, default=None, help="Left temperature theta."
+    )
     parser.add_argument("--rho-r", type=float, default=None)
     parser.add_argument("--u-r", type=float, default=None)
-    parser.add_argument("--t-r", type=float, default=None, help="Right temperature theta.")
+    parser.add_argument(
+        "--t-r", type=float, default=None, help="Right temperature theta."
+    )
     parser.add_argument("--t-end", type=float, default=None)
-    parser.add_argument("--n", type=float, default=None, help="Spatial degrees of freedom.")
-    parser.add_argument("--h", type=float, default=None, help="Planck constant (model parameter).")
+    parser.add_argument(
+        "--n", type=float, default=None, help="Spatial degrees of freedom."
+    )
+    parser.add_argument(
+        "--h", type=float, default=None, help="Planck constant (model parameter)."
+    )
     parser.add_argument(
         "--statistic",
         choices=("FD", "BE", "MB"),
@@ -161,7 +171,9 @@ def build_parser() -> argparse.ArgumentParser:
     _add_output_args(run_parser)
     _add_domain_args(run_parser)
 
-    solve_parser = subparsers.add_parser("solve", help="Solve a custom Riemann problem.")
+    solve_parser = subparsers.add_parser(
+        "solve", help="Solve a custom Riemann problem."
+    )
     solve_sub = solve_parser.add_subparsers(dest="solver", required=True)
 
     classical = solve_sub.add_parser("classical", help="Classical ideal-gas solver.")
@@ -254,7 +266,9 @@ def build_parser() -> argparse.ArgumentParser:
         "interactive",
         help="Launch an interactive matplotlib Riemann explorer.",
     )
-    interactive_sub = interactive_parser.add_subparsers(dest="interactive_target", required=True)
+    interactive_sub = interactive_parser.add_subparsers(
+        dest="interactive_target", required=True
+    )
 
     interactive_classical = interactive_sub.add_parser(
         "classical",

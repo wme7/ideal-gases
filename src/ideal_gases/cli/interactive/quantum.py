@@ -74,9 +74,9 @@ def run_quantum_interactive(
                 x, gas.rho, color=STATISTIC_COLORS[stat], linewidth=2, label=stat
             )[0],
             "ux": ax_vx.plot(x, gas.ux, color=STATISTIC_COLORS[stat], linewidth=2)[0],
-            "theta": ax_theta.plot(
-                x, gas.t, color=STATISTIC_COLORS[stat], linewidth=2
-            )[0],
+            "theta": ax_theta.plot(x, gas.t, color=STATISTIC_COLORS[stat], linewidth=2)[
+                0
+            ],
         }
 
     ax_rho.set_xticks([])
@@ -180,7 +180,9 @@ def run_quantum_interactive(
         fig.savefig(figure_path, dpi=SAVE_DPI)
         print(f"Saved figure to {figure_path}")
 
-    def on_check(label: str) -> None:
+    def on_check(label: str | None) -> None:
+        if label is None:
+            return
         if not any(checks.get_status()):
             checks.set_active(STATISTICS.index(label))
         update()

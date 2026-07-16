@@ -26,7 +26,9 @@ class ToroTest:
     x_min: float = 0.0
     x_max: float = 1.0
     dx: float = DEFAULT_DX
-    reference: str = "Toro (1999) Riemann Solvers and Numerical Methods for Fluid Dynamics"
+    reference: str = (
+        "Toro (1999) Riemann Solvers and Numerical Methods for Fluid Dynamics"
+    )
 
 
 TORO_TESTS: dict[int, ToroTest] = {
