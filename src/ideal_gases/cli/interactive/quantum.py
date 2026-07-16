@@ -92,13 +92,12 @@ def run_quantum_interactive(
     ax_theta.set_ylabel(r"$\theta$")
     ax_theta.set_xlabel(r"$x$")
 
-    ax_check = fig.add_axes([0.19, 0.9, 0.2, 0.035])
-    checks = CheckButtons(
-        ax_check,
-        STATISTICS,
-        actives=[True, True, True],
-        layout="horizontal",
-    )
+    check_width = 0.065
+    check_x0 = 0.19
+    checks: list[CheckButtons] = []
+    for i, stat in enumerate(STATISTICS):
+        ax = fig.add_axes([check_x0 + i * check_width, 0.9, check_width, 0.035])
+        checks.append(CheckButtons(ax, [stat], actives=[True]))
 
     ax_reset = fig.add_axes([0.40, 0.9, 0.09, 0.035])
     ax_save = fig.add_axes([0.50, 0.9, 0.09, 0.035])
@@ -138,7 +137,9 @@ def run_quantum_interactive(
     }
 
     def active_statistics() -> list[str]:
-        return [stat for stat, on in zip(STATISTICS, checks.get_status()) if on]
+        return [
+            stat for stat, check in zip(STATISTICS, checks) if check.get_status()[0]
+        ]
 
     def scale_axes(_=None) -> None:
         autoscale_axes(
@@ -171,9 +172,9 @@ def run_quantum_interactive(
     def reset_controls(_=None) -> None:
         for slider, value in default_slider_values.items():
             slider.set_val(value)
-        for index, active in enumerate((True, True, True)):
-            if checks.get_status()[index] != active:
-                checks.set_active(index)
+        for check in checks:
+            if not check.get_status()[0]:
+                check.set_active(0)
         update()
 
     def save_figure(_=None) -> None:
@@ -183,8 +184,8 @@ def run_quantum_interactive(
     def on_check(label: str | None) -> None:
         if label is None:
             return
-        if not any(checks.get_status()):
-            checks.set_active(STATISTICS.index(label))
+        if not any(check.get_status()[0] for check in checks):
+            checks[STATISTICS.index(label)].set_active(0)
         update()
 
     def update(_=None) -> None:
@@ -232,7 +233,8 @@ def run_quantum_interactive(
 
     btn_reset.on_clicked(reset_controls)
     btn_save.on_clicked(save_figure)
-    checks.on_clicked(on_check)
+    for check in checks:
+        check.on_clicked(on_check)
     for slider in (
         sl_t,
         sl_rho_l,
