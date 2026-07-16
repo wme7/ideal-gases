@@ -225,9 +225,9 @@ In the classical limit, MB statistics with `h → 0` recover the ideal-gas behav
 ### Polylogarithm module
 
 The polylogarithm module is used to compute the fermi and bose quantum functions. The current implementation is based on the [Bhagat approximation](https://doi.org/10.1016/S0010-4655(03)00294-7) and Sommerfeld's lemma. Providing up to 6 digits of accuracy for the polylogarithm function for half-integer orders. This is a trade-off between accuracy and performance.
-Nevertheless, it is known that this approximation might fail for `z` values very close to 1 (Degenerate limit of Bose gases).
+Nevertheless, it is known that this approximation might fail for `z` values very close to 1.0 (i.e. the *degenerate limit* of *Bose gases* and a known discontinuity in the polylogarithm function).
 
-**NOTE:** This is a known issue and the author is working on a more accurate implementation.
+> **NOTE:** This is a known issue and the author is working on a more accurate implementation.
 
 We can use the polylogarithm module on our scripts as follows:
 
