@@ -30,19 +30,19 @@ mark=['s','+','o','x','v','none'];
 % 2.3 set local marker size
 ms = 5;
 
-% 3. Plot Polylog curves from n -7/2 to 7/2 
+% 3. Plot Polylog curves from n -7/2 to 7/2
 figure(1)
 plot(z,PolyLog( 7/2,z),[lines{1},color(7)]); hold on;
-plot(z,PolyLog( 6/2,z),[lines{1},color(6)]); 
-plot(z,PolyLog( 5/2,z),[lines{1},color(5)]); 
-plot(z,PolyLog( 4/2,z),[lines{1},color(4)]); 
-plot(z,PolyLog( 3/2,z),[lines{1},color(3)]); 
-plot(z,PolyLog( 2/2,z),[lines{1},color(2)]); 
-plot(z,PolyLog( 1/2,z),[lines{1},color(1)]); 
-plot(z,PolyLog(  0 ,z),[lines{4},color(1)]); 
-plot(z,PolyLog(-1/2,z),[lines{3},color(1)]); 
-plot(z,PolyLog(-2/2,z),[lines{3},color(2)]); 
-plot(z,PolyLog(-3/2,z),[lines{3},color(3)]); 
+plot(z,PolyLog( 6/2,z),[lines{1},color(6)]);
+plot(z,PolyLog( 5/2,z),[lines{1},color(5)]);
+plot(z,PolyLog( 4/2,z),[lines{1},color(4)]);
+plot(z,PolyLog( 3/2,z),[lines{1},color(3)]);
+plot(z,PolyLog( 2/2,z),[lines{1},color(2)]);
+plot(z,PolyLog( 1/2,z),[lines{1},color(1)]);
+plot(z,PolyLog(  0 ,z),[lines{4},color(1)]);
+plot(z,PolyLog(-1/2,z),[lines{3},color(1)]);
+plot(z,PolyLog(-2/2,z),[lines{3},color(2)]);
+plot(z,PolyLog(-3/2,z),[lines{3},color(3)]);
 plot(z,PolyLog(-4/2,z),[lines{3},color(4)]);
 plot(z,PolyLog(-5/2,z),[lines{3},color(5)]);
 plot(z,PolyLog(-6/2,z),[lines{3},color(6)]);
@@ -54,7 +54,7 @@ y = line([0 0],[-2,2],'color','k');
 axis([-2,1,-1,1]); grid on;
 
 % 3.2 Set title, labels and legend
-title('PolyLogarithms of $z$','FontSize',20); 
+title('PolyLogarithms of $z$','FontSize',20);
 xlabel('$z$','FontSize',16); ylabel('$Li_n(z)$','FontSize',16);
 hleg = legend( ...
 'Li_{ 7/2}(z)','Li_{ 3}(z)','Li_{ 5/2}(z)','Li_{ 2}(z)', ...

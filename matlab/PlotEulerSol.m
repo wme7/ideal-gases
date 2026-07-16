@@ -12,7 +12,7 @@ clear; clc; close all;
 
 %% setup matlab enviroment
 
-% set(0,'defaultTextInterpreter','none') 
+% set(0,'defaultTextInterpreter','none')
 set(0,'defaultTextInterpreter','latex')
 set(0,'DefaultTextFontName','Times',...
 'DefaultTextFontSize',14,...
@@ -105,29 +105,29 @@ end
 %% Plot Individial pictures
 figure(1)
 
-subplot(3,6,1); plot(x,rhoFD,color(3)); title('$\rho$-FD'); axis('square','tight'); %xlabel('$x$'); 
-subplot(3,6,7); plot(x,rhoMB,color(4)); title('$\rho$-MB'); axis('square','tight'); %xlabel('$x$'); 
-subplot(3,6,13); plot(x,rhoBE,color(2)); title('$\rho$-BE'); axis('square','tight'); xlabel('$x$'); 
+subplot(3,6,1); plot(x,rhoFD,color(3)); title('$\rho$-FD'); axis('square','tight'); %xlabel('$x$');
+subplot(3,6,7); plot(x,rhoMB,color(4)); title('$\rho$-MB'); axis('square','tight'); %xlabel('$x$');
+subplot(3,6,13); plot(x,rhoBE,color(2)); title('$\rho$-BE'); axis('square','tight'); xlabel('$x$');
 
-subplot(3,6,2); plot(x,uxFD,color(3)); title('$u_x$-FD'); axis('square','tight'); %xlabel('$x$'); 
-subplot(3,6,8); plot(x,uxMB,color(4)); title('$u_x$-MB'); axis('square','tight'); %xlabel('$x$'); 
-subplot(3,6,14); plot(x,uxBE,color(2)); title('$u_x$-BE'); axis('square','tight'); xlabel('$x$'); 
+subplot(3,6,2); plot(x,uxFD,color(3)); title('$u_x$-FD'); axis('square','tight'); %xlabel('$x$');
+subplot(3,6,8); plot(x,uxMB,color(4)); title('$u_x$-MB'); axis('square','tight'); %xlabel('$x$');
+subplot(3,6,14); plot(x,uxBE,color(2)); title('$u_x$-BE'); axis('square','tight'); xlabel('$x$');
 
-subplot(3,6,3); plot(x,pFD,color(3)); title('$p$-FD'); axis('square','tight'); %xlabel('$x$'); 
-subplot(3,6,9); plot(x,pMB,color(4)); title('$p$-MB'); axis('square','tight'); %xlabel('$x$'); 
-subplot(3,6,15); plot(x,pBE,color(2)); title('$p$-BE'); axis('square','tight'); xlabel('$x$'); 
+subplot(3,6,3); plot(x,pFD,color(3)); title('$p$-FD'); axis('square','tight'); %xlabel('$x$');
+subplot(3,6,9); plot(x,pMB,color(4)); title('$p$-MB'); axis('square','tight'); %xlabel('$x$');
+subplot(3,6,15); plot(x,pBE,color(2)); title('$p$-BE'); axis('square','tight'); xlabel('$x$');
 
-subplot(3,6,4); plot(x,eFD,color(3)); title('$e$-FD'); axis('square','tight'); %xlabel('$x$'); 
-subplot(3,6,10); plot(x,eMB,color(4)); title('$e$-MB'); axis('square','tight'); %xlabel('$x$'); 
-subplot(3,6,16); plot(x,eBE,color(2)); title('$e$-BE'); axis('square','tight'); xlabel('$x$'); 
+subplot(3,6,4); plot(x,eFD,color(3)); title('$e$-FD'); axis('square','tight'); %xlabel('$x$');
+subplot(3,6,10); plot(x,eMB,color(4)); title('$e$-MB'); axis('square','tight'); %xlabel('$x$');
+subplot(3,6,16); plot(x,eBE,color(2)); title('$e$-BE'); axis('square','tight'); xlabel('$x$');
 
-subplot(3,6,5); plot(x,tFD,color(3)); title('$\theta$-FD'); axis('square','tight'); %xlabel('$x$'); 
-subplot(3,6,11); plot(x,tMB,color(4)); title('$\theta$-MB'); axis('square','tight'); %xlabel('$x$'); 
-subplot(3,6,17); plot(x,tBE,color(2)); title('$\theta$-BE'); axis('square','tight'); xlabel('$x$'); 
+subplot(3,6,5); plot(x,tFD,color(3)); title('$\theta$-FD'); axis('square','tight'); %xlabel('$x$');
+subplot(3,6,11); plot(x,tMB,color(4)); title('$\theta$-MB'); axis('square','tight'); %xlabel('$x$');
+subplot(3,6,17); plot(x,tBE,color(2)); title('$\theta$-BE'); axis('square','tight'); xlabel('$x$');
 
-subplot(3,6,6); plot(x,zFD,color(3)); title('$z$-FD'); axis('square','tight'); %xlabel('$x$'); 
-subplot(3,6,12); plot(x,zMB,color(4)); title('$z$-MB'); axis('square','tight'); %xlabel('$x$'); 
-subplot(3,6,18); plot(x,zBE,color(2)); title('$z$-BE'); axis('square','tight'); xlabel('$x$'); 
+subplot(3,6,6); plot(x,zFD,color(3)); title('$z$-FD'); axis('square','tight'); %xlabel('$x$');
+subplot(3,6,12); plot(x,zMB,color(4)); title('$z$-MB'); axis('square','tight'); %xlabel('$x$');
+subplot(3,6,18); plot(x,zBE,color(2)); title('$z$-BE'); axis('square','tight'); xlabel('$x$');
 
 % Export plot to *.eps figure.
 print('-dpng',[path,'QEuler_Eg',num2str(example),'_AllPlots.png']);

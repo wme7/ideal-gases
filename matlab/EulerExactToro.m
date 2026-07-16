@@ -6,7 +6,7 @@ function [x, rho, ux, p, e, z, t, Mach, entro] = ...
 %
 % Exact Riemann Solver for Classical and Quantum ideal gases
 %
-% This is an extension of the original code by 譚夢寧 (2015) using Toro's 
+% This is an extension of the original code by 譚夢寧 (2015) using Toro's
 % Exact Riemann solver (Toro, 1999).
 %
 % Kinetic inputs (rho, u, T) are converted to effective pressures via
@@ -26,9 +26,9 @@ function [x, rho, ux, p, e, z, t, Mach, entro] = ...
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Refs.:
-% [1] 譚夢寧. (2015). 半古典波茲曼 BGK 方程式之任意統計稀薄流模擬. 
+% [1] 譚夢寧. (2015). 半古典波茲曼 BGK 方程式之任意統計稀薄流模擬.
 %     臺灣大學應用力學研究所學位論文, 1-120.
-% [2] Toro, E. F. (1999). Riemann solvers and numerical methods for fluid 
+% [2] Toro, E. F. (1999). Riemann solvers and numerical methods for fluid
 %     dynamics. Springer Science & Business Media.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -37,7 +37,7 @@ function [x, rho, ux, p, e, z, t, Mach, entro] = ...
     x = 0:0.002:1;
     pFloor = 1e-300;
     rhoFloor = 1e-10;
-        
+
     % --- Quantum Functions ---
     BE = @(n,z)  PolyLog(n, z);
     FD = @(n,z) -PolyLog(n,-z);

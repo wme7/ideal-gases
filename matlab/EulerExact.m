@@ -25,7 +25,7 @@ function [x, rho, ux, p, e, z, t, Mach, entro] = ...
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Ref.:
-% [1] 譚夢寧. (2015). 半古典波茲曼 BGK 方程式之任意統計稀薄流模擬. 
+% [1] 譚夢寧. (2015). 半古典波茲曼 BGK 方程式之任意統計稀薄流模擬.
 %     臺灣大學應用力學研究所學位論文, 1-120.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -49,7 +49,7 @@ switch statistic
             % it=it+1;
         end
         p1 = rho1*t1*FD(n/2+1,z1)/FD(n/2,z1); %disp(it);
-        
+
         z4 = 0.001; delta = 1; %it = 0;
         while abs(delta) > 1E-6
             z = z4 - frhot(FD,z4,n,rho4,t4,h) ./ dfrhot(FD,z4,n);
@@ -57,24 +57,24 @@ switch statistic
             % it=it+1;
         end
         p4 = rho4*t4*FD(n/2+1,z4)/FD(n/2,z4); %disp(it);
-        
+
     case 'MB'
-        p1 = rho1*t1; 
+        p1 = rho1*t1;
         p4 = rho4*t4;
-        
+
     case 'BE' % Find z1, p1, z4 and p4 for BE gas
         z1=0.001; delta=1; % it=0;
         while abs(delta) > 1E-6
-            z = z1 - frhot(BE,z1,n,rho1,t1,h) ./ dfrhot(BE,z1,n); 
+            z = z1 - frhot(BE,z1,n,rho1,t1,h) ./ dfrhot(BE,z1,n);
             if z > 1; z=0.999999; end
             delta = z-z1; z1=z; %disp(z)
             % it=it+1;
         end
         p1 = rho1*t1*BE(n/2+1,z1)/BE(n/2,z1); %disp(it);
-        
+
         z4=0.001; delta=1; % it=0;
         while abs(delta) > 1E-6
-            z = z4 - frhot(BE,z4,n,rho4,t4,h) ./ dfrhot(BE,z4,n); 
+            z = z4 - frhot(BE,z4,n,rho4,t4,h) ./ dfrhot(BE,z4,n);
             if z > 1; z=0.999999; end
             delta = z-z4; z4=z; %disp(z)
             % it=it+1;
@@ -95,7 +95,7 @@ gamma=(n+2)/n; alpha=(gamma+1)/(gamma-1);
 %         |           |ity |       | |
 
 PRL = p4/p1;
-cright = sqrt(gamma*p4/rho4); 
+cright = sqrt(gamma*p4/rho4);
 cleft  = sqrt(gamma*p1/rho1);
 CRL = cright/cleft;
 MACHLEFT = (u1-u4)/cleft;
@@ -107,7 +107,7 @@ f = @(P) (1+MACHLEFT*(gamma-1)/2-(gamma-1)*CRL*(P-1)/sqrt(2*gamma*(gamma-1+(gamm
 p34 = fzero(f,3);
 
 p3 = p34*p4;
-rho3 = rho4*(1+alpha*p34)/(alpha+p34); 
+rho3 = rho4*(1+alpha*p34)/(alpha+p34);
 rho2 = rho1*(p34*p4/p1)^(1/gamma);
 u2 = u1-u4+(2/(gamma-1))*cleft*(1-(p34*p4/p1)^((gamma-1)/(2*gamma)));
 c2 = sqrt(gamma*p3/rho2);
@@ -120,11 +120,11 @@ pos2 = x0 + (u2+u4-c2)*tEnd;	% End of expansion fan
 
 % Plot structures
 x = 0:0.002:1;
-p = zeros(size(x)); 
-z = zeros(size(x)); 
-ux= zeros(size(x)); 
+p = zeros(size(x));
+z = zeros(size(x));
+ux= zeros(size(x));
 rho = zeros(size(x));
-Mach = zeros(size(x));  
+Mach = zeros(size(x));
 cexact = zeros(size(x));
 
 for i = 1:length(x)
@@ -179,7 +179,7 @@ switch statistic
     case 'BE' % Find z for BE model
         zBose0 = 0.001; delta = 1; %it = 0;
         while abs(delta) > 1E-6
-            zBose = zBose0 - frhoe(BE,zBose0,n,rho,e,h) ./ dfrhoe(BE,zBose0,n); 
+            zBose = zBose0 - frhoe(BE,zBose0,n,rho,e,h) ./ dfrhoe(BE,zBose0,n);
             zBose(zBose>1) = 0.999999;
             delta = zBose - zBose0; zBose0 = zBose;
             % it = it + 1;

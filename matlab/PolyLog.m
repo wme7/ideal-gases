@@ -14,7 +14,7 @@ function g = PolyLog(n,z)
 % Refs.:
 % [1] Bhagat, Vikram, Ranjan Bhattacharya, and Dhiranjan Roy. "On the
 %     evaluation of generalized Bose-Einstein and Fermi-Dirac integrals."
-%     Computer physics communications 155.1 (2003): 7-20. 
+%     Computer physics communications 155.1 (2003): 7-20.
 % [2] Maximilian Kuhnert. "Enhanced computation of polylogarithm aka de
 %     jonquieres function." Matlab File Exchange #37229, polylog.m
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -75,7 +75,7 @@ g3 = - nominator ./ denominator; g(id3)=g3; %disp(g3)
 
 %% Solution Method z-Range 4
 % Asymptotic expansion known as Sommerfeld's lemma.
-xi = log(z4); 
+xi = log(z4);
 preterm = (xi.^n)./gamma(n+1);
 series = 1 + n.*(n-1).*(pi^2/6).*(1./xi.^2) + ...
     n.*(n-1).*(n-2).*(n-3).*(7*pi^4/360).*(1./xi.^4);
