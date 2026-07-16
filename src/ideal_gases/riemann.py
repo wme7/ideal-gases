@@ -197,7 +197,7 @@ def _solve_profile(
 #     return np.asarray(_mpmath_polylog(n, z), dtype=np.float64)
 
 # def _fd(n: float, z: ArrayLike) -> NDArray[np.float64]:
-#     return np.asarray(_mpmath_polylog(n, -z), dtype=np.float64)
+#     return -np.asarray(_mpmath_polylog(n, -z), dtype=np.float64)
 #
 # ------------------------------------------------------------
 
@@ -336,11 +336,11 @@ def _dfrhoe(
 
 
 def _clip_be_fugacity_scalar(z: float) -> float:
-    return min(z, 0.999999999)
+    return min(z, 0.999999)
 
 
 def _clip_be_fugacity(z: NDArray[np.float64]) -> NDArray[np.float64]:
-    return np.minimum(z, 0.999999999)
+    return np.minimum(z, 0.999999)
 
 
 def _newton_scalar(

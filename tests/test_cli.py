@@ -271,6 +271,70 @@ def test_cli_quantum_example_all_statistics(tmp_path: Path) -> None:
         assert f"# statistic={statistic}" in path.read_text(encoding="utf-8")
 
 
+def test_resolve_stat_h_overrides() -> None:
+    from ideal_gases.cli.commands import _resolve_stat_h
+
+    assert _resolve_stat_h(0.2, "MB", h_fd=6.0, h_be=3.3) == 0.2
+    assert _resolve_stat_h(0.2, "FD", h_fd=6.0, h_be=3.3) == 6.0
+    assert _resolve_stat_h(0.2, "BE", h_fd=6.0, h_be=3.3) == 3.3
+    assert _resolve_stat_h(0.2, "FD", h_fd=None, h_be=3.3) == 0.2
+    assert _resolve_stat_h(0.2, "BE", h_fd=6.0, h_be=None) == 0.2
+
+
+def test_cli_quantum_example_4_uses_h_be(tmp_path: Path) -> None:
+    output = tmp_path / "eg4_be.csv"
+    exit_code = main(
+        [
+            "quantum-example",
+            "4",
+            "--statistic",
+            "BE",
+            "--nx",
+            "21",
+            "-o",
+            str(output),
+        ]
+    )
+    assert exit_code == 0
+    text = output.read_text(encoding="utf-8")
+    assert "# h=3.3" in text
+    # Degenerate BE left state: z ≈ 0.9906 (preset comment)
+    data_lines = [
+        line for line in text.splitlines() if line and not line.startswith("#")
+    ]
+    header = data_lines[0].split(",")
+    z_idx = header.index("z")
+    z_left = float(data_lines[1].split(",")[z_idx])
+    assert z_left == pytest.approx(0.9906, rel=1e-2)
+
+
+def test_cli_quantum_example_5_uses_h_fd(tmp_path: Path) -> None:
+    output = tmp_path / "eg5_fd.csv"
+    exit_code = main(
+        [
+            "quantum-example",
+            "5",
+            "--statistic",
+            "FD",
+            "--nx",
+            "21",
+            "-o",
+            str(output),
+        ]
+    )
+    assert exit_code == 0
+    text = output.read_text(encoding="utf-8")
+    assert "# h=6" in text
+    # Degenerate FD left state: z ≈ 901 (preset comment)
+    data_lines = [
+        line for line in text.splitlines() if line and not line.startswith("#")
+    ]
+    header = data_lines[0].split(",")
+    z_idx = header.index("z")
+    z_left = float(data_lines[1].split(",")[z_idx])
+    assert z_left == pytest.approx(901.2840, rel=5e-2)
+
+
 def test_cli_run_json_config(tmp_path: Path) -> None:
     config_path = tmp_path / "case.json"
     output = tmp_path / "out.json"

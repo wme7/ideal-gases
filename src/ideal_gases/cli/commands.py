@@ -157,6 +157,21 @@ def _solve_classical(
     )
 
 
+def _resolve_stat_h(
+    h: float,
+    statistic: Statistic,
+    *,
+    h_fd: float | None = None,
+    h_be: float | None = None,
+) -> float:
+    """Return per-statistic thermal scale, honoring FD/BE overrides when set."""
+    if statistic == "FD" and h_fd is not None:
+        return h_fd
+    if statistic == "BE" and h_be is not None:
+        return h_be
+    return h
+
+
 def _solve_quantum(
     *,
     left: QuantumState,
@@ -194,17 +209,17 @@ def _solve_quantum_all_statistics(
     n: float,
     h: float,
     h_fd: float | None = None,
+    h_be: float | None = None,
 ) -> dict[str, RiemannResult]:
     results: dict[str, RiemannResult] = {}
     for stat in STATISTICS:
-        stat_h = h_fd if stat == "FD" and h_fd is not None else h
         results[stat] = _solve_quantum(
             left=left,
             right=right,
             t_end=t_end,
             domain=domain,
             n=n,
-            h=stat_h,
+            h=_resolve_stat_h(h, stat, h_fd=h_fd, h_be=h_be),
             statistic=stat,
         )
     return results
@@ -1024,6 +1039,7 @@ def cmd_quantum_example(args: argparse.Namespace) -> int:
                 domain=domain,
                 n=preset.n,
                 h=preset.h,
+                h_be=preset.h_be,
                 h_fd=preset.h_fd,
             )
             _write_quantum_outputs(
@@ -1034,11 +1050,7 @@ def cmd_quantum_example(args: argparse.Namespace) -> int:
                 columns=columns,
             )
         else:
-            h = (
-                preset.h_fd
-                if statistic == "FD" and preset.h_fd is not None
-                else preset.h
-            )
+            h = _resolve_stat_h(preset.h, statistic, h_fd=preset.h_fd, h_be=preset.h_be)
             result = _solve_quantum(
                 left=left,
                 right=right,
@@ -1487,7 +1499,7 @@ def cmd_plot_quantum_example(args: argparse.Namespace) -> int:
         title = f"Quantum Euler example {preset.number}: {preset.name}"
         result: RiemannResult | None = None
         results: dict[str, RiemannResult] | None = None
-        h = preset.h_fd if statistic == "FD" and preset.h_fd is not None else preset.h
+        h = _resolve_stat_h(preset.h, statistic, h_fd=preset.h_fd, h_be=preset.h_be)
 
         if all_statistics:
             if figure is None:
@@ -1503,6 +1515,7 @@ def cmd_plot_quantum_example(args: argparse.Namespace) -> int:
                 n=preset.n,
                 h=preset.h,
                 h_fd=preset.h_fd,
+                h_be=preset.h_be,
             )
             saved = plot_all_statistics(
                 results,
