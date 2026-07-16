@@ -39,63 +39,68 @@ path = './';
 example = 5;
 
 switch example
-    case 1 % Sod's shock-tube problem
+    case 1 % Sod's shock-tube problem in Classical regime
         n = 5;      % degress of freedom (DoF)
-        h = 1.0;    % plank constant
+        h = 1.0;    % thermal length scale
         tEnd=0.1;   % output time
         [~,rhoBE,uxBE,pBE,eBE,zBE,tBE]=EulerExact(1,0,1,0.125,0,0.1/0.125,tEnd,n,h,'BE');
         [~,rhoMB,uxMB,pMB,eMB,zMB,tMB]=EulerExact(1,0,1,0.125,0,0.1/0.125,tEnd,n,h,'MB');
         [x,rhoFD,uxFD,pFD,eFD,zFD,tFD]=EulerExact(1,0,1,0.125,0,0.1/0.125,tEnd,n,h,'FD');
-	case 2 % Sod's shock-tube problem
+	case 2 % Sod's shock-tube problem in Quantum regime
         n = 5;      % degress of freedom (DoF)
-        h = 2;      % plank constant
+        h = 2;      % thermal length scale
         tEnd=0.1;   % output time
         [~,rhoBE,uxBE,pBE,eBE,zBE,tBE]=EulerExact(1,0,1,0.125,0,0.1/0.125,tEnd,n,h,'BE');
         [~,rhoMB,uxMB,pMB,eMB,zMB,tMB]=EulerExact(1,0,1,0.125,0,0.1/0.125,tEnd,n,h,'MB');
         [x,rhoFD,uxFD,pFD,eFD,zFD,tFD]=EulerExact(1,0,1,0.125,0,0.1/0.125,tEnd,n,h,'FD');
-	case 3 % Sod's shock-tube problem
+	case 3 % Sod's shock-tube problem in Degenerate regime
         n = 5;      % degress of freedom (DoF)
-        h = 2.65;	% plank constant
+        h = 2.65;	% thermal length scale
         tEnd=0.1;   % output time
         [~,rhoBE,uxBE,pBE,eBE,zBE,tBE]=EulerExactToro(1,0,1,0.125,0,0.1/0.125,tEnd,n,h,'BE');
         [~,rhoMB,uxMB,pMB,eMB,zMB,tMB]=EulerExactToro(1,0,1,0.125,0,0.1/0.125,tEnd,n,h,'MB');
         [x,rhoFD,uxFD,pFD,eFD,zFD,tFD]=EulerExactToro(1,0,1,0.125,0,0.1/0.125,tEnd,n,6.0,'FD');
     case 4 % Hu and Jin Problems in classical regime
         n = 3;      % degress of freedom (DoF)
-        h = 1.0;    % plank constant
+        h = 1.0;    % thermal length scale
         tEnd=0.18;  % output time
         [~,rhoBE,uxBE,pBE,eBE,zBE,tBE]=EulerExact(1,0,1,0.4,0,0.6,tEnd,n,h,'BE');
         [~,rhoMB,uxMB,pMB,eMB,zMB,tMB]=EulerExact(1,0,1,0.4,0,0.6,tEnd,n,h,'MB');
         [x,rhoFD,uxFD,pFD,eFD,zFD,tFD]=EulerExact(1,0,1,0.4,0,0.6,tEnd,n,h,'FD');
     case 5 % Hu and Jin Problems in Degenerate regime
         n = 3;      % degress of freedom (DoF)
-        h = 3.3;    % plank constant
+        h = 3.3;    % thermal length scale
         tEnd=0.18;  % output time
         [~,rhoBE,uxBE,pBE,eBE,zBE,tBE]=EulerExact(1,0,1,0.4,0,0.6,tEnd,n,h,'BE');
         [~,rhoMB,uxMB,pMB,eMB,zMB,tMB]=EulerExact(1,0,1,0.4,0,0.6,tEnd,n,h,'MB');
         [x,rhoFD,uxFD,pFD,eFD,zFD,tFD]=EulerExact(1,0,1,0.4,0,0.6,tEnd,n,6.0,'FD');
-    case 6 % Yang and Shi Degenerate regime problem.
+    case 6 % Yang and Shi problem in Degenerate regime.
         n = 3;    	% degress of freedom (DoF)
-        h = 6.0;      % plank constant
+        h = 6.0;    % thermal length scale
         tEnd=0.10;  % output time
         [~,rhoBE,uxBE,pBE,eBE,zBE,tBE]=EulerExact(3.086455,0,8.053324,3.084272,0,8.067390,tEnd,n,h,'BE');
         [~,rhoMB,uxMB,pMB,eMB,zMB,tMB]=EulerExact(3.086455,0,8.053324,3.084272,0,8.067390,tEnd,n,h,'MB');
         [x,rhoFD,uxFD,pFD,eFD,zFD,tFD]=EulerExact(3.086455,0,8.053324,3.084272,0,8.067390,tEnd,n,h,'FD');
-    case 7 % Filbet and Jing (2010).
+    case 7 % Filbet and Jing (2010) example near classical limit.
         n = 2;    	% degress of freedom (DoF)
-        h = 0.1;    % plank constant
+        h = 0.1;    % thermal length scale
         tEnd=0.20;  % output time
         [~,rhoBE,uxBE,pBE,eBE,zBE,tBE]=EulerExactToro(1,0,1,0.125,0,0.25,tEnd,n,h,'BE');
         [~,rhoMB,uxMB,pMB,eMB,zMB,tMB]=EulerExactToro(1,0,1,0.125,0,0.25,tEnd,n,h,'MB');
         [x,rhoFD,uxFD,pFD,eFD,zFD,tFD]=EulerExactToro(1,0,1,0.125,0,0.25,tEnd,n,h,'FD');
-	case 8 % Filbet and Jing (2010).
+	case 8 % Filbet and Jing (2010) example degenerate limit.
         n = 2;    	% degress of freedom (DoF)
-        h = 3.0;    % plank constant
+        h = 3.0;    % thermal length scale
         tEnd=0.20;  % output time
         [~,rhoBE,uxBE,pBE,eBE,zBE,tBE]=EulerExactToro(1,0,1,0.125,0,0.25,tEnd,n,h,'BE');
         [~,rhoMB,uxMB,pMB,eMB,zMB,tMB]=EulerExactToro(1,0,1,0.125,0,0.25,tEnd,n,h,'MB');
         [x,rhoFD,uxFD,pFD,eFD,zFD,tFD]=EulerExactToro(1,0,1,0.125,0,0.25,tEnd,n,h,'FD');
 end
+
+%% compute aparent gamma value
+%gammaBE = (n+2)/n*( PolyLog(n/2+1, zFD)).*( PolyLog(n/2-1, zFD))./( PolyLog(n/2, zFD)).^2;
+%gammaMB = (n+2)/n;
+%gammaFD = (n+2)/n*(-PolyLog(n/2+1,-zBE)).*(-PolyLog(n/2-1,-zBE))./(-PolyLog(n/2,-zBE)).^2;
 
 %% Plot Individial pictures
 figure(1)
@@ -126,11 +131,6 @@ subplot(3,6,18); plot(x,zBE,color(2)); title('$z$-BE'); axis('square','tight'); 
 
 % Export plot to *.eps figure.
 print('-dpng',[path,'QEuler_Eg',num2str(example),'_AllPlots.png']);
-
-%% compute aparent gamma value
-%gammaBE = (n+2)/n*( PolyLog(n/2+1, zFD)).*( PolyLog(n/2-1, zFD))./( PolyLog(n/2, zFD)).^2;
-%gammaMB = (n+2)/n;
-%gammaFD = (n+2)/n*(-PolyLog(n/2+1,-zBE)).*(-PolyLog(n/2-1,-zBE))./(-PolyLog(n/2,-zBE)).^2;
 
 %% Plot Comparative figures
 figure(2)

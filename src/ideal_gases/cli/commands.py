@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -26,6 +27,22 @@ from ideal_gases.cli.export import (
     write_result,
 )
 from ideal_gases.cli.grid import build_grid, validate_x0
+from ideal_gases.cli.interactive.classical import run_classical_interactive
+from ideal_gases.cli.interactive.defaults import (
+    DEFAULT_CLASSICAL_FIGURE_PATH,
+    DEFAULT_QUANTUM_FIGURE_PATH,
+    INTERACTIVE_CLASSICAL_LEFT,
+    INTERACTIVE_CLASSICAL_RIGHT,
+    INTERACTIVE_DOMAIN,
+    INTERACTIVE_GAMMA,
+    INTERACTIVE_H,
+    INTERACTIVE_N,
+    INTERACTIVE_QUANTUM_LEFT,
+    INTERACTIVE_QUANTUM_RIGHT,
+    INTERACTIVE_T_END,
+)
+from ideal_gases.cli.interactive.quantum import run_quantum_interactive
+from ideal_gases.cli.plot import PlotLayout, plot_all_statistics, plot_single
 from ideal_gases.cli.presets.quantum import QUANTUM_EXAMPLES
 from ideal_gases.cli.presets.toro import TORO_TESTS
 from ideal_gases.riemann import (
@@ -166,6 +183,31 @@ def _solve_quantum(
     )
 
 
+def _solve_quantum_all_statistics(
+    *,
+    left: QuantumState,
+    right: QuantumState,
+    t_end: float,
+    domain: DomainConfig,
+    n: float,
+    h: float,
+    h_fd: float | None = None,
+) -> dict[str, RiemannResult]:
+    results: dict[str, RiemannResult] = {}
+    for stat in STATISTICS:
+        stat_h = h_fd if stat == "FD" and h_fd is not None else h
+        results[stat] = _solve_quantum(
+            left=left,
+            right=right,
+            t_end=t_end,
+            domain=domain,
+            n=n,
+            h=stat_h,
+            statistic=stat,
+        )
+    return results
+
+
 def _require_output(path: Path | None, config_output: str | None) -> Path:
     if path is not None:
         return path
@@ -173,6 +215,35 @@ def _require_output(path: Path | None, config_output: str | None) -> Path:
         return Path(config_output)
     msg = "Output path is required (-o/--output or config \"output\")."
     raise ValueError(msg)
+
+
+def _optional_output(path: Path | None, config_output: str | None) -> Path | None:
+    if path is not None:
+        return path
+    if config_output is not None:
+        return Path(config_output)
+    return None
+
+
+def _require_figure(figure: Path | None, show: bool) -> Path | None:
+    if figure is not None:
+        return figure
+    if show:
+        return None
+    msg = "Figure path (-f/--figure) or --show is required."
+    raise ValueError(msg)
+
+
+def _single_figure_path(figure: Path) -> Path:
+    if figure.suffix.lower() == ".png":
+        return figure
+    return figure.with_suffix(".png")
+
+
+def _print_saved(paths: list[Path | None]) -> None:
+    for path in paths:
+        if path is not None:
+            print(f"Saved {path}", file=sys.stderr)
 
 
 def _classical_metadata(
@@ -245,7 +316,9 @@ def _quantum_metadata(
 def _merge_classical_from_args(
     args: argparse.Namespace,
     config: ClassicalConfig | None,
-) -> tuple[ClassicalState, ClassicalState, float, DomainConfig, float, str | None, Path]:
+    *,
+    require_output: bool = True,
+) -> tuple[ClassicalState, ClassicalState, float, DomainConfig, float, str | None, Path | None]:
     if config is None and args.t_end is None:
         msg = "--t-end is required."
         raise ValueError(msg)
@@ -287,13 +360,18 @@ def _merge_classical_from_args(
         n=args.n if args.n is not None else (config.n if config else None),
     )
     columns = args.columns if args.columns is not None else (config.columns if config else None)
-    output = _require_output(args.output, config.output if config else None)
+    if require_output:
+        output = _require_output(args.output, config.output if config else None)
+    else:
+        output = _optional_output(args.output, config.output if config else None)
     return left, right, t_end, domain, gamma, columns, output
 
 
 def _merge_quantum_from_args(
     args: argparse.Namespace,
     config: QuantumConfig | None,
+    *,
+    require_output: bool = True,
 ) -> tuple[
     QuantumState,
     QuantumState,
@@ -304,7 +382,7 @@ def _merge_quantum_from_args(
     Statistic,
     bool,
     str | None,
-    Path,
+    Path | None,
 ]:
     if config is None and args.t_end is None:
         msg = "--t-end is required."
@@ -356,8 +434,166 @@ def _merge_quantum_from_args(
     )
     all_statistics = args.all_statistics or (config.all_statistics if config else False)
     columns = args.columns if args.columns is not None else (config.columns if config else None)
-    output = _require_output(args.output, config.output if config else None)
+    if require_output:
+        output = _require_output(args.output, config.output if config else None)
+    else:
+        output = _optional_output(args.output, config.output if config else None)
     return left, right, t_end, domain, n, h, statistic, all_statistics, columns, output
+
+
+def _interactive_domain_from_args(
+    args: argparse.Namespace,
+    config_domain: DomainConfig | None,
+) -> DomainConfig:
+    base = config_domain if config_domain is not None else INTERACTIVE_DOMAIN
+    return _resolve_domain(
+        domain=base,
+        x_min=args.x_min,
+        x_max=args.x_max,
+        x0=args.x0,
+        dx=args.dx,
+        nx=args.nx,
+    )
+
+
+def _merge_classical_interactive_from_args(
+    args: argparse.Namespace,
+    config: ClassicalConfig | None,
+) -> tuple[ClassicalState, ClassicalState, float, DomainConfig, float, Path]:
+    left = ClassicalState(
+        rho=args.rho_l
+        if args.rho_l is not None
+        else (config.left.rho if config else INTERACTIVE_CLASSICAL_LEFT.rho),
+        u=args.u_l
+        if args.u_l is not None
+        else (config.left.u if config else INTERACTIVE_CLASSICAL_LEFT.u),
+        p=args.p_l
+        if args.p_l is not None
+        else (config.left.p if config else INTERACTIVE_CLASSICAL_LEFT.p),
+    )
+    right = ClassicalState(
+        rho=args.rho_r
+        if args.rho_r is not None
+        else (config.right.rho if config else INTERACTIVE_CLASSICAL_RIGHT.rho),
+        u=args.u_r
+        if args.u_r is not None
+        else (config.right.u if config else INTERACTIVE_CLASSICAL_RIGHT.u),
+        p=args.p_r
+        if args.p_r is not None
+        else (config.right.p if config else INTERACTIVE_CLASSICAL_RIGHT.p),
+    )
+    t_end = (
+        args.t_end
+        if args.t_end is not None
+        else (config.t_end if config else INTERACTIVE_T_END)
+    )
+    domain = _interactive_domain_from_args(
+        args,
+        config.domain if config else None,
+    )
+    gamma = _resolve_gamma(
+        gamma=args.gamma if args.gamma is not None else (config.gamma if config else INTERACTIVE_GAMMA),
+        n=args.n if args.n is not None else (config.n if config else None),
+        default=INTERACTIVE_GAMMA,
+    )
+    figure = args.figure if args.figure is not None else DEFAULT_CLASSICAL_FIGURE_PATH
+    return left, right, t_end, domain, gamma, figure
+
+
+def _merge_quantum_interactive_from_args(
+    args: argparse.Namespace,
+    config: QuantumConfig | None,
+) -> tuple[QuantumState, QuantumState, float, DomainConfig, float, float, Path]:
+    left = QuantumState(
+        rho=args.rho_l
+        if args.rho_l is not None
+        else (config.left.rho if config else INTERACTIVE_QUANTUM_LEFT.rho),
+        u=args.u_l
+        if args.u_l is not None
+        else (config.left.u if config else INTERACTIVE_QUANTUM_LEFT.u),
+        theta=args.t_l
+        if args.t_l is not None
+        else (config.left.theta if config else INTERACTIVE_QUANTUM_LEFT.theta),
+    )
+    right = QuantumState(
+        rho=args.rho_r
+        if args.rho_r is not None
+        else (config.right.rho if config else INTERACTIVE_QUANTUM_RIGHT.rho),
+        u=args.u_r
+        if args.u_r is not None
+        else (config.right.u if config else INTERACTIVE_QUANTUM_RIGHT.u),
+        theta=args.t_r
+        if args.t_r is not None
+        else (config.right.theta if config else INTERACTIVE_QUANTUM_RIGHT.theta),
+    )
+    t_end = (
+        args.t_end
+        if args.t_end is not None
+        else (config.t_end if config else INTERACTIVE_T_END)
+    )
+    domain = _interactive_domain_from_args(
+        args,
+        config.domain if config else None,
+    )
+    n = args.n if args.n is not None else (config.n if config else INTERACTIVE_N)
+    h = args.h if args.h is not None else (config.h if config else INTERACTIVE_H)
+    figure = args.figure if args.figure is not None else DEFAULT_QUANTUM_FIGURE_PATH
+    return left, right, t_end, domain, n, h, figure
+
+
+def cmd_interactive_classical(args: argparse.Namespace) -> int:
+    try:
+        config = load_config(args.config) if args.config else None
+        if config is not None and config.mode != "classical":
+            raise ValueError('Config mode must be "classical" for this command.')
+
+        left, right, t_end, domain, gamma, figure = _merge_classical_interactive_from_args(
+            args,
+            config if isinstance(config, ClassicalConfig) else None,
+        )
+        x = _grid_from_domain(domain)
+        return run_classical_interactive(
+            left=left,
+            right=right,
+            t_end=t_end,
+            gamma=gamma,
+            x=x,
+            x0=domain.x0,
+            x_min=domain.x_min,
+            x_max=domain.x_max,
+            figure_path=figure,
+        )
+    except (ValueError, RuntimeError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
+
+
+def cmd_interactive_quantum(args: argparse.Namespace) -> int:
+    try:
+        config = load_config(args.config) if args.config else None
+        if config is not None and config.mode != "quantum":
+            raise ValueError('Config mode must be "quantum" for this command.')
+
+        left, right, t_end, domain, n, h, figure = _merge_quantum_interactive_from_args(
+            args,
+            config if isinstance(config, QuantumConfig) else None,
+        )
+        x = _grid_from_domain(domain)
+        return run_quantum_interactive(
+            left=left,
+            right=right,
+            t_end=t_end,
+            n=n,
+            h=h,
+            x=x,
+            x0=domain.x0,
+            x_min=domain.x_min,
+            x_max=domain.x_max,
+            figure_path=figure,
+        )
+    except (ValueError, RuntimeError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
 
 
 def cmd_solve_classical(args: argparse.Namespace) -> int:
@@ -437,18 +673,14 @@ def cmd_solve_quantum(args: argparse.Namespace) -> int:
         )
 
         if all_statistics:
-            results = {
-                stat: _solve_quantum(
-                    left=left,
-                    right=right,
-                    t_end=t_end,
-                    domain=domain,
-                    n=n,
-                    h=h,
-                    statistic=stat,
-                )
-                for stat in STATISTICS
-            }
+            results = _solve_quantum_all_statistics(
+                left=left,
+                right=right,
+                t_end=t_end,
+                domain=domain,
+                n=n,
+                h=h,
+            )
             _write_quantum_outputs(
                 results=results,
                 output=output,
@@ -555,18 +787,14 @@ def cmd_run_config(args: argparse.Namespace) -> int:
         )
 
         if config.all_statistics:
-            results = {
-                stat: _solve_quantum(
-                    left=config.left,
-                    right=config.right,
-                    t_end=config.t_end,
-                    domain=domain,
-                    n=config.n,
-                    h=config.h,
-                    statistic=stat,
-                )
-                for stat in STATISTICS
-            }
+            results = _solve_quantum_all_statistics(
+                left=config.left,
+                right=config.right,
+                t_end=config.t_end,
+                domain=domain,
+                n=config.n,
+                h=config.h,
+            )
             _write_quantum_outputs(
                 results=results,
                 output=output,
@@ -693,18 +921,15 @@ def cmd_quantum_example(args: argparse.Namespace) -> int:
         base_metadata["name"] = preset.name
 
         if all_statistics:
-            results: dict[str, RiemannResult] = {}
-            for stat in STATISTICS:
-                h = preset.h_fd if stat == "FD" and preset.h_fd is not None else preset.h
-                results[stat] = _solve_quantum(
-                    left=left,
-                    right=right,
-                    t_end=preset.t_end,
-                    domain=domain,
-                    n=preset.n,
-                    h=h,
-                    statistic=stat,
-                )
+            results = _solve_quantum_all_statistics(
+                left=left,
+                right=right,
+                t_end=preset.t_end,
+                domain=domain,
+                n=preset.n,
+                h=preset.h,
+                h_fd=preset.h_fd,
+            )
             _write_quantum_outputs(
                 results=results,
                 output=output,
@@ -733,6 +958,495 @@ def cmd_quantum_example(args: argparse.Namespace) -> int:
             )
     except (ValueError, RuntimeError) as exc:
         print(f"error: {exc}", file=__import__("sys").stderr)
+        return 1
+    return 0
+
+
+def cmd_plot_classical(args: argparse.Namespace) -> int:
+    try:
+        config = load_config(args.config) if args.config else None
+        if config is not None and config.mode != "classical":
+            raise ValueError('Config mode must be "classical" for this command.')
+
+        left, right, t_end, domain, gamma, columns_raw, output = _merge_classical_from_args(
+            args,
+            config if isinstance(config, ClassicalConfig) else None,
+            require_output=False,
+        )
+        figure = _require_figure(args.figure, args.show)
+        result = _solve_classical(
+            left=left,
+            right=right,
+            t_end=t_end,
+            domain=domain,
+            gamma=gamma,
+        )
+        plot_path = _single_figure_path(figure) if figure is not None else None
+        saved = plot_single(
+            result,
+            title="Classical Euler Riemann solution",
+            output=plot_path,
+            show=args.show,
+            kind="classical",
+        )
+        _print_saved([saved])
+
+        if output is not None:
+            columns = resolve_columns(quantum=False, columns=columns_raw)
+            output_format = resolve_output_format(
+                args.format,
+                output,
+                config_format=config.format if config else None,
+            )
+            metadata = _classical_metadata(
+                left=left,
+                right=right,
+                t_end=t_end,
+                domain=domain,
+                gamma=gamma,
+            )
+            _write_outputs(
+                result=result,
+                output=output,
+                output_format=output_format,
+                metadata=metadata,
+                columns=columns,
+            )
+    except (ValueError, RuntimeError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
+    return 0
+
+
+def cmd_plot_quantum(args: argparse.Namespace) -> int:
+    try:
+        config = load_config(args.config) if args.config else None
+        if config is not None and config.mode != "quantum":
+            raise ValueError('Config mode must be "quantum" for this command.')
+
+        (
+            left,
+            right,
+            t_end,
+            domain,
+            n,
+            h,
+            statistic,
+            all_statistics,
+            columns_raw,
+            output,
+        ) = _merge_quantum_from_args(
+            args,
+            config if isinstance(config, QuantumConfig) else None,
+            require_output=False,
+        )
+        figure = _require_figure(args.figure, args.show)
+        layout: PlotLayout = args.layout
+        result: RiemannResult | None = None
+        results: dict[str, RiemannResult] | None = None
+        base_metadata = _quantum_metadata(
+            left=left,
+            right=right,
+            t_end=t_end,
+            domain=domain,
+            n=n,
+            h=h,
+            statistic=None if all_statistics else statistic,
+        )
+
+        if all_statistics:
+            if figure is None:
+                msg = "Figure path (-f/--figure) is required for --all-statistics plots."
+                raise ValueError(msg)
+            results = _solve_quantum_all_statistics(
+                left=left,
+                right=right,
+                t_end=t_end,
+                domain=domain,
+                n=n,
+                h=h,
+            )
+            saved = plot_all_statistics(
+                results,
+                title="Quantum Euler Riemann solution",
+                figure=figure,
+                layout=layout,
+                show=args.show,
+            )
+            _print_saved(saved)
+        else:
+            result = _solve_quantum(
+                left=left,
+                right=right,
+                t_end=t_end,
+                domain=domain,
+                n=n,
+                h=h,
+                statistic=statistic,
+            )
+            plot_path = _single_figure_path(figure) if figure is not None else None
+            saved = plot_single(
+                result,
+                title=f"Quantum Euler Riemann solution ({statistic})",
+                output=plot_path,
+                show=args.show,
+                kind="quantum",
+            )
+            _print_saved([saved])
+
+        if output is not None:
+            columns = resolve_columns(quantum=True, columns=columns_raw)
+            output_format = resolve_output_format(
+                args.format,
+                output,
+                config_format=config.format if config else None,
+            )
+            if all_statistics:
+                assert results is not None
+                _write_quantum_outputs(
+                    results=results,
+                    output=output,
+                    output_format=output_format,
+                    base_metadata=base_metadata,
+                    columns=columns,
+                )
+            else:
+                assert result is not None
+                metadata = {**base_metadata, "statistic": statistic}
+                _write_outputs(
+                    result=result,
+                    output=output,
+                    output_format=output_format,
+                    metadata=metadata,
+                    columns=columns,
+                )
+    except (ValueError, RuntimeError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
+    return 0
+
+
+def cmd_plot_run(args: argparse.Namespace) -> int:
+    try:
+        config = load_config(args.config)
+        figure = _require_figure(args.figure, args.show)
+        layout: PlotLayout = args.layout
+
+        if isinstance(config, ClassicalConfig):
+            domain = _resolve_domain(
+                domain=config.domain,
+                x_min=args.x_min,
+                x_max=args.x_max,
+                x0=args.x0,
+                dx=args.dx,
+                nx=args.nx,
+            )
+            gamma = _resolve_gamma(gamma=config.gamma, n=config.n)
+            result = _solve_classical(
+                left=config.left,
+                right=config.right,
+                t_end=config.t_end,
+                domain=domain,
+                gamma=gamma,
+            )
+            plot_path = _single_figure_path(figure) if figure is not None else None
+            saved = plot_single(
+                result,
+                title="Classical Euler Riemann solution",
+                output=plot_path,
+                show=args.show,
+                kind="classical",
+            )
+            _print_saved([saved])
+
+            output = _optional_output(args.output, config.output)
+            if output is not None:
+                columns = resolve_columns(
+                    quantum=False,
+                    columns=args.columns if args.columns is not None else config.columns,
+                )
+                output_format = resolve_output_format(
+                    args.format,
+                    output,
+                    config_format=config.format,
+                )
+                metadata = _classical_metadata(
+                    left=config.left,
+                    right=config.right,
+                    t_end=config.t_end,
+                    domain=domain,
+                    gamma=gamma,
+                )
+                _write_outputs(
+                    result=result,
+                    output=output,
+                    output_format=output_format,
+                    metadata=metadata,
+                    columns=columns,
+                )
+            return 0
+
+        domain = _resolve_domain(
+            domain=config.domain,
+            x_min=args.x_min,
+            x_max=args.x_max,
+            x0=args.x0,
+            dx=args.dx,
+            nx=args.nx,
+        )
+        base_metadata = _quantum_metadata(
+            left=config.left,
+            right=config.right,
+            t_end=config.t_end,
+            domain=domain,
+            n=config.n,
+            h=config.h,
+            statistic=None if config.all_statistics else config.statistic,
+        )
+
+        if config.all_statistics:
+            if figure is None:
+                msg = "Figure path (-f/--figure) is required for --all-statistics plots."
+                raise ValueError(msg)
+            results = _solve_quantum_all_statistics(
+                left=config.left,
+                right=config.right,
+                t_end=config.t_end,
+                domain=domain,
+                n=config.n,
+                h=config.h,
+            )
+            saved = plot_all_statistics(
+                results,
+                title="Quantum Euler Riemann solution",
+                figure=figure,
+                layout=layout,
+                show=args.show,
+            )
+            _print_saved(saved)
+        else:
+            result = _solve_quantum(
+                left=config.left,
+                right=config.right,
+                t_end=config.t_end,
+                domain=domain,
+                n=config.n,
+                h=config.h,
+                statistic=config.statistic,
+            )
+            plot_path = _single_figure_path(figure) if figure is not None else None
+            saved = plot_single(
+                result,
+                title=f"Quantum Euler Riemann solution ({config.statistic})",
+                output=plot_path,
+                show=args.show,
+                kind="quantum",
+            )
+            _print_saved([saved])
+
+        output = _optional_output(args.output, config.output)
+        if output is not None:
+            columns = resolve_columns(
+                quantum=True,
+                columns=args.columns if args.columns is not None else config.columns,
+            )
+            output_format = resolve_output_format(
+                args.format,
+                output,
+                config_format=config.format,
+            )
+            if config.all_statistics:
+                assert results is not None
+                _write_quantum_outputs(
+                    results=results,
+                    output=output,
+                    output_format=output_format,
+                    base_metadata=base_metadata,
+                    columns=columns,
+                )
+            else:
+                assert result is not None
+                metadata = {**base_metadata, "statistic": config.statistic}
+                _write_outputs(
+                    result=result,
+                    output=output,
+                    output_format=output_format,
+                    metadata=metadata,
+                    columns=columns,
+                )
+    except (ValueError, RuntimeError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
+    return 0
+
+
+def cmd_plot_toro(args: argparse.Namespace) -> int:
+    try:
+        preset = TORO_TESTS[args.number]
+        figure = _require_figure(args.figure, args.show)
+        domain = _resolve_domain(
+            domain=DomainConfig(
+                x_min=preset.x_min,
+                x_max=preset.x_max,
+                x0=preset.x0,
+                dx=preset.dx,
+            ),
+            x_min=args.x_min,
+            x_max=args.x_max,
+            x0=args.x0,
+            dx=args.dx,
+            nx=args.nx,
+        )
+        left = ClassicalState(rho=preset.rho_l, u=preset.u_l, p=preset.p_l)
+        right = ClassicalState(rho=preset.rho_r, u=preset.u_r, p=preset.p_r)
+        result = _solve_classical(
+            left=left,
+            right=right,
+            t_end=preset.t_end,
+            domain=domain,
+            gamma=preset.gamma,
+        )
+        plot_path = _single_figure_path(figure) if figure is not None else None
+        saved = plot_single(
+            result,
+            title=f"Toro test {preset.number}: {preset.name}",
+            output=plot_path,
+            show=args.show,
+            kind="classical",
+        )
+        _print_saved([saved])
+
+        if args.output is not None:
+            output = args.output
+            output_format = resolve_output_format(args.format, output)
+            columns = resolve_columns(quantum=False, columns=args.columns)
+            metadata = _classical_metadata(
+                left=left,
+                right=right,
+                t_end=preset.t_end,
+                domain=domain,
+                gamma=preset.gamma,
+                preset=f"toro:{preset.number}",
+            )
+            metadata["reference"] = preset.reference
+            metadata["name"] = preset.name
+            _write_outputs(
+                result=result,
+                output=output,
+                output_format=output_format,
+                metadata=metadata,
+                columns=columns,
+            )
+    except (ValueError, RuntimeError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
+    return 0
+
+
+def cmd_plot_quantum_example(args: argparse.Namespace) -> int:
+    try:
+        preset = QUANTUM_EXAMPLES[args.number]
+        figure = _require_figure(args.figure, args.show)
+        layout: PlotLayout = args.layout
+        domain = _resolve_domain(
+            domain=DomainConfig(
+                x_min=preset.x_min,
+                x_max=preset.x_max,
+                x0=preset.x0,
+                dx=preset.dx,
+            ),
+            x_min=args.x_min,
+            x_max=args.x_max,
+            x0=args.x0,
+            dx=args.dx,
+            nx=args.nx,
+        )
+        left = QuantumState(rho=preset.rho_l, u=preset.u_l, theta=preset.t_l)
+        right = QuantumState(rho=preset.rho_r, u=preset.u_r, theta=preset.t_r)
+        statistic = args.statistic if args.statistic is not None else "FD"
+        all_statistics = args.all_statistics
+        base_metadata = _quantum_metadata(
+            left=left,
+            right=right,
+            t_end=preset.t_end,
+            domain=domain,
+            n=preset.n,
+            h=preset.h,
+            statistic=None if all_statistics else statistic,
+            preset=f"quantum:{preset.number}",
+        )
+        base_metadata["name"] = preset.name
+        title = f"Quantum Euler example {preset.number}: {preset.name}"
+        result: RiemannResult | None = None
+        results: dict[str, RiemannResult] | None = None
+        h = preset.h_fd if statistic == "FD" and preset.h_fd is not None else preset.h
+
+        if all_statistics:
+            if figure is None:
+                msg = "Figure path (-f/--figure) is required for --all-statistics plots."
+                raise ValueError(msg)
+            results = _solve_quantum_all_statistics(
+                left=left,
+                right=right,
+                t_end=preset.t_end,
+                domain=domain,
+                n=preset.n,
+                h=preset.h,
+                h_fd=preset.h_fd,
+            )
+            saved = plot_all_statistics(
+                results,
+                title=title,
+                figure=figure,
+                layout=layout,
+                show=args.show,
+            )
+            _print_saved(saved)
+        else:
+            result = _solve_quantum(
+                left=left,
+                right=right,
+                t_end=preset.t_end,
+                domain=domain,
+                n=preset.n,
+                h=h,
+                statistic=statistic,
+            )
+            plot_path = _single_figure_path(figure) if figure is not None else None
+            saved = plot_single(
+                result,
+                title=f"{title} ({statistic})",
+                output=plot_path,
+                show=args.show,
+                kind="quantum",
+            )
+            _print_saved([saved])
+
+        if args.output is not None:
+            output = args.output
+            output_format = resolve_output_format(args.format, output)
+            columns = resolve_columns(quantum=True, columns=args.columns)
+            if all_statistics:
+                assert results is not None
+                _write_quantum_outputs(
+                    results=results,
+                    output=output,
+                    output_format=output_format,
+                    base_metadata=base_metadata,
+                    columns=columns,
+                )
+            else:
+                assert result is not None
+                metadata = {**base_metadata, "statistic": statistic, "h": h}
+                _write_outputs(
+                    result=result,
+                    output=output,
+                    output_format=output_format,
+                    metadata=metadata,
+                    columns=columns,
+                )
+    except (ValueError, RuntimeError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
         return 1
     return 0
 

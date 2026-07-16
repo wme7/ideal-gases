@@ -44,6 +44,9 @@ wheel.packages = ["src/ideal_gases"]
 BUILD_PYTHON_BINDINGS = "ON"
 BUILD_CPP_TESTS = "OFF"
 
+[project.optional-dependencies]
+plot = ["matplotlib>=3.11.0"]
+
 [dependency-groups]
 dev = [
     "matplotlib>=3.11.0",

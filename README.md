@@ -1,4 +1,4 @@
-# QEuler
+# Classical and Quantum Ideal Gases
 
 Exact Riemann solvers for classical and quantum Euler gases, with a fast polylogarithm kernel used in the quantum equation of state.
 
@@ -59,10 +59,6 @@ result = classical_gas(
 )
 ```
 
-Using `matplotlib`, the results can be plotted as follows:
-
-![Classical Sod shock tube](./figures/classical_sod_shock_tube.png)
-
 ### Quantum Euler (FD / BE / MB)
 
 Left and right states are given in terms of density `rho`, velocity `u`, and temperature `theta` (written `t` in the API). The solver converts these to effective pressures via the quantum EOS, then applies the Toro exact Riemann solver.
@@ -88,7 +84,7 @@ result = quantum_gas(
 )
 ```
 
-`RiemannResult` fields: `x`, `rho`, `ux`, `p`, `e`, `z` (fugacity), `t` (temperature), `mach`, `entropy`.
+This results in a `RiemannResult` object with the following fields: `x`, `rho`, `ux`, `p`, `e`, `z` (fugacity), `t` (temperature), `mach`, `entropy`.
 
 Graphically, the results for the three statistics can be plotted as follows:
 
@@ -191,12 +187,74 @@ Example `case.json`:
 
 Use `--format json` (or a `.json` output path) for JSON instead of CSV. CLI flags override values from the config file.
 
+### Visualization
+
+Plotting requires matplotlib:
+
+```bash
+pip install ideal-gases[plot]
+# or, for local development:
+uv sync --group dev
+```
+
+Save a classical Sod shock tube figure:
+
+```bash
+euler plot classical \
+  --rho-l 1 --u-l 0 --p-l 1 \
+  --rho-r 0.125 --u-r 0 --p-r 0.1 \
+  --t-end 0.2 --gamma 1.4 --nx 101 \
+  -f sod.png
+```
+
+Plot a single quantum statistic or compare FD/MB/BE:
+
+```bash
+euler plot quantum \
+  --rho-l 1 --u-l 0 --t-l 1 \
+  --rho-r 0.125 --u-r 0 --t-r 0.25 \
+  --t-end 0.20 --n 2 --h 0.1 --statistic FD \
+  -f qfd.png
+
+euler plot quantum-example 7 --all-statistics -f eg7
+```
+
+With `--all-statistics`, `-f eg7` writes `eg7_panels.png` (3×6 grid) and `eg7_comparison.png` (overlay). Use `--layout panels|comparison|both` to select one or both (default: `both`). Add `--show` for an interactive window, or `-o` to export CSV/JSON in the same run.
+
+### Interactive exploration
+
+Launch matplotlib widget explorers to build custom Riemann problems with sliders, statistic toggles (quantum), and Save/Reset controls. Y-axis limits autoscale automatically on each update.
+
+```bash
+euler interactive classical
+euler interactive quantum
+```
+
+Seed the initial state from CLI flags or a JSON config (same fields as `euler solve`):
+
+```bash
+euler interactive classical --gamma 1.4 --t-end 0.5 --nx 101
+euler interactive quantum --rho-l 2 --t-l 1.5 --n 3 --h 0.5
+euler interactive classical --config case.json
+```
+
+Optional domain flags (`--x-min`, `--x-max`, `--x0`, `--nx`) default to an interactive Sod-tube layout (`x` in `[-10, 10]`, discontinuity at `x0=0`, `nx=1024`). Use `-f path.png` to set the **Save** button target; nothing is written until you click Save.
+
+Equivalent script entry points:
+
+```bash
+uv run python scripts/interactive_classical_riemann.py
+uv run python scripts/interactive_quantum_comparison.py
+```
+
 ## Plotting benchmark solutions
 
-`scripts/plot_quantum_euler_solutions.py` reproduces the workflow of `matlab/PlotQEuler.m`. It solves eight published test cases and saves comparison figures.
+`scripts/plot_quantum_euler_solutions.py` is a thin wrapper around `euler plot quantum-example`. It reproduces the workflow of `matlab/PlotQEuler.m`.
 
 ```bash
 uv run python scripts/plot_quantum_euler_solutions.py --example 7
+# equivalent:
+euler plot quantum-example 7 --all-statistics -f QEuler_Eg7
 ```
 
 Options:
@@ -204,15 +262,15 @@ Options:
 | Flag | Default | Description |
 |------|---------|-------------|
 | `--example` | 7 | Benchmark case (1–8) |
-| `--output-dir` | repo root | Where PNG files are saved |
+| `--output-dir` | repo root | Directory for saved PNG figures |
 | `--dx` | 0.002 | Grid spacing |
 | `--x0` | 0.5 | Discontinuity location |
 | `--show` | off | Open interactive plot windows |
 
-Outputs per example:
+Outputs per example (when using `-f QEuler_Eg{N}`):
 
-- `QEuler_Eg{N}_AllPlots.png` — FD/MB/BE panels for ρ, u, p, e, θ, z
-- `QEuler_Eg{N}_TogetherPlots.png` — overlay of all three statistics
+- `QEuler_Eg{N}_panels.png` — FD/MB/BE panels for ρ, u, p, e, θ, z
+- `QEuler_Eg{N}_comparison.png` — overlay of all three statistics
 
 ## Public API
 

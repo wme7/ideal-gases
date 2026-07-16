@@ -184,6 +184,23 @@ def _solve_profile(
     z, t = _postprocess_quantum(statistic, n, h, rho, e)
     return RiemannResult(x_arr, rho, ux, p, e, z, t, mach, entropy)
 
+# ------------------------------------------------------------
+# Use mpmath for polylog (slow! use cpp polylog instead)
+# from mpmath import fp
+
+# def _mpmath_polylog_real(n: float, z: float) -> float:
+#     value = fp.polylog(n, z)
+#     return float(value.real) if hasattr(value, "real") else float(value)
+
+# _mpmath_polylog = np.frompyfunc(_mpmath_polylog_real, 2, 1)
+
+# def _be(n: float, z: ArrayLike) -> NDArray[np.float64]:
+#     return np.asarray(_mpmath_polylog(n, z), dtype=np.float64)
+
+# def _fd(n: float, z: ArrayLike) -> NDArray[np.float64]:
+#     return np.asarray(_mpmath_polylog(n, -z), dtype=np.float64)
+#
+# ------------------------------------------------------------
 
 def _be(n: float, z: ArrayLike) -> NDArray[np.float64]:
     return np.asarray(polylog(n, z), dtype=np.float64)
@@ -206,7 +223,7 @@ def _effective_pressures(
         return rho_l * t_l, rho_r * t_r
 
     q_func = _fd if statistic == "FD" else _be
-    clip_fn = (lambda z: min(float(z), 0.999999)) if statistic == "BE" else None
+    clip_fn = _clip_be_fugacity if statistic == "BE" else None
 
     if rho_l > RHO_FLOOR:
         z_l = _newton_scalar(
@@ -250,12 +267,12 @@ def _postprocess_quantum(
         return z, t
 
     q_func = _fd if statistic == "FD" else _be
-    clip = _clip_be_fugacity if statistic == "BE" else None
+    clip_fn = _clip_be_fugacity if statistic == "BE" else None
     z = _newton_array(
         lambda zv: _frhoe(q_func, zv, n, rho, e, h),
         lambda zv: _dfrhoe(q_func, zv, n),
         np.full_like(rho, 0.001),
-        clip=clip,
+        clip=clip_fn,
     )
 
     if statistic == "FD":
@@ -321,7 +338,7 @@ def _dfrhoe(
 
 
 def _clip_be_fugacity(z: NDArray[np.float64]) -> NDArray[np.float64]:
-    return np.minimum(z, 0.999999)
+    return np.minimum(z, 0.999999999)
 
 
 def _newton_scalar(

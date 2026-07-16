@@ -81,27 +81,26 @@ series = 1 + n.*(n-1).*(pi^2/6).*(1./xi.^2) + ...
     n.*(n-1).*(n-2).*(n-3).*(7*pi^4/360).*(1./xi.^4);
 g4 = - preterm .* series; g(id4)=g4; %disp(g4)
 end
+end % PolyLog
 
 %% Define Internal functions
-    % Bose-Einstein Function
-    function out = BE(nu,zz,j)
-        out = zeros(size(zz)); for l=1:j; out = out + zz.^l./l^nu; end
-    end
+% Bose-Einstein Function
+function out = BE(nu,zz,j)
+    out = zeros(size(zz)); for l=1:j; out = out + zz.^l./l^nu; end
+end
 
-    % Fermi-Dirac Function
-    function out = FD(nu,zz,j)
-        out = zeros(size(zz)); for l=1:j; out = out + (-1).^(l-1).*zz.^l./l^nu; end
-    end
+% Fermi-Dirac Function
+function out = FD(nu,zz,j)
+    out = zeros(size(zz)); for l=1:j; out = out + (-1).^(l-1).*zz.^l./l^nu; end
+end
 
-    % Zeta Function
-    function Z = zeta(n)
-        eta = @(nu,j) sum( ((-1).^((1:j)+1))./((1:j).^nu) );
-        prefactor = 2^(n-1)/( 2^(n-1)-1 );
-        numerator = 1 + 36*2^n*eta(n,2) + 315*3^n*eta(n,3) + 1120*4^n*eta(n,4) +...
-            + 1890*5^n*eta(n,5) + 1512*6^n*eta(n,6) + 462*7^n*eta(n,7);
-        denominator = 1 + 36*2^n + 315*3^n + 1120*4^n + 1890*5^n + 1512*6^n +...
-            + 462*7^n;
-        Z = prefactor * numerator / denominator;
-    end
-    
+% Zeta Function
+function Z = zeta(n)
+    eta = @(nu,j) sum( ((-1).^((1:j)+1))./((1:j).^nu) );
+    prefactor = 2^(n-1)/( 2^(n-1)-1 );
+    numerator = 1 + 36*2^n*eta(n,2) + 315*3^n*eta(n,3) + 1120*4^n*eta(n,4) +...
+        + 1890*5^n*eta(n,5) + 1512*6^n*eta(n,6) + 462*7^n*eta(n,7);
+    denominator = 1 + 36*2^n + 315*3^n + 1120*4^n + 1890*5^n + 1512*6^n +...
+        + 462*7^n;
+    Z = prefactor * numerator / denominator;
 end
