@@ -85,10 +85,10 @@ ctest --test-dir build/cpp
 
 GitHub Actions runs lint (pre-commit) and tests with coverage on Linux and macOS for every push/PR to `master` / `main`.
 
-Releases build wheels (Linux + macOS) and an sdist, then upload them to **TestPyPI** and **PyPI** when you push a version tag:
+Releases build wheels (Linux + macOS) and an sdist, then upload them to **PyPI** when you push a version tag:
 
-1. One-time setup on [TestPyPI](https://test.pypi.org) and [PyPI](https://pypi.org): create accounts, then add a **Trusted Publisher** for this repo on each — owner `wme7`, repository `ideal-gases`, workflow `publish.yml`, environments `testpypi` and `pypi`.
-2. In GitHub → Settings → Environments, create `testpypi` and `pypi` (optional: required reviewers on `pypi`).
+1. One-time setup on [PyPI](https://pypi.org): create an account, then add a **Trusted Publisher** for this repo — owner `wme7`, repository `ideal-gases`, workflow `publish.yml`, environment `pypi`.
+2. In GitHub → Settings → Environments, create `pypi` (optional: required reviewers).
 3. Bump `version` in `pyproject.toml` so it matches the tag (e.g. `0.1.2` ↔ `v0.1.2`).
 4. Tag and push:
    ```bash
@@ -99,10 +99,6 @@ Releases build wheels (Linux + macOS) and an sdist, then upload them to **TestPy
 6. Install from PyPI:
    ```bash
    pip install ideal-gases
-   ```
-   Or from TestPyPI (dependencies still resolve from real PyPI):
-   ```bash
-   pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ ideal-gases
    ```
 
 `workflow_dispatch` on the Publish workflow builds artifacts without uploading (useful dry run).

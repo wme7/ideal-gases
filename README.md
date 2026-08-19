@@ -1,5 +1,9 @@
 # Classical and Quantum Ideal Gases
 
+[![CI](https://github.com/wme7/ideal-gases/actions/workflows/ci.yml/badge.svg)](https://github.com/wme7/ideal-gases/actions/workflows/ci.yml)
+[![Publish](https://github.com/wme7/ideal-gases/actions/workflows/publish.yml/badge.svg)](https://github.com/wme7/ideal-gases/actions/workflows/publish.yml)
+[![PyPI](https://img.shields.io/pypi/v/ideal-gases)](https://pypi.org/project/ideal-gases/)
+
 Exact Riemann solvers for classical and quantum Euler gases, with a fast polylogarithm kernel used to resolve the quantum equation of state.
 
 This repository ports the MATLAB implementation found in [this thesis](https://doi.org/10.6342/NTU.2015.00509) to Python 3.11. The polylog function has been ported from the MATLAB implementation to C++ and the Toro exact Riemann solver has been extended to support Fermi–Dirac (FD), Bose–Einstein (BE), and Maxwell–Boltzmann (MB) statistics.
