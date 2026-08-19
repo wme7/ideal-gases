@@ -54,7 +54,7 @@ Outputs a Sod shock tube problem resolved with a quantum Euler solver for all st
 In Fig. 5 of [Hu and Jing (2010)](https://www.researchgate.net/profile/Shi-Jin-5/publication/228568274_On_kinetic_flux_vector_splitting_schemes_for_quantum_Euler_equations/links/02e7e525327fccc0cf000000/On-kinetic-flux-vector-splitting-schemes-for-quantum-Euler-equations.pdf), a fictitious 2-d fermi gas degenerate regime is used to prove the accuracy of Kinetic Flux Vector Splitting schemes for quantum Euler equations. Using the interactive mode, we set `n` : 2 and set the left and right states ($\rho,u,\theta$). Using the `h` slider, we found that the degenerate gas is resolved approximately for `h` $\approx$ 3.71.
 As show in the following figure:
 
-![Sod shock tube](./figures/fermi_2d_gas_yang_hsieh_shi.png)
+![Sod shock tube](https://raw.githubusercontent.com/wme7/ideal-gases/master/figures/fermi_2d_gas_yang_hsieh_shi.png)
 
 
 ## Command-line mode
@@ -176,13 +176,13 @@ In [Filbet, Hu and Jing (2010)](https://www.cambridge.org/core/journals/esaim-ma
 euler plot quantum-example 7 --all-statistics -f sod_2d_gas_classical --layout comparison --show
 ```
 yields the following plot:
-![Sod shock tube](./figures/sod_2d_gas_classical_comparison.png)
+![Sod shock tube](https://raw.githubusercontent.com/wme7/ideal-gases/master/figures/sod_2d_gas_classical_comparison.png)
 
 ```bash
 euler plot quantum-example 8 --all-statistics -f sod_2d_gas_quantum --layout comparison --show
 ```
 yields the following plot:
-![Sod shock tube](./figures/sod_2d_gas_quantum_comparison.png)
+![Sod shock tube](https://raw.githubusercontent.com/wme7/ideal-gases/master/figures/sod_2d_gas_quantum_comparison.png)
 
 ## Python module
 
@@ -281,7 +281,7 @@ We can plot the polylogarithm function to verify the accuracy of the implementat
 uv run scripts/plot_polylogarithms.py
 ```
 yields the following plot:
-![Polylogarithm](./figures/polylogarithms.png)
+![Polylogarithm](https://raw.githubusercontent.com/wme7/ideal-gases/master/figures/polylogarithms.png)
 
 ### Public API
 
