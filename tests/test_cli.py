@@ -642,3 +642,54 @@ def test_moments_json_output(tmp_path: Path) -> None:
     assert "z" in data
     assert "T" in data
     assert "p" in data
+
+
+def test_cli_polylog_backend_argparse() -> None:
+    from ideal_gases.cli import build_parser
+
+    parser = build_parser()
+    args = parser.parse_args(["interactive", "quantum"])
+    assert args.polylog_backend == "fukushima"
+    args = parser.parse_args(
+        ["interactive", "quantum", "--polylog-backend", "ideal_gases"]
+    )
+    assert args.polylog_backend == "ideal_gases"
+    args = parser.parse_args(
+        [
+            "fugacity",
+            "--rho",
+            "1",
+            "--theta",
+            "1",
+            "--n",
+            "3",
+            "--polylog-backend",
+            "mpmath",
+        ]
+    )
+    assert args.polylog_backend == "mpmath"
+
+
+def test_cli_fukushima_backend_runs(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    code = main(
+        [
+            "fugacity",
+            "--rho",
+            "1.0",
+            "--theta",
+            "1.0",
+            "--n",
+            "3",
+            "--h",
+            "6",
+            "--statistic",
+            "FD",
+            "--polylog-backend",
+            "fukushima",
+        ]
+    )
+    assert code == 0
+    out = capsys.readouterr().out
+    assert "z =" in out

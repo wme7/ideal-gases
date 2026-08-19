@@ -45,7 +45,7 @@ from ideal_gases.cli.interactive.quantum import run_quantum_interactive
 from ideal_gases.cli.plot import PlotLayout, plot_all_statistics, plot_single
 from ideal_gases.cli.presets.quantum import QUANTUM_EXAMPLES
 from ideal_gases.cli.presets.toro import TORO_TESTS
-from ideal_gases.equilibrium import find_fugacity, find_moments
+from ideal_gases.equilibrium import find_fugacity, find_moments, set_polylog_backend
 from ideal_gases.riemann import (
     RiemannResult,
     Statistic,
@@ -55,6 +55,11 @@ from ideal_gases.riemann import (
 )
 
 STATISTICS: tuple[Statistic, ...] = ("FD", "MB", "BE")
+
+
+def _apply_polylog_backend(args: argparse.Namespace) -> None:
+    name = getattr(args, "polylog_backend", None) or "fukushima"
+    set_polylog_backend(name)
 
 
 def _resolve_gamma(
@@ -678,6 +683,7 @@ def cmd_interactive_classical(args: argparse.Namespace) -> int:
 
 def cmd_interactive_quantum(args: argparse.Namespace) -> int:
     try:
+        _apply_polylog_backend(args)
         config = load_config(args.config) if args.config else None
         if config is not None and config.mode != "quantum":
             raise ValueError('Config mode must be "quantum" for this command.')
@@ -698,6 +704,7 @@ def cmd_interactive_quantum(args: argparse.Namespace) -> int:
             x_min=domain.x_min,
             x_max=domain.x_max,
             figure_path=figure,
+            polylog_backend=args.polylog_backend,
         )
     except (ValueError, RuntimeError) as exc:
         print(f"error: {exc}", file=sys.stderr)
@@ -750,6 +757,7 @@ def cmd_solve_classical(args: argparse.Namespace) -> int:
 
 def cmd_solve_quantum(args: argparse.Namespace) -> int:
     try:
+        _apply_polylog_backend(args)
         config = load_config(args.config) if args.config else None
         if config is not None and config.mode != "quantum":
             raise ValueError('Config mode must be "quantum" for this command.')
@@ -995,6 +1003,7 @@ def cmd_toro(args: argparse.Namespace) -> int:
 
 def cmd_quantum_example(args: argparse.Namespace) -> int:
     try:
+        _apply_polylog_backend(args)
         preset = QUANTUM_EXAMPLES[args.number]
         if args.output is None:
             output = Path(f"qeuler_eg{preset.number}.csv")
@@ -1135,6 +1144,7 @@ def cmd_plot_classical(args: argparse.Namespace) -> int:
 
 def cmd_plot_quantum(args: argparse.Namespace) -> int:
     try:
+        _apply_polylog_backend(args)
         config = load_config(args.config) if args.config else None
         if config is not None and config.mode != "quantum":
             raise ValueError('Config mode must be "quantum" for this command.')
@@ -1466,6 +1476,7 @@ def cmd_plot_toro(args: argparse.Namespace) -> int:
 
 def cmd_plot_quantum_example(args: argparse.Namespace) -> int:
     try:
+        _apply_polylog_backend(args)
         preset = QUANTUM_EXAMPLES[args.number]
         figure = _require_figure(args.figure, args.show)
         layout: PlotLayout = args.layout
@@ -1625,6 +1636,7 @@ def _write_equilibrium_result(data: dict[str, Any], output: Path | None) -> None
 
 def cmd_fugacity(args: argparse.Namespace) -> int:
     try:
+        _apply_polylog_backend(args)
         eta = _STATISTIC_TO_ETA[args.statistic]
         z = find_fugacity(
             args.rho,
@@ -1652,6 +1664,7 @@ def cmd_fugacity(args: argparse.Namespace) -> int:
 
 def cmd_moments(args: argparse.Namespace) -> int:
     try:
+        _apply_polylog_backend(args)
         eta = _STATISTIC_TO_ETA[args.statistic]
         z, T, p = find_moments(
             args.rho,

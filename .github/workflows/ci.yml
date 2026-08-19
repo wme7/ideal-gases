@@ -60,3 +60,18 @@ jobs:
         with:
           name: coverage-xml
           path: coverage.xml
+
+  cpp-tests:
+    name: C++ tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure
+        run: cmake -S cpp -B build/cpp -DBUILD_PYTHON_BINDINGS=OFF -DBUILD_CPP_TESTS=ON
+
+      - name: Build
+        run: cmake --build build/cpp
+
+      - name: Test
+        run: ctest --test-dir build/cpp --output-on-failure

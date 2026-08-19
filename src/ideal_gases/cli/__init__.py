@@ -94,6 +94,18 @@ def _add_classical_solver_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--n", type=float, default=None, help="DoF; gamma = (n+2)/n.")
 
 
+def _add_polylog_backend_arg(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--polylog-backend",
+        choices=("ideal_gases", "mpmath", "fukushima"),
+        default="fukushima",
+        help=(
+            "Li_n implementation (default: fukushima). "
+            "ideal_gases is the Bhagat/Kuhnert kernel."
+        ),
+    )
+
+
 def _add_quantum_solver_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--config", type=Path, default=None, help="JSON config file.")
     parser.add_argument("--rho-l", type=float, default=None)
@@ -124,6 +136,7 @@ def _add_quantum_solver_args(parser: argparse.ArgumentParser) -> None:
         action="store_true",
         help="Plot or export FD, MB, and BE together.",
     )
+    _add_polylog_backend_arg(parser)
 
 
 def _add_equilibrium_args(parser: argparse.ArgumentParser) -> None:
@@ -152,6 +165,7 @@ def _add_equilibrium_args(parser: argparse.ArgumentParser) -> None:
         default=None,
         help="Write JSON output to file instead of stdout.",
     )
+    _add_polylog_backend_arg(parser)
 
 
 def _add_interactive_args(parser: argparse.ArgumentParser) -> None:
@@ -237,6 +251,7 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Write separate output files for FD, MB, and BE.",
     )
+    _add_polylog_backend_arg(quantum_example)
     _add_domain_args(quantum_example)
     _add_output_args(quantum_example)
 
@@ -288,6 +303,7 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Plot FD, MB, and BE comparison figures.",
     )
+    _add_polylog_backend_arg(plot_quantum_example)
     _add_domain_args(plot_quantum_example)
     _add_plot_args(plot_quantum_example)
     _add_output_args(plot_quantum_example)

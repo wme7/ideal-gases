@@ -15,6 +15,7 @@ option(BUILD_CPP_TESTS "Build the C++ unit tests" ON)
 
 add_library(quantum_polylog STATIC
   src/polylog.cpp
+  src/fukushima.cpp
 )
 
 # Required when linking this static lib into the pybind11 shared module on Linux.
@@ -48,5 +49,13 @@ if(BUILD_CPP_TESTS)
   add_executable(polylog_test tests/polylog_test.cpp)
   target_link_libraries(polylog_test PRIVATE quantum_polylog)
 
+  add_executable(fukushima_test tests/fukushima_test.cpp)
+  target_link_libraries(fukushima_test PRIVATE quantum_polylog)
+  target_compile_definitions(fukushima_test PRIVATE
+    "FUKUSHIMA_XFDH_TXT=\"${CMAKE_CURRENT_SOURCE_DIR}/../fortran/xfdh.txt\""
+    "FUKUSHIMA_XBEH_TXT=\"${CMAKE_CURRENT_SOURCE_DIR}/../fortran/xbeh.txt\""
+  )
+
   add_test(NAME polylog_test COMMAND polylog_test)
+  add_test(NAME fukushima_test COMMAND fukushima_test)
 endif()

@@ -7,9 +7,10 @@ Given ρ and e, recover z and T for: Fermi (η = -1) and Bose (η = +1) statisti
 
 Planck's constant h may be treated as a free parameter that sets the degeneracy.
 
-Polylogarithms default to ``ideal_gases.polylog`` (fast, array-capable).
-Set ``POLYLOG_BACKEND = "mpmath"`` (or call ``set_polylog_backend``) to
-compare against ``mpmath.polylog``.
+Solvers default to the in-tree Fukushima C++ kernel.  Set
+``POLYLOG_BACKEND = "ideal_gases"`` for the Bhagat/Kuhnert ``polylog``,
+or ``"mpmath"`` (via ``set_polylog_backend``) to compare against
+``mpmath.polylog``.
 """
 
 from __future__ import annotations
@@ -25,19 +26,19 @@ __all__ = [
 ]
 
 VALID_ETA = frozenset({-1, 0, 1})
-VALID_POLYLOG = frozenset({"ideal_gases", "mpmath"})
+VALID_POLYLOG = frozenset({"ideal_gases", "mpmath", "fukushima"})
 Z_INIT = 1.0e-3
 Z_MIN = 1.0e-15
-Z_BOSE_MAX = 0.999999
+Z_BOSE_MAX = 0.999_999
 NEWTON_TOL = 1.0e-6
 NEWTON_MAXITER = 200
 
-# "ideal_gases" (default, fast) or "mpmath" (higher precision, slower).
-POLYLOG_BACKEND = "ideal_gases"
+# "fukushima" (default), "ideal_gases" (Bhagat), or "mpmath".
+POLYLOG_BACKEND = "fukushima"
 
 
 def set_polylog_backend(name: str) -> str:
-    """Select the Li_n implementation: ``"ideal_gases"`` or ``"mpmath"``."""
+    """Select the Li_n implementation."""
     global POLYLOG_BACKEND
     if name not in VALID_POLYLOG:
         raise ValueError(
@@ -66,12 +67,20 @@ def _polylog_mpmath(n, z):
     return out if out.ndim else float(out)
 
 
+def _polylog_fukushima(n, z):
+    from ideal_gases.polylog import polylog_fukushima
+
+    return polylog_fukushima(float(n), z)
+
+
 def _polylog(n, z):
     """Real polylogarithm Li_n(z) via ``POLYLOG_BACKEND``."""
     if POLYLOG_BACKEND == "ideal_gases":
         return _polylog_ideal_gases(n, z)
     if POLYLOG_BACKEND == "mpmath":
         return _polylog_mpmath(n, z)
+    if POLYLOG_BACKEND == "fukushima":
+        return _polylog_fukushima(n, z)
     raise ValueError(
         f"POLYLOG_BACKEND={POLYLOG_BACKEND!r}; expected one of {sorted(VALID_POLYLOG)}"
     )

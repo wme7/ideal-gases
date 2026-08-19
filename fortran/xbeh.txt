@@ -1,0 +1,1497 @@
+program xbeh
+!
+!   Test driver of "beNh", double precision routines to compute
+!   the normalized Bose-Einstein integral of
+!   (i) half integer orders: -9/2, -7/2, ..., 39/2, and of
+!   (ii) integer orders: 1, 2, ..., 19
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/31
+!
+implicit integer (i-n)
+implicit real*8 (a-h,o-z)
+!
+x1=-1.5d0; x2=-1.d0; x3=-0.75d0
+write (*,"(a5,3a20)") "# 2k","eta=-1.5","eta=-1.0","eta=-0.75"
+do k2=-9,39
+    if(k2.eq.-8.or.k2.eq.-6.or.k2.eq.-4.or.k2.eq.-2.or.k2.eq.0) cycle
+    if(k2.eq.-9) then
+        b1=bem9h(x1); b2=bem9h(x2); b3=bem9h(x3)
+    elseif(k2.eq.-7) then
+        b1=bem7h(x1); b2=bem7h(x2); b3=bem7h(x3)
+    elseif(k2.eq.-5) then
+        b1=bem5h(x1); b2=bem5h(x2); b3=bem5h(x3)
+    elseif(k2.eq.-3) then
+        b1=bem3h(x1); b2=bem3h(x2); b3=bem3h(x3)
+    elseif(k2.eq.-1) then
+        b1=bem1h(x1); b2=bem1h(x2); b3=bem1h(x3)
+    elseif(k2.eq.1) then
+        b1=be1h(x1); b2=be1h(x2); b3=be1h(x3)
+    elseif(k2.eq.2) then
+        b1=be2h(x1); b2=be2h(x2); b3=be2h(x3)
+    elseif(k2.eq.3) then
+        b1=be3h(x1); b2=be3h(x2); b3=be3h(x3)
+    elseif(k2.eq.4) then
+        b1=be4h(x1); b2=be4h(x2); b3=be4h(x3)
+    elseif(k2.eq.5) then
+        b1=be5h(x1); b2=be5h(x2); b3=be5h(x3)
+    elseif(k2.eq.6) then
+        b1=be6h(x1); b2=be6h(x2); b3=be6h(x3)
+    elseif(k2.eq.7) then
+        b1=be7h(x1); b2=be7h(x2); b3=be7h(x3)
+    elseif(k2.eq.8) then
+        b1=be8h(x1); b2=be8h(x2); b3=be8h(x3)
+    elseif(k2.eq.9) then
+        b1=be9h(x1); b2=be9h(x2); b3=be9h(x3)
+    elseif(k2.eq.10) then
+        b1=be10h(x1); b2=be10h(x2); b3=be10h(x3)
+    elseif(k2.eq.11) then
+        b1=be11h(x1); b2=be11h(x2); b3=be11h(x3)
+    elseif(k2.eq.12) then
+        b1=be12h(x1); b2=be12h(x2); b3=be12h(x3)
+    elseif(k2.eq.13) then
+        b1=be13h(x1); b2=be13h(x2); b3=be13h(x3)
+    elseif(k2.eq.14) then
+        b1=be14h(x1); b2=be14h(x2); b3=be14h(x3)
+    elseif(k2.eq.15) then
+        b1=be15h(x1); b2=be15h(x2); b3=be15h(x3)
+    elseif(k2.eq.16) then
+        b1=be16h(x1); b2=be16h(x2); b3=be16h(x3)
+    elseif(k2.eq.17) then
+        b1=be17h(x1); b2=be17h(x2); b3=be17h(x3)
+    elseif(k2.eq.18) then
+        b1=be18h(x1); b2=be18h(x2); b3=be18h(x3)
+    elseif(k2.eq.19) then
+        b1=be19h(x1); b2=be19h(x2); b3=be19h(x3)
+    elseif(k2.eq.20) then
+        b1=be20h(x1); b2=be20h(x2); b3=be20h(x3)
+    elseif(k2.eq.21) then
+        b1=be21h(x1); b2=be21h(x2); b3=be21h(x3)
+    elseif(k2.eq.22) then
+        b1=be22h(x1); b2=be22h(x2); b3=be22h(x3)
+    elseif(k2.eq.23) then
+        b1=be23h(x1); b2=be23h(x2); b3=be23h(x3)
+    elseif(k2.eq.24) then
+        b1=be24h(x1); b2=be24h(x2); b3=be24h(x3)
+    elseif(k2.eq.25) then
+        b1=be25h(x1); b2=be25h(x2); b3=be25h(x3)
+    elseif(k2.eq.26) then
+        b1=be26h(x1); b2=be26h(x2); b3=be26h(x3)
+    elseif(k2.eq.27) then
+        b1=be27h(x1); b2=be27h(x2); b3=be27h(x3)
+    elseif(k2.eq.28) then
+        b1=be28h(x1); b2=be28h(x2); b3=be28h(x3)
+    elseif(k2.eq.29) then
+        b1=be29h(x1); b2=be29h(x2); b3=be29h(x3)
+    elseif(k2.eq.30) then
+        b1=be30h(x1); b2=be30h(x2); b3=be30h(x3)
+    elseif(k2.eq.31) then
+        b1=be31h(x1); b2=be31h(x2); b3=be31h(x3)
+    elseif(k2.eq.32) then
+        b1=be32h(x1); b2=be32h(x2); b3=be32h(x3)
+    elseif(k2.eq.33) then
+        b1=be33h(x1); b2=be33h(x2); b3=be33h(x3)
+    elseif(k2.eq.34) then
+        b1=be34h(x1); b2=be34h(x2); b3=be34h(x3)
+    elseif(k2.eq.35) then
+        b1=be35h(x1); b2=be35h(x2); b3=be35h(x3)
+    elseif(k2.eq.36) then
+        b1=be36h(x1); b2=be36h(x2); b3=be36h(x3)
+    elseif(k2.eq.37) then
+        b1=be37h(x1); b2=be37h(x2); b3=be37h(x3)
+    elseif(k2.eq.38) then
+        b1=be38h(x1); b2=be38h(x2); b3=be38h(x3)
+    elseif(k2.eq.39) then
+        b1=be39h(x1); b2=be39h(x2); b3=be39h(x3)
+    endif
+    write (*,"(i5,0p3f20.16)") k2,b1,b2,b3
+enddo
+end program xbeh
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function bem9h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order -9/2 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+parameter (xc=-1.4954929351806640625d0)
+parameter (zc= 0.22413809194410674151d0)
+!
+if(x.lt.xc) then
+    z=exp(x)
+    t=zc-z
+    bem9h=z*(3.7960886964214010789d0+t*(-10.956339321979869392d0 &
+         +t*(2.3176792756943738469d0+t*(1.4453191503757198301d0 &
+         +t*(-0.18107366855462336939d0+t*0.016451375341632157096d0))))) &
+           /(0.44618099565450790452d0+t*(2.6964523636715163911d0 &
+         +t*(6.4567459818643437692d0+t*(7.6322342215766871939d0 &
+         +t*(4.4296050358770970486d0+t)))))
+elseif(x.lt.0.d0) then
+    bem9h=(67.356419101155975117d0+x*(-44.180646370040586301d0 &
+        +x*(-14.826871896871132603d0+x*(1.2979172261058504962d0 &
+        +x*(0.25126898267157834768d0+x*4.5214017614712619504d-3))))) &
+          /(15166.909970042278778d0+x*(610.31655954717400371d0 &
+        +x*(1648.0270171964426483d0+x*(59.661786535448978715d0 &
+        +x*(65.695730881968670413d0+x*(1.7732483715144943549d0 &
+        +x)))))) &
+        +11.631728396567448929d0/(x*x*x*x*sqrt(-x))
+else
+    bem9h=0.d0
+    write (*,*) "(bem1h) Nonnegative argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function bem7h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order -7/2 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+parameter (xc=-1.3378057479858398438d0)
+parameter (zc= 0.26242085478697263740d0)
+!
+if(x.lt.xc) then
+    z=exp(x)
+    t=zc-z
+    bem7h=z*(4.0853174805407081196d0+t*(-2.4056466042260668335d0 &
+         +t*(-4.0274723680622875937d0+t*(-0.21678629850903951800d0 &
+         +t*(6.7959616501374430080d-2-t*3.6721515761384638652d-3))))) &
+           /(0.89253458645167888273d0+t*(4.9792143479010833429d0 &
+         +t*(10.792088286989469966d0+t*(11.243853948022693804d0 &
+         +t*(5.5370395260181738072d0+t)))))
+elseif(x.lt.0.d0) then
+    bem7h=(59194.13755884220511d0+x*(28055.013317687779768d0 &
+        -x*6755.967038489331738d0)) &
+          /(6.950174071290603945d6+x*(-330023.71975481195451d0 &
+        +x*(640312.0082706308295d0+x*(-30442.723768616476516d0 &
+        +x*(21443.712596690141648d0+x*(-1028.6512874208909804d0 &
+        +x*(293.67923612808042742d0+x*(-14.683211897549533202d0 &
+        +x)))))))) &
+        +3.3233509704478425512d0/(-x*x*x*sqrt(-x))
+else
+    bem7h=0.d0
+    write (*,*) "(bem1h) Nonnegative argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function bem5h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order -5/2 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+parameter (xc=-1.3535985946655273438d0)
+parameter (zc= 0.25830903658075460832d0)
+!
+if(x.lt.xc) then
+    z=exp(x)
+    t=zc-z
+    bem5h=z*(9.6254919024434701741d0+t*(9.4548588965334868409d0 &
+         +t*(-1.9978637499428692255d-2+t*(-0.97029471351162003130d0 &
+         -t* 5.1468342102880809731d-2)))) &
+           /(4.2034986513467546178d0+t*(19.570733192412027344d0 &
+         +t*(34.161567985969035346d0+t*(27.179936333559946366d0 &
+         +t*(9.3665795582794985250d0+t)))))
+elseif(x.lt.0.d0) then
+    s=xc-x
+    bem5h=(-72109.08742658262711d0+s*(-12189.280650582622446d0 &
+        +s*(608.7940033170396314d0-s*280.24559782570189275d0))) &
+          /(2.2455528948841217074d6+s*(308726.46030259286285d0 &
+        +s*(167066.83100168797521d0+s*(14297.511187851391115d0 &
+        +s*(3999.6984030418769012d0+s*(207.63307005474481723d0 &
+        +s*(35.088098317990688929d0+s))))))) &
+        +1.3293403881791370205d0/(x*x*sqrt(-x))
+else
+    bem5h=0.d0
+    write (*,*) "(bem1h) Nonnegative argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function bem3h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order -3/2 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+parameter (xc=-0.98143672943115234375d0)
+parameter (zc= 0.37477226552138139443d0)
+!
+if(x.lt.xc) then
+    z=exp(x)
+    t=zc-z
+    bem3h=z*(5.9036601969341124347d0+t*(15.879507889600498678d0 &
+          +t*(13.714385194702326692d0+t*(4.2107026416155720459d0 &
+          +t*(0.33448573635670726594d0-t*2.4734408640034812296d-3))))) &
+            /(3.0229071616323494154d0+t*(15.071914726151853416d0 &
+          +t*(27.950747776593214146d0+t*(23.478836054209199989d0 &
+          +t*(8.5567790651617709955d0+t)))))
+elseif(x.lt.0.d0) then
+    s=xc-x
+    bem3h=(-245.53977132621034244d0+s*(30.609420030233244598d0 &
+         +s*(-8.7610890334993407068d0+s*(0.72171774019975674413d0 &
+         +s*(-6.2654027664972222080d-2+s*2.0475711338103929919d-3))))) &
+           /(1367.3879738776294936d0+s*(68.169832700242163782d0 &
+         +s*(72.746531494778720003d0+s*(1.7818188967789274822d0 &
+         +s)))) &
+         +0.88622692545275801365d0/(-x*sqrt(-x))
+else
+    bem3h=0.d0
+    write (*,*) "(bem1h) Nonnegative argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function bem1h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order -1/2 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+parameter (xc=-0.62059517991640936050d0)
+parameter (yc= 0.78777863636710113599d0)
+parameter (zc= 0.53762435913085937500d0)
+!
+if(x.lt.xc) then
+    z=exp(x)
+    t=zc-z
+    bem1h=z*(7.9363641348518435615d0+t*(41.095933883764431025d0 &
+        +t*(76.479224457740482707d0+t*(61.797638811482228942d0 &
+        +t*(20.589872875541506600d0+t*(2.0973664471030137779d0 &
+        +t*0.0093697466131604216151d0)))))) &
+        /(4.6714196857785550036d0+t*(30.931549188257480277d0 &
+        +t*(78.050590281687221176d0+t*(93.599237815959686859d0 &
+        +t*(54.111158569022341357d0+t*(13.433006186164128188d0 &
+        +t))))))
+elseif(x.lt.0.d0) then
+    y=sqrt(-x)
+    s=yc-y
+    bem1h=(35.736852380507785931d0+s*(53.708117488513343213d0 &
+        +s*(22.895713956413423596d0+s*(-3.1301267781299707332d0 &
+        +s*(-3.6482505689988922835d0+s*(0.42704319167531030013d0 &
+        +s*(0.51362336749014077975d0+s*(-3.3039838205162732177d-2 &
+        +s*(-3.3338755291394647806d-2+s*5.6620181494770290979d-3 &
+        )))))))))/(y*(49.666146129099487851d0 &
+        +s*(-1.2821538578243209628d0+s*(4.6956395373016640826d0 &
+        +s*(-2.9150833517949538991d0+s)))))
+else
+    bem1h=0.d0
+    write (*,*) "(bem1h) Nonnegative argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be1h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 1/2 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+parameter (xc=-0.59156040860433650013d0)
+parameter (yc= 0.76912964356104263999d0)
+parameter (zc= 0.55346298217773437500d0)
+!
+if(x.lt.xc) then
+    z=exp(x)
+    t=zc-z
+    be1h=z*(16.389000258702484125d0+t*(88.086315720536676973d0 &
+         +t*(170.53944293729973764d0+t*(144.06414441851796486d0 &
+         +t*(50.802083350381250217d0+t*(5.7173981547641335330d0 &
+         +t* 0.059237742495238898528d0)))))) &
+           /(12.698460552008995401d0+t*(76.218699610183605388d0 &
+         +t*(171.32124428683647485d0+t*(178.99837339617336754d0 &
+         +t*(87.564870601278497875d0+t*(17.657595163556334453d0 &
+         +t))))))
+elseif(x.le.0.d0) then
+    y=sqrt(-x)
+    s=yc-y
+    be1h=(4435.52907722751626d0+s*(8929.68392777296329d0 &
+       +s*(7247.23774798206308d0+s*(2822.494403786414386d0 &
+       +s*(410.0423770506600814d0+s*(-47.8790912413936460d0 &
+       -s* 16.77017170077765649d0)))))) &
+         /(6209.4833063893533045d0+s*(-367.96072600691727077d0 &
+       +s*(1210.8891054070306954d0+s*(-387.73420769490525504d0 &
+       +s*(145.25300390220580906d0+s*(-38.498710291912643015d0 &
+       +s*(7.8119240123128274972d0-s)))))))
+else
+    be1h=0.d0
+    write (*,*) "(be1h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be2h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 1 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+parameter (xc=-1.14727020263671875d0)
+parameter (zc= 0.31750230442738611998d0)
+!
+if(x.lt.xc) then
+    z=exp(x)
+    t=zc-z
+    be2h=z*(245.67815130393117749d0+t*(651.99690167708282663d0 &
+        +t*(555.00148476197962340d0+t*(165.59868939786947722d0 &
+        +t* 12.223759612601795672d0)))) &
+          /(224.75345345732930831d0+t*(667.71846162921069043d0 &
+        +t*(676.56162611830181387d0+t*(272.28857340090817607d0 &
+        +t*(37.892507035242703694d0+t)))))
+elseif(x.le.0.d0) then
+    s=xc-x
+    be2h=(189648.06353838307955d0+s*(-1.5111482387545983171d6 &
+       +s*(-279848.84965468879198d0+s*(-19642.113365894264581d0 &
+       +s*(-2650.0010092802104556d0+s*127.30164950917556545d0))))) &
+        /(1.0010780918959626009d6+s*(52106.772241468256688d0 &
+      +s*(14538.439941153667263d0+s*(8.6235524987399405171d0 &
+      +s*(-5.7463487444251139925d0-s))))) &
+       -x*log(-x)
+else
+    be2h=0.d0
+    write (*,*) "(be2h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be3h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 3/2 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+parameter (xc=-0.53245448731908991967d0)
+parameter (yc= 0.72969479052483985763d0)
+parameter (zc= 0.58716201782226562500d0)
+!
+if(x.lt.xc) then
+    z=exp(x)
+    t=zc-z
+    be3h=z*(34.059328894574200731d0+t*(181.71096513005222531d0 &
+         +t*(347.52434681494889063d0+t*(288.98515615866345627d0 &
+         +t*(100.41461520725591804d0+t*(11.350478131978167267d0 &
+         +t*0.15103120640608393782d0)))))) &
+           /(29.989376957308629529d0+t*(168.23843189261650627d0 &
+         +t*(346.62556549272790423d0+t*(323.90707826178396666d0 &
+         +t*(137.25183538672046489d0+t*(22.927089049954918725d0 &
+         +t))))))
+elseif(x.le.0.d0) then
+    y=sqrt(-x)
+    s=yc-y
+    be3h=(10039.44465986988497d0+s*(15672.49865540910033d0 &
+        +s*(5010.8301433366629d0+s*(-5721.43203660069281d0 &
+        +s*(-5935.86841989832351d0+s*(-2203.277233622697941d0 &
+        -s*317.3106143706067461d0)))))) &
+          /(14710.624176433446613d0+y*(-822.90733289618773814d0 &
+        +y*(1522.6001625383241100d0+y*(245.33416912435105517d0 &
+        +y*(115.50619180394869666d0+y*(25.520340245649595927d0 &
+        +y*(5.0116777182288091719d0+y)))))))
+else
+    be3h=0.d0
+    write (*,*) "(be3h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be4h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 2 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/28
+!
+implicit real*8 (a-z)
+!
+parameter (xc=-1.14727020263671875d0)
+parameter (zc= 0.31750230442738611998d0)
+!
+if(x.lt.xc) then
+    z=exp(x)
+    t=zc-z
+    be4h=z*(830.24923110147890441d0+t*(2002.6470288838789058d0 &
+        +t*(1541.2951142658538302d0+t*(414.57651624826825200d0 &
+        +t* 27.755756440328056535d0)))) &
+          /(795.24146643765319078d0+t*(2035.9488560097759995d0 &
+        +t*(1732.9059074451925447d0+t*(564.29669085429907886d0 &
+        +t*(59.563792990965949366d0+t)))))
+elseif(x.le.0.d0) then
+    s=xc-x
+    be4h=(1.4993187081179276521d6+s*(1.4782027409763104721d6 &
+       +s*(3.7117616152371751271d6+s*(530287.0832390722264d0 &
+       +s*(56729.63586812844365d0+s*3983.7033915232206268d0))))) &
+        /(3.5537759015446597581d6+s*(267538.51712631298263d0 &
+      +s*(49208.916801143828540d0+s*(1243.6866113876582924d0 &
+      +s*(27.207676209990359416d0-s))))) &
+       -0.5d0*x*x*log(-x)
+else
+    be4h=0.d0
+    write (*,*) "(be4h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be5h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 5/2 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+parameter (xc=-0.49965649108652662072d0)
+parameter (yc= 0.70686384197137048122d0)
+parameter (zc= 0.60673904418945312500d0)
+!
+if(x.lt.xc) then
+    z=exp(x)
+    t=zc-z
+    be5h=z*(87.664590823988941383d0+t*(435.92646943021074304d0 &
+         +t*(770.43340952459853980d0+t*(587.51017382207496682d0 &
+         +t*(186.42677483315647528d0+t*(19.404260061541620005d0 &
+         +t*0.26827839829200912793d0)))))) &
+           /(82.393356867273681919d0+t*(419.66067995950837650d0 &
+         +t*(770.69755926372591975d0+t*(627.36914888161820594d0 &
+         +t*(224.77335474882788038d0+t*(30.433429932181875475d0 &
+         +t))))))
+elseif(x.le.0.d0) then
+    y=sqrt(-x)
+    s=yc-y
+    be5h=(6275.71576736466175d0+s*(6621.32942798667226d0 &
+        +s*(-1638.74155240788418d0+s*(-4586.37717104199250d0 &
+        +s*(-1198.46606007181425d0+s*(938.666043530807749d0 &
+        +s*(641.975357948423132d0+s*120.5556110530198689d0))))))) &
+          /(7521.3715212026426088d0+y*(2047.1970774955545002d0 &
+        +y*(1152.4110327408844096d0+y*(393.15645945941711520d0 &
+        +y*(126.44612179529664191d0+y*(32.876984725964877154d0 &
+        +y*(6.6022481428927381721d0+y)))))))
+else
+    be5h=0.d0
+    write (*,*) "(be5h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be6h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 3 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/28
+!
+implicit real*8 (a-z)
+!
+parameter (xc=-0.94890594482421875d0)
+parameter (zc= 0.38716437101346516964d0)
+!
+if(x.lt.xc) then
+    z=exp(x)
+    t=zc-z
+    be6h=z*(2194.0250479585085015d0+t*(5066.6092643003490162d0 &
+        +t*(3670.1163369143965272d0+t*(912.19102040656492446d0 &
+        +t* 55.535382881421580342d0)))) &
+          /(2137.7602069306767212d0+t*(5091.4489636102963539d0 &
+        +t*(3905.0855859340025625d0+t*(1094.7463439706564236d0 &
+        +t*(92.189685995779181405d0+t)))))
+elseif(x.le.0.d0) then
+    s=xc-x
+    be6h=(1.1762660228597334920d6+s*(-1.5214902694407356032d6 &
+       +s*(-490670.10808422339576d0+s*(-1.1124187045235231477d6 &
+       +s*(-81967.03498806764509d0+s*247.184859303977949788d0))))) &
+        /(2.9056322156572482644d6+s*(81222.70263733860609d0 &
+      +s*(677.4071901105985278d0+s*(36.510608569712646611d0 &
+      +s*(-13.281377120103912061d0+s))))) &
+        -0.166666666666666666667d0*x*x*x*log(-x)
+else
+    be6h=0.d0
+    write (*,*) "(be6h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be7h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 7/2 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+parameter (xc=-0.36792072641165210502d0)
+parameter (zc= 0.69217205047607421875d0)
+!
+if(x.lt.xc) then
+    z=exp(x)
+    t=zc-z
+    be7h=z*(132.05564104438486148d0+t*(687.37315661747495424d0 &
+        +t*(1242.7732171076661619d0+t*(945.77979729361834928d0 &
+        +t*(292.21331670030062576d0+t*(29.084046309702332073d0 &
+        +t*0.40250775729917304163d0)))))) &
+          /(127.60286120526474191d0+t*(671.40349384649241463d0 &
+        +t*(1236.8854467224130753d0+t*(974.75958575440055040d0 &
+        +t*(323.53848139042637575d0+t*(38.279750948034333821d0 &
+        +t))))))
+elseif(x.le.0.d0) then
+    y=sqrt(-x)
+    be7h=( 510.69323126998516579d0+y*( 442.89141125351025898d0 &
+      +y*(-273.90194211661965024d0+y*(-342.54604187861154330d0 &
+      +y*( 85.929640015461011315d0+y*( 159.44084542869428234d0 &
+      +y*(-88.750341263393643734d0+y*  13.579549851705865386d0))))))) &
+        /( 484.20365462391202250d0+y*( 419.91870422327382029d0 &
+      +y*( 257.57540498734375568d0+y*( 123.81687085714797828d0 &
+      +y*( 48.707396487794083497d0+y*( 16.394778290816415079d0 &
+      +y*( 3.9663308071473827625d0+y)))))))
+else
+    be7h=0.d0
+    write (*,*) "(be7h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be8h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 4 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/28
+!
+implicit real*8 (a-z)
+!
+parameter (xc=-0.72479248046875d0)
+parameter (zc= 0.48442508619216914862d0)
+!
+if(x.lt.xc) then
+    z=exp(x)
+    t=zc-z
+    be8h=z*(5403.6577526180347190d0+t*(12163.312204495206442d0 &
+        +t*(8361.0349544346924008d0+t*(1912.6246144342493828d0 &
+        +t* 103.79349195908340298d0)))) &
+          /(5317.3199278864771966d0+t*(12157.958588166404069d0 &
+        +t*(8627.0838604982524806d0+t*(2125.6081599719909169d0 &
+        +t*(144.82867277468813643d0+t)))))
+elseif(x.le.0.d0) then
+    s=xc-x
+    be8h=(1.3685102551728883035d6+s*(-1.3993503372869586824d6 &
+      +s*(807560.5518632689454d0 +s*( 4487.0884385621015807d0 &
+      +s*(283440.73004737150981d0+s*  13567.254521569227788d0))))) &
+        /(2.8009396249626570656d6+s*( 32831.984762057494880d0 &
+      +s*(1936.8388910649572958d0+s*(-65.68769467566667566d0 &
+      -s)))) &
+        -0.0416666666666666666667d0*x*x*x*x*log(-x)
+else
+    be8h=0.d0
+    write (*,*) "(be8h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be9h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 9/2 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+parameter (xc=-0.13484669293924198133d0)
+parameter (zc= 0.87384986877441406250d0)
+!
+if(x.lt.xc) then
+    z=exp(x)
+    t=zc-z
+    be9h=z*(1284.0432749021413535d0+t*(11281.206957470393462d0 &
+        +t*(33328.112220856119321d0+t*(40641.614656945782668d0 &
+        +t*(20391.338947973751007d0+t*(3658.6866323455624347d0 &
+        +t* 154.97230105035126959d0)))))) &
+          /(1256.9213721038308250d0+t*(11077.431171271717395d0 &
+        +t*(32921.904746833949064d0+t*(40634.014411844579679d0 &
+        +t*(20934.026617601553044d0+t*(4010.7075938952490122d0 &
+        +t*(209.42015966209243804d0+t)))))))
+elseif(x.le.0.d0) then
+    y=sqrt(-x)
+    be9h=( 2.6773534326675218476d0+y*( 4.2421523708923276084d0 &
+      +y*( 3.1169279991153784112d0+y*( 5.2106951121111803452d0 &
+      +y*(-3.6568464072589501323d0+y*(-2.3080456370871202877d0 &
+      +y*  1.2257013988748904805d0)))))) &
+        /( 2.6115308934591975766d0+y*( 4.1378593637184235029d0 &
+      +y*( 5.7269830449423463154d0+y*( 9.3395275941084254345d0 &
+      +y*(0.88976911459220649890d0+y*( 5.0831742222090008614d0 &
+      +y*(-0.46663095725915229042d0+y)))))))
+else
+    be9h=0.d0
+    write (*,*) "(be9h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be10h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 5 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/28
+!
+implicit real*8 (a-z)
+!
+parameter (xc=-0.621795654296875d0)
+parameter (zc= 0.53697934210208077689d0)
+!
+if(x.lt.xc) then
+    z=exp(x)
+    t=zc-z
+    be10h=z*(16827.657733348184072d0+t*(34666.515995720359398d0 &
+         +t*(21247.091375051818661d0+t*(4203.9477640134523585d0 &
+         +t* 190.71779183058140721d0)))) &
+           /(16680.366908799374983d0+t*(34650.138838788621105d0 &
+         +t*(21625.587120349687400d0+t*(4481.2741958384492990d0 &
+         +t*(238.37177177369610548d0+t)))))
+elseif(x.le.0.d0) then
+    s=xc-x
+    be10h=(202134.82767003970282d0+s*(-208928.22796468514869d0 &
+      +s*(110143.17133384119944d0 +s*(-43048.689658751351055d0 &
+      +s*(3346.2793408044732001d0 -s*  8138.3137243253823246d0))))) &
+        /(372881.25596416850080d0 +s*(-10520.394189656738905d0 &
+      +s*(574.92115028134783162d0 +s*(-26.381775713597388883d0 &
+      +s)))) &
+        -0.0083333333333333333333d0*x*x*x*x*x*log(-x)
+else
+    be10h=0.d0
+    write (*,*) "(be10h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be11h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 11/2 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+parameter (xc=-0.15243918724860693049d0)
+parameter (zc= 0.85861110687255859375d0)
+!
+if(x.lt.xc) then
+    z=exp(x)
+    t=zc-z
+    be11h=z*(289.73547673586126080d0+t*(1723.2654787936256129d0 &
+         +t*(3296.5073203966141551d0+t*(2448.8129389711891554d0 &
+         +t*(681.00402449410470805d0+t*(56.609691695396152117d0 &
+         +t* 0.64256606368230028822d0)))))) &
+           /(286.81874356500060589d0+t*(1709.5493583567183991d0 &
+         +t*(3284.5868265802434200d0+t*(2463.5896482476360926d0 &
+         +t*(701.58221754504769113d0+t*(62.612232418477870327d0 &
+         +t))))))
+elseif(x.le.0.d0) then
+    y=sqrt(-x)
+    be11h=( 23.996121256993340050d0+y*( 58.155882749456111595d0 &
+       +y*(-31.161684657132618719d0+y*(-37.009842917216471113d0 &
+       +y*( 15.285863585561273712d0+y*( 7.7314138137486757813d0 &
+       +y* -3.3910552335937372207d0)))))) &
+         /( 23.711444033712232937d0+y*( 57.465952279390432946d0 &
+       +y*(-6.7713079904805207376d0+y*( 21.644651030425618335d0 &
+       +y*(-4.1110740262334270299d0+y*(-0.37873533603263990833d0 &
+       +y*(0.41300012686572321971d0-y)))))))
+else
+    be11h=0.d0
+    write (*,*) "(be11h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be12h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 6 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/28
+!
+implicit real*8 (a-z)
+!
+parameter (xc=-0.30231475830078125d0)
+parameter (zc= 0.73910538871682368764d0)
+!
+if(x.lt.xc) then
+    z=exp(x)
+    t=zc-z
+    be12h=z*(1040.6809065243394417d0+t*(2969.7324606216274651d0 &
+         +t*(2545.2074205079440003d0+t*(745.73823711253444266d0 &
+         +t*(62.546237881054225964d0+t*0.69975051102458660737d0))))) &
+           /(1034.4189682154582074d0+t*(2960.7230036236695494d0 &
+         +t*(2554.5743781772644507d0+t*(761.33627134930829128d0 &
+         +t*(67.371342804148341207d0+t)))))
+elseif(x.le.0.d0) then
+    s=xc-x
+    be12h=(88.755153517985955560d0+s*(-117.00720148268006855d0 &
+       +s*(74.047647644042933724d0+s*(-30.361029239408831027d0 &
+       +s*(6.2963469842286888641d0-s*  5.8703569894830276649d-2))))) &
+         /(119.36220712078321561d0+s*(-37.235410243818556446d0 &
+       +s*(1.2764277144626801049d0+s*(0.36967317034552176942d0 &
+       +s*(-3.8206684807357738145d0-s))))) &
+       -0.00138888888888888888889d0*x*x*x*x*x*x*log(-x)
+else
+    be12h=0.d0
+    write (*,*) "(be12h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be13h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 13/2 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+if(x.le.0.d0) then
+    z=exp(x)
+    t=1.d0-z
+    be13h=z*(2555.4766016086694035d0+t*(36187.565691060832107d0 &
+         +t*(140796.33100791252299d0+t*(191746.95941683147768d0 &
+         +t*(93631.533978810087680d0+t*(14508.598046024013014d0 &
+         +t* 475.17824720882812132d0)))))) &
+           /(2540.6727934815960611d0+t*(35993.540393195608103d0 &
+         +t*(140200.76214755872141d0+t*(191482.69082814601669d0 &
+         +t*(94210.255572359759451d0+t*(14935.078325881818296d0 &
+         +t*(537.64292883294241148d0+t)))))))
+else
+    be13h=0.d0
+    write (*,*) "(be13h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be14h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 7 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+if(x.le.0.d0) then
+    z=exp(x)
+    t=1.d0-z
+    be14h=z*(9054.129720638044307d0 +t*(106906.74970722732846d0 &
+         +t*(352680.87343822398226d0+t*(411795.92724299246434d0 &
+         +t*(173432.21380197694130d0+t*(23186.672879499749431d0 &
+         +t* 650.3213382758168527d0)))))) &
+           /(9017.362720859037683d0 +t*(106510.98793325920006d0 &
+         +t*(351699.84579170328434d0+t*(411596.54530359644109d0 &
+         +t*(174404.51282086685775d0+t*(23754.949582749633198d0 &
+         +t*(721.6839757998855102d0+t)))))))
+else
+    be14h=0.d0
+    write (*,*) "(be14h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be15h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 15/2 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+if(x.le.0.d0) then
+    z=exp(x)
+    t=1.d0-z
+    be15h=z*(582.39862150650458289d0+t*(4480.4011840353034793d0 &
+         +t*(9468.7481599382783760d0+t*(6803.1816559236986208d0 &
+         +t*(1626.6505444469142084d0+t*(103.81530879832178656d0 &
+         +t* 0.80454989999771514603d0)))))) &
+           /(580.73814545166950774d0+t*(4469.3455307713946098d0 &
+         +t*(9454.9059765469057491d0+t*(6811.2285299490080157d0 &
+         +t*(1641.0923640932175649d0+t*(107.68947773682304731d0 &
+         +t))))))
+else
+    be15h=0.d0
+    write (*,*) "(be15h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be16h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 8 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+if(x.le.0.d0) then
+    z=exp(x)
+    t=1.d0-z
+    be16h=z*(1664.8968138899084353d0+t*(6230.8507860859111037d0 &
+         +t*(5895.8448591751408017d0+t*(1630.6124293964982067d0 &
+         +t*(110.65668420278142290d0+t*0.84200348654624882727d0 &
+         ))))) &
+           /(1661.5597492094893353d0+t*(6221.7926885460571080d0 &
+         +t*(5896.7631836015916182d0+t*(1639.1170636012126434d0 &
+         +t*(113.47089127843381871d0+t)))))
+else
+    be16h=0.d0
+    write (*,*) "(be16h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be17h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 17/2 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+if(x.le.0.d0) then
+    z=exp(x)
+    t=1.d0-z
+    be17h=z*(3457.7780580404259866d0+t*(11295.733836333328761d0 &
+         +t*(9374.0641420941549001d0+t*(2272.2773212423003564d0 &
+         +t*(133.97871755494032338d0+t*0.86244941561122913104d0 &
+         ))))) &
+           /(3452.9005231766172642d0+t*(11284.788224431068816d0 &
+         +t*(9377.0154859916302606d0+t*(2282.2129435002787835d0 &
+         +t*(136.77734758116574036d0+t)))))
+else
+    be17h=0.d0
+    write (*,*) "(be17h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be18h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 9 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+if(x.le.0.d0) then
+    z=exp(x)
+    t=1.d0-z
+    be18h=z*(702354.2868588143701d0+t*(1.4570832978600407424d6 &
+         +t*(716676.7544208368075d0+t*(89820.26684831215065d0 &
+         +t* 1956.0134749439739990d0)))) &
+           /(701656.4368184812854d0+t*(1.4563462038619230404d6 &
+         +t*(717425.1917060096510d0+t*(90428.74375055968992d0 &
+         +t*(2033.0433259745409705d0+t)))))
+else
+    be18h=0.d0
+    write (*,*) "(be18h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be19h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 19/2 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+if(x.le.0.d0) then
+    z=exp(x)
+    t=1.d0-z
+    be19h=z*(1.6171942506472826659d6+t*(2.9693995561492874113d6 &
+         +t*(1.2928457440681701924d6+t*(142532.12222392849769d0 &
+         +t*2678.9244342902879729d0)))) &
+           /(1.6160616457342777994d6+t*(2.9684693548411740541d6 &
+         +t*(1.2940329151682387742d6+t*(143319.57772925151430d0 &
+         +t*(2766.1040500170002845d0+t)))))
+else
+    be19h=0.d0
+    write (*,*) "(be19h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be20h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 10 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+if(x.le.0.d0) then
+    z=exp(x)
+    t=1.d0-z
+    be20h=z*(14506.573220098121528d0+t*(16547.633287111717281d0 &
+         +t*(4049.6115950641482471d0+t*(203.74813286835352164d0 &
+         +t*0.91877585075310884935d0)))) &
+           /(14499.407778007749588d0+t*(16546.711399156191420d0 &
+         +t*(4055.7924501989756572d0+t*(205.57338363017551851d0 &
+         +t))))
+else
+    be20h=0.d0
+    write (*,*) "(be20h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be21h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 21/2 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+if(x.le.0.d0) then
+    z=exp(x)
+    t=1.d0-z
+    be21h=z*(25183.225887482739599d0+t*(25632.914007962358410d0 &
+         +t*(5572.4100889786195849d0+t*(245.61183900222104022d0 &
+         +t*0.92986631543265749530d0)))) &
+           /(25174.448667841035834d0+t*(25632.843073880879756d0 &
+         +t*(5579.3995225116278905d0+t*(247.40042550782711556d0 &
+         +t))))
+else
+    be21h=0.d0
+    write (*,*) "(be21h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be22h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 11 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+if(x.le.0.d0) then
+    z=exp(x)
+    t=1.d0-z
+    be22h=z*(6.443845008972852576d6 +t*(3.8702232732177380431d6 &
+         +t*(424458.20642520630633d0+t* 6447.623078765960474d0))) &
+           /(6.442259655498715744d6 +t*(3.8708690422291642403d6 &
+         +t*(425300.44412946671617d0+t*(6543.969837216755146d0 &
+         +t))))
+else
+    be22h=0.d0
+    write (*,*) "(be22h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be23h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 23/2 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+if(x.le.0.d0) then
+    z=exp(x)
+    t=1.d0-z
+    be23h=z*(1.2915470117438359273d7+t*(6.949628877397342022d6 &
+         +t*(676344.8291342601985d0 +t* 8891.978534722669324d0))) &
+           /(1.2913226421960616936d7+t*(6.950679761627862683d6 &
+         +t*(677427.4708853128283d0 +t*(9001.148030892058044d0 &
+         +t))))
+else
+    be23h=0.d0
+    write (*,*) "(be23h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be24h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 12 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+if(x.le.0.d0) then
+    z=exp(x)
+    t=1.d0-z
+    be24h=z*(29497.487168274905182d0+t*(8708.2839874604132126d0 &
+         +t*(364.50943514163614839d0+t*0.96036408528625755307d0))) &
+           /(29493.867877014682221d0+t*(8710.8538024590421478d0 &
+         +t*(365.51927548851227608d0+t)))
+else
+    be24h=0.d0
+    write (*,*) "(be24h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be25h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 25/2 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+if(x.le.0.d0) then
+    z=exp(x)
+    t=1.d0-z
+    be25h=z*(45237.572306351051378d0+t*(11956.331737247759696d0 &
+         +t*(440.23725292936152859d0+t*0.96587816738944807002d0))) &
+           /(45233.651149161759181d0+t*(11959.233298566847519d0 &
+         +t*(441.22272696695322478d0+t)))
+else
+    be25h=0.d0
+    write (*,*) "(be25h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be26h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 13 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+if(x.le.0.d0) then
+    z=exp(x)
+    t=1.d0-z
+    be26h=z*(69081.272851497028210d0+t*(16381.656762939650363d0 &
+         +t*(531.46047344881134302d0+t*0.97064916065717818391d0))) &
+           /(69077.042011498453001d0+t*(16384.899053496877566d0 &
+         +t*(532.41967205081543726d0+t)))
+else
+    be26h=0.d0
+    write (*,*) "(be26h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be27h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 27/2 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+if(x.le.0.d0) then
+    z=exp(x)
+    t=1.d0-z
+    be27h=z*(105091.78640169629094d0+t*(22404.113176128541465d0 &
+         +t*(641.37968659290557774d0+t*0.97477100066097869768d0))) &
+           /(105087.23811839421189d0+t*(22407.704733184855663d0 &
+         +t*(642.31118383933084154d0+t)))
+else
+    be27h=0.d0
+    write (*,*) "(be27h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be28h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 14 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+if(x.le.0.d0) then
+    z=exp(x)
+    t=1.d0-z
+    be28h=z*(4.8680286654907902780d7+t*(4.9416424426003647351d6 &
+         +t* 42463.010508500723575d0)) &
+           /(4.8678797656342051555d7+t*(4.9429837324531916519d6 &
+         +t*(42609.719221527899097d0+t)))
+else
+    be28h=0.d0
+    write (*,*) "(be28h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be29h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 29/2 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+if(x.le.0.d0) then
+    z=exp(x)
+    t=1.d0-z
+    be29h=z*(8.755145587146981420d7+t*(7.943938003009404271d6 &
+         +t* 59145.18754347115144d0)) &
+           /(8.754956305829971032d7+t*(7.945662640136109565d6 &
+         +t*(59312.36358687164661d0+t)))
+else
+    be29h=0.d0
+    write (*,*) "(be29h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be30h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 15 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+if(x.le.0.d0) then
+    z=exp(x)
+    t=1.d0-z
+    be30h=z*(1.5725319888348563468d8+t*(1.2770487209928721465d7 &
+         +t* 82443.93435322409148d0)) &
+           /(1.5725079573603298087d8+t*(1.2772698891277612469d7 &
+         +t*(82634.40045698816746d0+t)))
+else
+    be30h=0.d0
+    write (*,*) "(be30h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be31h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 31/2 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+if(x.le.0.d0) then
+    z=exp(x)
+    t=1.d0-z
+    be31h=z*(2.8212479217152781613d8+t*(2.0531328023826753485d7 &
+         +t* 115006.67805289623552d0)) &
+           /(2.8212174437508627663d8+t*(2.0534157839412417226d7 &
+         +t*(115223.65890877285433d0+t)))
+else
+    be31h=0.d0
+    write (*,*) "(be31h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be32h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 16 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+if(x.le.0.d0) then
+    z=exp(x)
+    t=1.d0-z
+    be32h=z*(50743.736429550688608d0+t*(1374.1664705980524607d0 &
+         +t*0.98990138876146995794d0)) &
+           /(50743.348892566390828d0+t*(1374.5439089711079588d0+t))
+else
+    be32h=0.d0
+    write (*,*) "(be32h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be33h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 33/2 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+if(x.le.0.d0) then
+    z=exp(x)
+    t=1.d0-z
+    be33h=z*(69722.324798955225251d0+t*(1668.5959271694160178d0 &
+         +t*0.99130466526366162631d0)) &
+           /(69721.948349445099983d0+t*(1668.9636813448028468d0+t))
+else
+    be33h=0.d0
+    write (*,*) "(be33h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be34h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 17 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+if(x.le.0.d0) then
+    z=exp(x)
+    t=1.d0-z
+    be34h=z*(95720.390427414596845d0+t*(2026.1347748770953092d0 &
+         +t*0.99251421839594503515d0)) &
+           /(95720.025036007702430d0+t*(2026.4926805023844919d0+t))
+else
+    be34h=0.d0
+    write (*,*) "(be34h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be35h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 35/2 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+if(x.le.0.d0) then
+    z=exp(x)
+    t=1.d0-z
+    be35h=z*(131317.18466390161283d0+t*(2460.3921221766825355d0 &
+         +t*0.99355637175070373552d0)) &
+           /(131316.83025344104723d0+t*(2460.7400890089981799d0+t))
+else
+    be35h=0.d0
+    write (*,*) "(be35h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be36h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 18 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+if(x.le.0.d0) then
+    z=exp(x)
+    t=1.d0-z
+    be36h=z*(180036.22919511223656d0+t*(2987.9313672532372750d0 &
+         +t*0.99445398725690190028d0)) &
+           /(180035.88564834580670d0+t*(2988.2693680069236671d0+t))
+else
+    be36h=0.d0
+    write (*,*) "(be36h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be37h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 37/2 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+if(x.le.0.d0) then
+    z=exp(x)
+    t=1.d0-z
+    be37h=z*(246690.38106717698158d0+t*(3628.9153781464768708d0 &
+         +t*0.99522689106641784565d0)) &
+           /(246690.04823352073118d0+t*(3629.2434386937934836d0+t))
+else
+    be37h=0.d0
+    write (*,*) "(be37h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be38h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 19 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+if(x.le.0.d0) then
+    z=exp(x)
+    t=1.d0-z
+    be38h=z*(3.561125887005801832d8 +t* 1.1556723177237811630d6) &
+           /(3.5611224898301487916d8+t*(1.1560110352891080896d6+t))
+else
+    be38h=0.d0
+    write (*,*) "(be38h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+real*8 function be39h(x)
+!
+!   Double precision minimax rational function approximation of
+!   Bose-Einstein integral of order 39/2 and of argument x=eta
+!
+!   Author: Fukushima, T. <Toshio.Fukushima@nao.ac.jp>
+!   Date: 2020/01/18
+!
+implicit real*8 (a-z)
+!
+if(x.le.0.d0) then
+    z=exp(x)
+    t=1.d0-z
+    be39h=z*(5.796968891344202206d8+t* 1.625254599024272994d6) &
+           /(5.796964981200784581d8+t*(1.6256446133660522474d6+t))
+else
+    be39h=0.d0
+    write (*,*) "(be39h) Positive argument: x=",x
+endif
+return
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ # 2k            eta=-1.5            eta=-1.0           eta=-0.75
+   -9  1.8813725967014896 11.6376296751270711 42.4549731123344429
+   -7  0.8042111607394021  3.3264089049663461  9.1007707348113005
+   -5  0.4501997635247233  1.2979450676664934  2.6984249954112056
+   -3  0.3193731919000946  0.7072407184868038  1.1777115212105438
+   -1  0.2662989807334175  0.5060301198729361  0.7345109544210222
+    1  0.2432400058683661  0.4284407345998379  0.5810878479909148
+    2  0.2369924122759424  0.4087542873488963  0.5443905122618031
+    3  0.2327330035613081  0.3957280103803376  0.5207364456600337
+    4  0.2298088090601440  0.3869954242101997  0.5052016032356623
+    5  0.2277899169462502  0.3810793119677889  0.4948448400827065
+    6  0.2263896760250073  0.3770372769243203  0.4878571450793351
+    7  0.2254149218864423  0.3742568990347961  0.4830975610829913
+    8  0.2247343374367561  0.3723339822804351  0.4798311019792836
+    9  0.2242580001431964  0.3709983097129550  0.4775759128698880
+   10  0.2239239652370866  0.3700673152590211  0.4760114973557492
+   11  0.2236893523817355  0.3694165828905787  0.4749221586519055
+   12  0.2235243600275574  0.3689607273747988  0.4741613379802982
+   13  0.2234082091329661  0.3686408150523767  0.4736286820530094
+   14  0.2233263733880341  0.3684159813379485  0.4732550470373619
+   15  0.2232686759337353  0.3682577848601629  0.4729925532832372
+   16  0.2232279746636775  0.3681463709315173  0.4728079118886615
+   17  0.2231992501856333  0.3680678453540937  0.4726779031186649
+   18  0.2231789708869174  0.3680124658840481  0.4725862883270348
+   19  0.2231646496363310  0.3679733906334759  0.4725216871342708
+   20  0.2231545335536795  0.3679458084142871  0.4724761103816446
+   21  0.2231473864860059  0.3679263324884449  0.4724439418951737
+   22  0.2231423362480242  0.3679125768157348  0.4724212292743982
+   23  0.2231387672074460  0.3679028592205869  0.4724051885129941
+   24  0.2231362446766686  0.3678959930981207  0.4723938571805313
+   25  0.2231344616477141  0.3678911410410196  0.4723858511583397
+   26  0.2231332012418684  0.3678877118602081  0.4723801937510375
+   27  0.2231323102229115  0.3678852880664592  0.4723761954928841
+   28  0.2231316803057104  0.3678835747635520  0.4723733695257256
+   29  0.2231312349610103  0.3678823636086397  0.4723713719727785
+   30  0.2231309200974532  0.3678815073848736  0.4723699598972965
+   31  0.2231306974799311  0.3678809020540020  0.4723689616441772
+   32  0.2231305400797847  0.3678804740843146  0.4723682559081292
+   33  0.2231304287892752  0.3678801715008909  0.4723677569555201
+   34  0.2231303500997338  0.3678799575633547  0.4723674041878110
+   35  0.2231302944605568  0.3678798062989347  0.4723671547693657
+   36  0.2231302551192937  0.3678796993459132  0.4723669784188876
+   37  0.2231302273017296  0.3678796237227892  0.4723668537289205
+   38  0.2231302076322665  0.3678795702515216  0.4723667655647913
+   39  0.2231301937241588  0.3678795324429854  0.4723667032262187
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

@@ -4,7 +4,8 @@
 
 """Plot fractional polylogarithms for visual verification.
 
-Ports the workflow of ``matlab/PlotPolyLog.m`` using :func:`ideal_gases.polylog`.
+Ports the workflow of ``matlab/PlotPolyLog.m`` using the Bhagat/Kuhnert
+:func:`ideal_gases.polylog` kernel (not the solver's Fukushima default).
 """
 
 from __future__ import annotations
