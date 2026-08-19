@@ -11,9 +11,11 @@ from pathlib import Path
 
 from ideal_gases import __version__
 from ideal_gases.cli.commands import (
+    cmd_fugacity,
     cmd_interactive_classical,
     cmd_interactive_quantum,
     cmd_list,
+    cmd_moments,
     cmd_plot_classical,
     cmd_plot_quantum,
     cmd_plot_quantum_example,
@@ -121,6 +123,34 @@ def _add_quantum_solver_args(parser: argparse.ArgumentParser) -> None:
         "--all-statistics",
         action="store_true",
         help="Plot or export FD, MB, and BE together.",
+    )
+
+
+def _add_equilibrium_args(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--n", type=float, required=True, help="Degrees of freedom (dimension D)."
+    )
+    parser.add_argument(
+        "--h", type=float, default=1.0, help="Planck constant (default: 1.0)."
+    )
+    parser.add_argument(
+        "--statistic",
+        choices=("FD", "BE", "MB"),
+        default="MB",
+        help="Quantum statistic (default: MB).",
+    )
+    parser.add_argument(
+        "--m", type=float, default=1.0, help="Particle mass (default: 1.0)."
+    )
+    parser.add_argument(
+        "--k-B", type=float, default=1.0, help="Boltzmann constant (default: 1.0)."
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        type=Path,
+        default=None,
+        help="Write JSON output to file instead of stdout.",
     )
 
 
@@ -286,6 +316,26 @@ def build_parser() -> argparse.ArgumentParser:
     _add_domain_args(interactive_quantum)
     _add_interactive_args(interactive_quantum)
 
+    fugacity_parser = subparsers.add_parser(
+        "fugacity",
+        help="Compute fugacity z from (rho, theta).",
+    )
+    fugacity_parser.add_argument("--rho", type=float, required=True, help="Density.")
+    fugacity_parser.add_argument(
+        "--theta", type=float, required=True, help="Temperature."
+    )
+    _add_equilibrium_args(fugacity_parser)
+
+    moments_parser = subparsers.add_parser(
+        "moments",
+        help="Compute (z, T, p) from (rho, e).",
+    )
+    moments_parser.add_argument("--rho", type=float, required=True, help="Density.")
+    moments_parser.add_argument(
+        "--e", type=float, required=True, help="Specific internal energy."
+    )
+    _add_equilibrium_args(moments_parser)
+
     return parser
 
 
@@ -309,6 +359,12 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "quantum-example":
         return cmd_quantum_example(args)
+
+    if args.command == "fugacity":
+        return cmd_fugacity(args)
+
+    if args.command == "moments":
+        return cmd_moments(args)
 
     if args.command == "interactive":
         if args.interactive_target == "classical":

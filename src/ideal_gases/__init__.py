@@ -5,6 +5,13 @@
 
 from importlib.metadata import requires, version
 
+from ideal_gases.equilibrium import (
+    G,
+    equilibrium_moments,
+    find_fugacity,
+    find_moments,
+    set_polylog_backend,
+)
 from ideal_gases.polylog import polylog
 from ideal_gases.riemann import (
     RiemannResult,
@@ -17,9 +24,14 @@ __version__ = version("ideal_gases")
 __requires__ = requires("ideal_gases")
 
 __all__ = [
+    "G",
     "RiemannResult",
     "adiabatic_index",
-    "polylog",
     "classical_gas",
+    "equilibrium_moments",
+    "find_fugacity",
+    "find_moments",
+    "polylog",
     "quantum_gas",
+    "set_polylog_backend",
 ]

@@ -87,6 +87,22 @@ Write separate files for FD, MB, and BE with `--all-statistics` (e.g. `euler_cas
 euler solve quantum ... --all-statistics -o euler_case7
 ```
 
+### Equilibrium inversions
+
+Compute the fugacity from density and temperature:
+
+```bash
+euler fugacity --rho 1.0 --theta 1.0 --n 3 --h 1.0 --statistic FD
+```
+
+Recover fugacity, temperature and pressure from density and internal energy:
+
+```bash
+euler moments --rho 1.0 --e 1.5 --n 3 --h 1.0 --statistic FD
+```
+
+Use `-o result.json` to write JSON output instead of printing to stdout.
+
 ### Built-in benchmarks
 
 ```bash
@@ -222,6 +238,26 @@ This returns a `RiemannResult` object that contains the solution fields: `x`, `r
 
 In the classical limit, MB statistics with `h → 0` recover the ideal-gas behaviour (pressures `p = rho * theta`).
 
+### Equilibrium inversions
+
+Given density and temperature, recover the fugacity:
+
+```python
+from ideal_gases import find_fugacity
+
+z = find_fugacity(rho=1.0, T=1.0, dim=3, h=1.0, eta=-1)
+```
+
+Given density and internal energy, recover fugacity, temperature and pressure:
+
+```python
+from ideal_gases import find_moments
+
+z, T, p = find_moments(rho=1.0, e=1.5, dim=3, h=1.0, eta=-1)
+```
+
+The `eta` parameter selects the statistic: `-1` Fermi, `0` classical (Maxwell-Boltzmann), `+1` Bose.
+
 ### Polylogarithm module
 
 The polylogarithm module is used to compute the fermi and bose quantum functions. The current implementation is based on the [Bhagat approximation](https://doi.org/10.1016/S0010-4655(03)00294-7) and Sommerfeld's lemma. Providing up to 6 digits of accuracy for the polylogarithm function for half-integer orders. This is a trade-off between accuracy and performance.
@@ -251,11 +287,16 @@ yields the following plot:
 
 ```python
 from ideal_gases import (
+    G,
     RiemannResult,
     adiabatic_index,
     classical_gas,
-    quantum_gas,
+    equilibrium_moments,
+    find_fugacity,
+    find_moments,
     polylog,
+    quantum_gas,
+    set_polylog_backend,
 )
 ```
 
@@ -266,6 +307,11 @@ from ideal_gases import (
 | `classical_gas(...)` | Classical ideal-gas exact Riemann solver |
 | `quantum_gas(...)` | Quantum EOS + Toro exact Riemann solver |
 | `RiemannResult` | Solution profiles on the spatial grid |
+| `G(n, z, eta)` | Bose / Fermi / classical partition function |
+| `equilibrium_moments(z, T, ...)` | Forward map (z, T) → (ρ, e) |
+| `find_fugacity(rho, T, ...)` | Invert (ρ, T) → z |
+| `find_moments(rho, e, ...)` | Invert (ρ, e) → (z, T, p) |
+| `set_polylog_backend(name)` | Switch polylog backend (`"ideal_gases"` or `"mpmath"`) |
 
 ## License
 

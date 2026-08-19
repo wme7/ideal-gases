@@ -45,6 +45,7 @@ from ideal_gases.cli.interactive.quantum import run_quantum_interactive
 from ideal_gases.cli.plot import PlotLayout, plot_all_statistics, plot_single
 from ideal_gases.cli.presets.quantum import QUANTUM_EXAMPLES
 from ideal_gases.cli.presets.toro import TORO_TESTS
+from ideal_gases.equilibrium import find_fugacity, find_moments
 from ideal_gases.riemann import (
     RiemannResult,
     Statistic,
@@ -1602,4 +1603,77 @@ def cmd_list(args: argparse.Namespace) -> int:
                 f"t_end={example.t_end}, n={example.n}, h={example.h}"
             )
 
+    return 0
+
+
+_STATISTIC_TO_ETA = {"FD": -1, "BE": 1, "MB": 0}
+
+
+def _write_equilibrium_result(data: dict[str, Any], output: Path | None) -> None:
+    import json
+
+    if output is not None:
+        output.write_text(json.dumps(data, indent=2) + "\n")
+        print(f"Written to {output}")
+    else:
+        for key, value in data.items():
+            if isinstance(value, float):
+                print(f"{key} = {value:.8g}")
+            else:
+                print(f"{key} = {value}")
+
+
+def cmd_fugacity(args: argparse.Namespace) -> int:
+    try:
+        eta = _STATISTIC_TO_ETA[args.statistic]
+        z = find_fugacity(
+            args.rho,
+            args.theta,
+            dim=args.n,
+            h=args.h,
+            eta=eta,
+            m=args.m,
+            k_B=args.k_B,
+        )
+        data = {
+            "rho": args.rho,
+            "theta": args.theta,
+            "n": args.n,
+            "h": args.h,
+            "statistic": args.statistic,
+            "z": float(z),
+        }
+        _write_equilibrium_result(data, args.output)
+    except (ValueError, RuntimeError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
+    return 0
+
+
+def cmd_moments(args: argparse.Namespace) -> int:
+    try:
+        eta = _STATISTIC_TO_ETA[args.statistic]
+        z, T, p = find_moments(
+            args.rho,
+            args.e,
+            dim=args.n,
+            h=args.h,
+            eta=eta,
+            m=args.m,
+            k_B=args.k_B,
+        )
+        data = {
+            "rho": args.rho,
+            "e": args.e,
+            "n": args.n,
+            "h": args.h,
+            "statistic": args.statistic,
+            "z": float(z),
+            "T": float(T),
+            "p": float(p),
+        }
+        _write_equilibrium_result(data, args.output)
+    except (ValueError, RuntimeError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
     return 0

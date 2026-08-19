@@ -10,12 +10,12 @@ pre-processing and quantum fugacity corrections for FD/BE/MB statistics.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable, Literal
+from typing import Literal
 
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
 
-from ideal_gases.polylog import polylog
+from ideal_gases.equilibrium import G, find_fugacity, find_moments as _eq_find_moments
 
 Statistic = Literal["FD", "BE", "MB"]
 
@@ -183,31 +183,7 @@ def _solve_profile(
     return RiemannResult(x_arr, rho, ux, p, e, z, t, mach, entropy)
 
 
-# ------------------------------------------------------------
-# Use mpmath for polylog (slow! use cpp polylog instead)
-# from mpmath import fp
-
-# def _mpmath_polylog_real(n: float, z: float) -> float:
-#     value = fp.polylog(n, z)
-#     return float(value.real) if hasattr(value, "real") else float(value)
-
-# _mpmath_polylog = np.frompyfunc(_mpmath_polylog_real, 2, 1)
-
-# def _be(n: float, z: ArrayLike) -> NDArray[np.float64]:
-#     return np.asarray(_mpmath_polylog(n, z), dtype=np.float64)
-
-# def _fd(n: float, z: ArrayLike) -> NDArray[np.float64]:
-#     return -np.asarray(_mpmath_polylog(n, -z), dtype=np.float64)
-#
-# ------------------------------------------------------------
-
-
-def _be(n: float, z: ArrayLike) -> NDArray[np.float64]:
-    return np.asarray(polylog(n, z), dtype=np.float64)
-
-
-def _fd(n: float, z: ArrayLike) -> NDArray[np.float64]:
-    return -np.asarray(polylog(n, -np.asarray(z)), dtype=np.float64)
+_STATISTIC_TO_ETA = {"FD": -1, "BE": 1, "MB": 0}
 
 
 def _effective_pressures(
@@ -222,32 +198,21 @@ def _effective_pressures(
     if statistic == "MB":
         return rho_l * t_l, rho_r * t_r
 
-    q_func = _fd if statistic == "FD" else _be
-    clip_fn = _clip_be_fugacity_scalar if statistic == "BE" else None
+    eta = _STATISTIC_TO_ETA[statistic]
 
     if rho_l > RHO_FLOOR:
-        z_l = _newton_scalar(
-            lambda z: float(_frhot(q_func, z, n, rho_l, t_l, h)),
-            lambda z: float(_dfrhot(q_func, z, n)),
-            0.001,
-            clip=clip_fn,
-        )
-        p_l = float(
-            rho_l * t_l * _safe_ratio(q_func(n / 2.0 + 1.0, z_l), q_func(n / 2.0, z_l))
-        )
+        z_l = find_fugacity(rho_l, t_l, dim=n, h=h, eta=eta, m=1.0, k_B=1.0)
+        g0_l = G(n / 2.0, z_l, eta)
+        g1_l = G(n / 2.0 + 1.0, z_l, eta)
+        p_l = float(rho_l * t_l * g1_l / g0_l)
     else:
         p_l = 0.0
 
     if rho_r > RHO_FLOOR:
-        z_r = _newton_scalar(
-            lambda z: float(_frhot(q_func, z, n, rho_r, t_r, h)),
-            lambda z: float(_dfrhot(q_func, z, n)),
-            0.001,
-            clip=clip_fn,
-        )
-        p_r = float(
-            rho_r * t_r * _safe_ratio(q_func(n / 2.0 + 1.0, z_r), q_func(n / 2.0, z_r))
-        )
+        z_r = find_fugacity(rho_r, t_r, dim=n, h=h, eta=eta, m=1.0, k_B=1.0)
+        g0_r = G(n / 2.0, z_r, eta)
+        g1_r = G(n / 2.0 + 1.0, z_r, eta)
+        p_r = float(rho_r * t_r * g1_r / g0_r)
     else:
         p_r = 0.0
 
@@ -261,136 +226,9 @@ def _postprocess_quantum(
     rho: NDArray[np.float64],
     e: NDArray[np.float64],
 ) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
-    if statistic == "MB":
-        t = (2.0 / n) * e
-        z = rho * h**n / (2.0 * np.pi * t) ** (n / 2.0)
-        return z, t
-
-    q_func = _fd if statistic == "FD" else _be
-    clip_fn = _clip_be_fugacity if statistic == "BE" else None
-    z = _newton_array(
-        lambda zv: _frhoe(q_func, zv, n, rho, e, h),
-        lambda zv: _dfrhoe(q_func, zv, n),
-        np.full_like(rho, 0.001),
-        clip=clip_fn,
-    )
-
-    if statistic == "FD":
-        t = (rho / _fd(n / 2.0, z)) ** (2.0 / n) * h**2 / (2.0 * np.pi)
-    else:
-        t = (rho / _be(n / 2.0, z)) ** (2.0 / n) * h**2 / (2.0 * np.pi)
-    return z, t
-
-
-def _frhot(
-    q_func: Callable[[float, ArrayLike], NDArray[np.float64]],
-    z: ArrayLike,
-    n: float,
-    rho: ArrayLike,
-    t: ArrayLike,
-    h: float,
-) -> NDArray[np.float64]:
-    rho_arr = np.asarray(rho, dtype=np.float64)
-    t_arr = np.asarray(t, dtype=np.float64)
-    return rho_arr * h**n / (2.0 * np.pi * t_arr) ** (n / 2.0) - q_func(n / 2.0, z)
-
-
-def _dfrhot(
-    q_func: Callable[[float, ArrayLike], NDArray[np.float64]],
-    z: ArrayLike,
-    n: float,
-) -> NDArray[np.float64]:
-    z_arr = np.asarray(z, dtype=np.float64)
-    return -q_func(n / 2.0 - 1.0, z_arr) / z_arr
-
-
-def _frhoe(
-    q_func: Callable[[float, ArrayLike], NDArray[np.float64]],
-    z: ArrayLike,
-    n: float,
-    rho: ArrayLike,
-    e: ArrayLike,
-    h: float,
-) -> NDArray[np.float64]:
-    rho_arr = np.asarray(rho, dtype=np.float64)
-    e_arr = np.asarray(e, dtype=np.float64)
-    q_mid = q_func(n / 2.0, z)
-    q_high = q_func((n + 2.0) / 2.0, z)
-    return q_mid ** ((n + 2.0) / n) / q_high - h**2 * n * rho_arr ** (2.0 / n) / (
-        4.0 * np.pi * e_arr
-    )
-
-
-def _dfrhoe(
-    q_func: Callable[[float, ArrayLike], NDArray[np.float64]],
-    z: ArrayLike,
-    n: float,
-) -> NDArray[np.float64]:
-    z_arr = np.asarray(z, dtype=np.float64)
-    q_minus = q_func(n / 2.0 - 1.0, z_arr)
-    q_mid = q_func(n / 2.0, z_arr)
-    q_plus = q_func(n / 2.0 + 1.0, z_arr)
-    return ((2.0 + n) / n) * (
-        q_mid ** ((2.0 + n) / n - 1.0) * q_minus / (z_arr * q_plus)
-    ) - q_mid ** (2.0 * (1.0 + n) / n) / (z_arr * q_plus**2)
-
-
-def _clip_be_fugacity_scalar(z: float) -> float:
-    return min(z, 0.999999)
-
-
-def _clip_be_fugacity(z: NDArray[np.float64]) -> NDArray[np.float64]:
-    return np.minimum(z, 0.999999)
-
-
-def _newton_scalar(
-    func: Callable[[float], float],
-    dfunc: Callable[[float], float],
-    x0: float,
-    *,
-    tol: float = 1e-6,
-    max_iter: int = 100,
-    clip: Callable[[float], float] | None = None,
-) -> float:
-    x = x0
-    for _ in range(max_iter):
-        delta = func(x) / dfunc(x)
-        x -= delta
-        if clip is not None:
-            x = clip(x)
-        if abs(delta) < tol:
-            break
-    return x
-
-
-def _newton_array(
-    func: Callable[[NDArray[np.float64]], NDArray[np.float64]],
-    dfunc: Callable[[NDArray[np.float64]], NDArray[np.float64]],
-    x0: NDArray[np.float64],
-    *,
-    tol: float = 1e-6,
-    max_iter: int = 100,
-    clip: Callable[[NDArray[np.float64]], NDArray[np.float64]] | None = None,
-) -> NDArray[np.float64]:
-    x = x0.astype(np.float64, copy=True)
-    for _ in range(max_iter):
-        delta = func(x) / dfunc(x)
-        x -= delta
-        if clip is not None:
-            x = clip(x)
-        if np.max(np.abs(delta)) < tol:
-            break
-    return x
-
-
-def _safe_ratio(
-    numerator: ArrayLike, denominator: ArrayLike
-) -> NDArray[np.float64] | float:
-    num = np.asarray(numerator, dtype=np.float64)
-    den = np.asarray(denominator, dtype=np.float64)
-    if num.ndim == 0 and den.ndim == 0:
-        return float(num / den)
-    return num / den
+    eta = _STATISTIC_TO_ETA[statistic]
+    z, t, _p = _eq_find_moments(rho, e, dim=n, h=h, eta=eta, m=1.0, k_B=1.0)
+    return np.asarray(z, dtype=np.float64), np.asarray(t, dtype=np.float64)
 
 
 def _riemann_exact_state(

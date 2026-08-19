@@ -556,3 +556,89 @@ def test_export_helpers_round_trip(tmp_path: Path) -> None:
     assert "x,rho,ux,p" in csv_path.read_text(encoding="utf-8")
     payload = json.loads(json_path.read_text(encoding="utf-8"))
     assert payload["data"]["rho"] == result.rho.tolist()
+
+
+# -- euler fugacity / euler moments -----------------------------------------
+
+
+def test_fugacity_classical(capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["fugacity", "--rho", "1.0", "--theta", "1.0", "--n", "3"]) == 0
+    out = capsys.readouterr().out
+    assert "z = " in out
+
+
+def test_fugacity_fd(capsys: pytest.CaptureFixture[str]) -> None:
+    assert (
+        main(
+            [
+                "fugacity",
+                "--rho",
+                "1.0",
+                "--theta",
+                "1.0",
+                "--n",
+                "3",
+                "--h",
+                "1.0",
+                "--statistic",
+                "FD",
+            ]
+        )
+        == 0
+    )
+    out = capsys.readouterr().out
+    assert "z = " in out
+
+
+def test_moments_classical(capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["moments", "--rho", "1.0", "--e", "1.5", "--n", "3"]) == 0
+    out = capsys.readouterr().out
+    assert "z = " in out
+    assert "T = " in out
+    assert "p = " in out
+
+
+def test_moments_fd(capsys: pytest.CaptureFixture[str]) -> None:
+    assert (
+        main(
+            [
+                "moments",
+                "--rho",
+                "1.0",
+                "--e",
+                "1.5",
+                "--n",
+                "3",
+                "--h",
+                "1.0",
+                "--statistic",
+                "FD",
+            ]
+        )
+        == 0
+    )
+    out = capsys.readouterr().out
+    assert "z = " in out
+    assert "T = " in out
+
+
+def test_fugacity_json_output(tmp_path: Path) -> None:
+    out = tmp_path / "fug.json"
+    assert (
+        main(["fugacity", "--rho", "1.0", "--theta", "1.0", "--n", "3", "-o", str(out)])
+        == 0
+    )
+    data = json.loads(out.read_text())
+    assert "z" in data
+    assert data["rho"] == 1.0
+
+
+def test_moments_json_output(tmp_path: Path) -> None:
+    out = tmp_path / "mom.json"
+    assert (
+        main(["moments", "--rho", "1.0", "--e", "1.5", "--n", "3", "-o", str(out)]) == 0
+    )
+    data = json.loads(out.read_text())
+    assert "z" in data
+    assert "T" in data
+    assert "p" in data
