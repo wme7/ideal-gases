@@ -10,9 +10,14 @@ import pytest
 
 from ideal_gases.equilibrium import (
     G,
+    Z_BOSE_MAX,
+    bose_ceiling,
+    bose_density_parameter,
     equilibrium_moments,
     find_fugacity,
     find_moments,
+    is_bose_ceiling_z,
+    is_bose_condensed,
 )
 
 
@@ -89,6 +94,32 @@ def test_broadcasting() -> None:
     assert z_v.shape == (2,)
     assert T_v.shape == (2,)
     assert p_v.shape == (2,)
+
+
+# -- Bose condensation ceiling ----------------------------------------------
+
+
+def test_hu_jin_bose_not_condensed_at_h_3_3() -> None:
+    assert is_bose_condensed(1.0, 1.0, dim=3, h=3.3) is False
+
+
+def test_bose_condensed_at_h_6() -> None:
+    assert is_bose_condensed(1.0, 1.0, dim=3, h=6.0) is True
+
+
+def test_is_bose_ceiling_z() -> None:
+    assert is_bose_ceiling_z(Z_BOSE_MAX) is True
+    assert is_bose_ceiling_z(0.99) is False
+    mask = is_bose_ceiling_z(np.array([0.99, Z_BOSE_MAX]))
+    np.testing.assert_array_equal(mask, np.array([False, True]))
+
+
+def test_bose_density_parameter_matches_newton_data() -> None:
+    rho, T, dim, h = 1.0, 1.0, 3.0, 3.3
+    data = bose_density_parameter(rho, T, dim, h)
+    expected = rho * h**dim / (2.0 * np.pi * T) ** (dim / 2.0)
+    assert data == pytest.approx(expected)
+    assert data < bose_ceiling(dim)
 
 
 # -- G_n versus mpmath.polylog -----------------------------------------------

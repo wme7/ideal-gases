@@ -19,9 +19,13 @@ from ideal_gases.polylog import polylog
 
 __all__ = [
     "G",
+    "bose_ceiling",
+    "bose_density_parameter",
     "equilibrium_moments",
     "find_fugacity",
     "find_moments",
+    "is_bose_ceiling_z",
+    "is_bose_condensed",
 ]
 
 VALID_ETA = frozenset({-1, 0, 1})
@@ -56,6 +60,43 @@ def G(n, z, eta: int = 1):
         return z if z.ndim else float(z)
     value = _polylog(n, eta * z) * eta
     return value
+
+
+def bose_ceiling(dim: float) -> float:
+    """Excited-gas Bose ceiling G_{D/2}(z_max) used by Newton clipping."""
+    return float(G(dim / 2.0, Z_BOSE_MAX, eta=1))
+
+
+def bose_density_parameter(
+    rho, T, dim: float, h: float, m: float = 1.0, k_B: float = 1.0
+):
+    """Excited-gas density parameter data = ρ h^D / (m (2π m k_B T)^{D/2})."""
+    rho_arr, t_arr = np.broadcast_arrays(
+        np.asarray(rho, dtype=float),
+        np.asarray(T, dtype=float),
+    )
+    data = rho_arr * h**dim / (m * (2.0 * np.pi * m * k_B * t_arr) ** (dim / 2.0))
+    if rho_arr.ndim == 0:
+        return float(data)
+    return data
+
+
+def is_bose_condensed(rho, T, dim: float, h: float, m: float = 1.0, k_B: float = 1.0):
+    """True where data exceeds G_{D/2}(z_max) (independent T, not reconstructed)."""
+    data = bose_density_parameter(rho, T, dim, h, m=m, k_B=k_B)
+    ceiling = bose_ceiling(dim)
+    if np.isscalar(data):
+        return bool(float(data) > ceiling)
+    return np.asarray(data, dtype=float) > ceiling
+
+
+def is_bose_ceiling_z(z):
+    """True where fugacity is at the Newton Bose clip Z_BOSE_MAX."""
+    z_arr = np.asarray(z, dtype=float)
+    mask = z_arr >= Z_BOSE_MAX
+    if z_arr.ndim == 0:
+        return bool(mask)
+    return mask
 
 
 def equilibrium_moments(

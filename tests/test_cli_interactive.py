@@ -12,6 +12,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 
+import numpy as np
 import pytest
 
 from ideal_gases.cli import main
@@ -145,3 +146,31 @@ def test_interactive_missing_matplotlib_reports_install_hint() -> None:
     ):
         exit_code = main(["interactive", "classical", "--nx", "21"])
     assert exit_code == 1
+
+
+def test_nan_split_breaks_polyline() -> None:
+    from ideal_gases.cli.interactive._widgets import nan_split
+
+    y = np.array([1.0, 2.0, 3.0, 4.0])
+    mask = np.array([False, True, True, False])
+    y_keep, y_mask = nan_split(y, mask)
+    np.testing.assert_allclose(
+        y_keep, np.array([1.0, np.nan, np.nan, 4.0]), equal_nan=True
+    )
+    np.testing.assert_allclose(
+        y_mask, np.array([np.nan, 2.0, 3.0, np.nan]), equal_nan=True
+    )
+
+
+def test_ylim_from_lines_skips_all_nan() -> None:
+    from matplotlib.lines import Line2D
+
+    from ideal_gases.cli.interactive._widgets import ylim_from_lines
+
+    finite = Line2D([0, 1], [1.0, 3.0])
+    empty = Line2D([0, 1], [np.nan, np.nan])
+    limits = ylim_from_lines(finite, empty)
+    assert limits is not None
+    low, high = limits
+    assert low < 1.0
+    assert high > 3.0

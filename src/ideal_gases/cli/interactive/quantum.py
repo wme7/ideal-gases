@@ -12,11 +12,14 @@ from numpy.typing import NDArray
 
 from ideal_gases.cli.config import QuantumState
 from ideal_gases.cli.interactive._widgets import (
+    BEC_COLOR,
     SAVE_DPI,
     autoscale_axes,
+    nan_split,
     piecewise_ic,
 )
 from ideal_gases.cli.plot import STATISTIC_COLORS, STATISTICS, _require_matplotlib
+from ideal_gases.equilibrium import is_bose_ceiling_z
 from ideal_gases.riemann import quantum_euler
 
 
@@ -78,6 +81,15 @@ def run_quantum_interactive(
                 0
             ],
         }
+
+    nan_y = np.full_like(x, np.nan)
+    bec_lines = {
+        "rho": ax_rho.plot(
+            x, nan_y, color=BEC_COLOR, linewidth=2, label="BEC", zorder=3
+        )[0],
+        "ux": ax_vx.plot(x, nan_y, color=BEC_COLOR, linewidth=2, zorder=3)[0],
+        "theta": ax_theta.plot(x, nan_y, color=BEC_COLOR, linewidth=2, zorder=3)[0],
+    }
 
     ax_rho.set_xticks([])
     ax_rho.set_xlim(x_min, x_max)
@@ -150,6 +162,7 @@ def run_quantum_interactive(
                     (
                         ic_line_rho,
                         *(solution_lines[stat]["rho"] for stat in STATISTICS),
+                        bec_lines["rho"],
                     ),
                 ),
                 (
@@ -157,6 +170,7 @@ def run_quantum_interactive(
                     (
                         ic_line_vx,
                         *(solution_lines[stat]["ux"] for stat in STATISTICS),
+                        bec_lines["ux"],
                     ),
                 ),
                 (
@@ -164,6 +178,7 @@ def run_quantum_interactive(
                     (
                         ic_line_theta,
                         *(solution_lines[stat]["theta"] for stat in STATISTICS),
+                        bec_lines["theta"],
                     ),
                 ),
             ],
@@ -204,6 +219,9 @@ def run_quantum_interactive(
         ic_line_theta.set_ydata(piecewise_ic(x, x0, theta_l_val, theta_r_val))
 
         active = active_statistics()
+        be_visible = "BE" in active
+        for line in bec_lines.values():
+            line.set_visible(be_visible)
         for stat in STATISTICS:
             visible = stat in active
             for line in solution_lines[stat].values():
@@ -225,9 +243,21 @@ def run_quantum_interactive(
                 x=x,
                 x0=x0,
             )
-            solution_lines[stat]["rho"].set_ydata(gas.rho)
-            solution_lines[stat]["ux"].set_ydata(gas.ux)
-            solution_lines[stat]["theta"].set_ydata(gas.t)
+            if stat == "BE":
+                mask = is_bose_ceiling_z(gas.z)
+                _, rho_bec = nan_split(gas.rho, mask)
+                _, ux_bec = nan_split(gas.ux, mask)
+                _, theta_bec = nan_split(gas.t, mask)
+                solution_lines[stat]["rho"].set_ydata(gas.rho)
+                solution_lines[stat]["ux"].set_ydata(gas.ux)
+                solution_lines[stat]["theta"].set_ydata(gas.t)
+                bec_lines["rho"].set_ydata(rho_bec)
+                bec_lines["ux"].set_ydata(ux_bec)
+                bec_lines["theta"].set_ydata(theta_bec)
+            else:
+                solution_lines[stat]["rho"].set_ydata(gas.rho)
+                solution_lines[stat]["ux"].set_ydata(gas.ux)
+                solution_lines[stat]["theta"].set_ydata(gas.t)
 
         scale_axes()
 

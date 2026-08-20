@@ -15,6 +15,14 @@ if TYPE_CHECKING:
     from matplotlib.lines import Line2D
 
 SAVE_DPI = 240
+BEC_COLOR = "tab:green"
+
+
+def nan_split(y: np.ndarray, mask: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Split a profile into (~mask, mask) using NaNs to break the polyline."""
+    y_arr = np.asarray(y, dtype=np.float64)
+    mask_arr = np.asarray(mask, dtype=bool)
+    return np.where(~mask_arr, y_arr, np.nan), np.where(mask_arr, y_arr, np.nan)
 
 
 def ylim_from_lines(*lines: Line2D) -> tuple[float, float] | None:
@@ -24,8 +32,11 @@ def ylim_from_lines(*lines: Line2D) -> tuple[float, float] | None:
         if not line.get_visible():
             continue
         y = np.asarray(line.get_ydata(), dtype=np.float64)
-        ymin = min(ymin, float(np.min(y)))
-        ymax = max(ymax, float(np.max(y)))
+        finite = y[np.isfinite(y)]
+        if finite.size == 0:
+            continue
+        ymin = min(ymin, float(np.min(finite)))
+        ymax = max(ymax, float(np.max(finite)))
     if not np.isfinite(ymin) or not np.isfinite(ymax):
         return None
     if ymax <= ymin:
