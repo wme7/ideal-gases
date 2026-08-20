@@ -22,6 +22,11 @@ from typing import Literal, NamedTuple
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
 
+from ideal_gases._progress import (
+    DEFAULT_PROGRESS_EVERY,
+    _validate_progress_every,
+    nsf_pbar,
+)
 from ideal_gases.equilibrium import (
     G,
     equilibrium_moments,
@@ -332,6 +337,8 @@ def quantum_nsf(
     conv_flux: ConvFlux = "hllc",
     viscosity: TransportFn | None = None,
     conductivity: TransportFn | None = None,
+    progress: bool = False,
+    progress_every: int = DEFAULT_PROGRESS_EVERY,
 ) -> NSFResult:
     """Advance 1-D quantum NSF from a Riemann initial condition.
 
@@ -344,8 +351,15 @@ def quantum_nsf(
     viscosity, conductivity:
         Optional ``(rho, temp, z) -> array`` replacements for the CE
         closures (e.g. interpolated tables).
+    progress:
+        If True, show a tqdm bar of physical time. Requires
+        ``pip install ideal-gases[progress]``.
+    progress_every:
+        Refresh the bar every this many time steps (ignored when
+        ``progress`` is False).
     """
     dim_i = _validate_dim(dim)
+    every = _validate_progress_every(progress_every)
     if statistic not in STATISTIC_TO_ETA:
         raise ValueError(
             f"statistic = {statistic!r}; expected one of {sorted(STATISTIC_TO_ETA)}"
@@ -385,13 +399,23 @@ def quantum_nsf(
 
     u_cons = _initialize(x_arr, x0, rho_l, u_l, t_l, rho_r, u_r, t_r, prob)
     t = 0.0
-    while t < t_end - 1e-15:
-        dt = min(_timestep(u_cons, dx_cell, cfl, prob), t_end - t)
-        k1 = _rhs(u_cons, dx_cell, prob)
-        u_star = u_cons + dt * k1
-        k2 = _rhs(u_star, dx_cell, prob)
-        u_cons = u_cons + 0.5 * dt * (k1 + k2)
-        t += dt
+    n_step = 0
+    pending = 0.0
+    with nsf_pbar(progress, total=t_end, desc="quantum NSF") as pbar:
+        while t < t_end - 1e-15:
+            dt = min(_timestep(u_cons, dx_cell, cfl, prob), t_end - t)
+            k1 = _rhs(u_cons, dx_cell, prob)
+            u_star = u_cons + dt * k1
+            k2 = _rhs(u_star, dx_cell, prob)
+            u_cons = u_cons + 0.5 * dt * (k1 + k2)
+            t += dt
+            pending += dt
+            n_step += 1
+            if n_step % every == 0:
+                pbar.update(min(pending, pbar.total - pbar.n))
+                pending = 0.0
+        if pending > 0.0:
+            pbar.update(min(pending, pbar.total - pbar.n))
 
     rho, u, temp, pressure, z = _primitives(u_cons, prob)
     kappa = np.asarray(prob.conductivity(rho, temp, z), dtype=float)

@@ -5,6 +5,9 @@
 
 from __future__ import annotations
 
+from contextlib import contextmanager
+from unittest.mock import patch
+
 import numpy as np
 import pytest
 
@@ -86,3 +89,70 @@ def test_reject_invalid_dim() -> None:
     kwargs["dim"] = 1.5
     with pytest.raises(ValueError, match="dim"):
         quantum_nsf(**kwargs)
+
+
+class _DummyBar:
+    def __init__(self, total: float) -> None:
+        self.n = 0.0
+        self.total = total
+        self.updates: list[float] = []
+
+    def update(self, n: float = 1.0) -> None:
+        self.updates.append(n)
+        self.n += n
+
+
+def _pbar_patch(captured: list[_DummyBar]):
+    @contextmanager
+    def dummy(_enabled, *, total, desc):
+        bar = _DummyBar(total)
+        captured.append(bar)
+        _ = desc
+        yield bar
+
+    return dummy
+
+
+def test_reject_invalid_progress_every() -> None:
+    kwargs = _riemann_kwargs(3, "MB", t_end=0.0)
+    kwargs["progress_every"] = 0
+    with pytest.raises(ValueError, match="progress_every"):
+        quantum_nsf(**kwargs)
+    kwargs["progress_every"] = 1.5
+    with pytest.raises(ValueError, match="progress_every"):
+        quantum_nsf(**kwargs)
+
+
+def test_progress_missing_tqdm_reports_install_hint() -> None:
+    with patch(
+        "ideal_gases._progress._require_tqdm",
+        side_effect=RuntimeError(
+            "Progress bars require tqdm. Install with: pip install ideal-gases[progress]"
+        ),
+    ):
+        with pytest.raises(RuntimeError, match=r"ideal-gases\[progress\]"):
+            quantum_nsf(**_riemann_kwargs(3, "MB", t_end=1e-8), progress=True)
+
+
+def test_progress_every_one_updates_bar() -> None:
+    captured: list[_DummyBar] = []
+    with patch("ideal_gases.quantum_nsf.nsf_pbar", _pbar_patch(captured)):
+        quantum_nsf(
+            **_riemann_kwargs(3, "MB", t_end=1e-8),
+            progress=True,
+            progress_every=1,
+        )
+    assert captured[0].updates
+    assert captured[0].updates[0] > 0.0
+
+
+def test_progress_every_larger_than_step_count_flushes() -> None:
+    captured: list[_DummyBar] = []
+    with patch("ideal_gases.quantum_nsf.nsf_pbar", _pbar_patch(captured)):
+        quantum_nsf(
+            **_riemann_kwargs(3, "MB", t_end=1e-8),
+            progress=True,
+            progress_every=10**9,
+        )
+    assert len(captured[0].updates) == 1
+    assert captured[0].updates[0] > 0.0

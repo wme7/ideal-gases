@@ -5,9 +5,13 @@
 
 from __future__ import annotations
 
+from contextlib import contextmanager
+from unittest.mock import patch
+
 import numpy as np
 import pytest
 
+from ideal_gases._progress import nsf_pbar
 from ideal_gases.classical_nsf import ClassicalNSFResult, classical_nsf
 from ideal_gases.quantum_nsf import quantum_nsf
 
@@ -125,3 +129,92 @@ def test_mb_quantum_matches_classical_pressure_at_t_end_zero() -> None:
     np.testing.assert_allclose(quantum.t, classical.t)
     np.testing.assert_allclose(quantum.p, classical.p)
     np.testing.assert_allclose(classical.p, classical.rho * classical.t)
+
+
+class _DummyBar:
+    def __init__(self, total: float) -> None:
+        self.n = 0.0
+        self.total = total
+        self.updates: list[float] = []
+
+    def update(self, n: float = 1.0) -> None:
+        self.updates.append(n)
+        self.n += n
+
+
+def _pbar_patch(captured: list[_DummyBar]):
+    @contextmanager
+    def dummy(_enabled, *, total, desc):
+        bar = _DummyBar(total)
+        captured.append(bar)
+        _ = desc
+        yield bar
+
+    return dummy
+
+
+def test_reject_invalid_progress_every() -> None:
+    kwargs = _riemann_kwargs(3, t_end=0.0)
+    kwargs["progress_every"] = 0
+    with pytest.raises(ValueError, match="progress_every"):
+        classical_nsf(**kwargs)
+    kwargs["progress_every"] = 1.5
+    with pytest.raises(ValueError, match="progress_every"):
+        classical_nsf(**kwargs)
+
+
+def test_progress_missing_tqdm_reports_install_hint() -> None:
+    with patch(
+        "ideal_gases._progress._require_tqdm",
+        side_effect=RuntimeError(
+            "Progress bars require tqdm. Install with: pip install ideal-gases[progress]"
+        ),
+    ):
+        with pytest.raises(RuntimeError, match=r"ideal-gases\[progress\]"):
+            classical_nsf(**_riemann_kwargs(3, t_end=1e-8), progress=True)
+
+
+def test_progress_every_one_updates_bar() -> None:
+    captured: list[_DummyBar] = []
+    with patch("ideal_gases.classical_nsf.nsf_pbar", _pbar_patch(captured)):
+        classical_nsf(
+            **_riemann_kwargs(3, t_end=1e-8),
+            progress=True,
+            progress_every=1,
+        )
+    assert captured[0].updates
+    assert captured[0].updates[0] > 0.0
+
+
+def test_progress_every_larger_than_step_count_flushes() -> None:
+    captured: list[_DummyBar] = []
+    with patch("ideal_gases.classical_nsf.nsf_pbar", _pbar_patch(captured)):
+        classical_nsf(
+            **_riemann_kwargs(3, t_end=1e-8),
+            progress=True,
+            progress_every=10**9,
+        )
+    assert len(captured[0].updates) == 1
+    assert captured[0].updates[0] > 0.0
+
+
+def test_nsf_pbar_uses_tqdm_when_enabled() -> None:
+    class FakeTqdm:
+        def __init__(self, *args, **kwargs):
+            self.n = 0.0
+            self.total = kwargs["total"]
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return None
+
+        def update(self, n=1.0):
+            self.n += n
+
+    with patch("ideal_gases._progress._require_tqdm", return_value=FakeTqdm):
+        with nsf_pbar(True, total=1.0, desc="classical NSF") as bar:
+            bar.update(0.25)
+            assert bar.n == 0.25
+            assert bar.total == 1.0
