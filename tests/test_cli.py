@@ -644,31 +644,7 @@ def test_moments_json_output(tmp_path: Path) -> None:
     assert "p" in data
 
 
-def test_cli_polylog_backend_argparse() -> None:
-    from ideal_gases.cli import build_parser
-
-    parser = build_parser()
-    args = parser.parse_args(["interactive", "quantum"])
-    assert args.polylog_backend == "ideal_gases"
-    args = parser.parse_args(["interactive", "quantum", "--polylog-backend", "mpmath"])
-    assert args.polylog_backend == "mpmath"
-    args = parser.parse_args(
-        [
-            "fugacity",
-            "--rho",
-            "1",
-            "--theta",
-            "1",
-            "--n",
-            "3",
-            "--polylog-backend",
-            "ideal_gases",
-        ]
-    )
-    assert args.polylog_backend == "ideal_gases"
-
-
-def test_cli_default_polylog_backend_runs(
+def test_cli_fugacity_runs(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     code = main(

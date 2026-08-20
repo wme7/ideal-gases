@@ -4,8 +4,8 @@
 
 """Smoke-test driver for :mod:`ideal_gases.equilibrium`.
 
-Runs round-trip inversions for all three statistics and compares the
-``ideal_gases`` polylog backend against ``mpmath``.
+Runs round-trip inversions for all three statistics and compares ``G``
+against ``mpmath.polylog``.
 """
 
 from __future__ import annotations
@@ -17,7 +17,6 @@ from ideal_gases.equilibrium import (
     equilibrium_moments,
     find_fugacity,
     find_moments,
-    set_polylog_backend,
 )
 
 
@@ -87,36 +86,32 @@ def _smoke() -> None:
     print("\nAll find_moments smoke checks passed.")
 
 
-def _compare_backends() -> None:
-    """G_n samples: ideal_gases vs mpmath."""
-    from ideal_gases.equilibrium import POLYLOG_BACKEND
+def _g_mpmath(n: float, z, eta: int) -> np.ndarray:
+    import mpmath as mp
 
-    saved = POLYLOG_BACKEND
+    z_arr = np.asarray(z, dtype=float)
+
+    def _one(zi: float) -> float:
+        return eta * float(mp.re(mp.polylog(n, eta * zi)))
+
+    return np.vectorize(_one, otypes=[float])(z_arr)
+
+
+def _compare_mpmath() -> None:
+    """G_n samples: C++ kernel vs mpmath.polylog."""
     z_pts = np.array([0.05, 0.5, 0.99])
-    try:
-        set_polylog_backend("ideal_gases")
-        g_ig = {
-            n: np.asarray(G(n, z_pts, eta=-1), dtype=float) for n in (1.5, 2.5, 3.5)
-        }
-        set_polylog_backend("mpmath")
-        g_mp = {
-            n: np.asarray(G(n, z_pts, eta=-1), dtype=float) for n in (1.5, 2.5, 3.5)
-        }
-    finally:
-        set_polylog_backend(saved)
-    print("Backend comparison (Fermi G_n, z = 0.05, 0.5, 0.99)")
+    g_ig = {n: np.asarray(G(n, z_pts, eta=-1), dtype=float) for n in (1.5, 2.5, 3.5)}
+    g_mp = {n: _g_mpmath(n, z_pts, eta=-1) for n in (1.5, 2.5, 3.5)}
+    print("G_n versus mpmath.polylog (Fermi, z = 0.05, 0.5, 0.99)")
     for n in (1.5, 2.5, 3.5):
         diff = np.max(np.abs(g_ig[n] - g_mp[n]))
         print(f"  max |G_{n}(ideal_gases) - G_{n}(mpmath)| = {diff:.3e}")
         if not np.allclose(g_ig[n], g_mp[n], rtol=1e-5, atol=1e-8):
-            raise AssertionError(f"G_{n} backends disagree: {g_ig[n]} vs {g_mp[n]}")
-    print("  backends agree (ok)")
+            raise AssertionError(f"G_{n} disagrees with mpmath: {g_ig[n]} vs {g_mp[n]}")
+    print("  G agrees with mpmath (ok)")
 
 
 if __name__ == "__main__":
-    for backend in ("ideal_gases", "mpmath"):
-        set_polylog_backend(backend)
-        print(f"=== POLYLOG_BACKEND={backend} ===")
-        _smoke()
-        print()
-    _compare_backends()
+    _smoke()
+    print()
+    _compare_mpmath()

@@ -7,75 +7,34 @@ Given ρ and e, recover z and T for: Fermi (η = -1) and Bose (η = +1) statisti
 
 Planck's constant h may be treated as a free parameter that sets the degeneracy.
 
-Solvers default to the in-tree C++ ``polylog`` kernel (Fukushima
-minimax integrals with Bhagat/integer fallback).  Set
-``POLYLOG_BACKEND = "mpmath"`` (via ``set_polylog_backend``) to compare
-against ``mpmath.polylog``.
+Solvers use the in-tree C++ ``polylog`` kernel (Fukushima minimax
+integrals with Bhagat/integer fallback).
 """
 
 from __future__ import annotations
 
 import numpy as np
 
+from ideal_gases.polylog import polylog
+
 __all__ = [
     "G",
     "equilibrium_moments",
     "find_fugacity",
     "find_moments",
-    "set_polylog_backend",
 ]
 
 VALID_ETA = frozenset({-1, 0, 1})
-VALID_POLYLOG = frozenset({"ideal_gases", "mpmath"})
 Z_INIT = 1.0e-3
 Z_MIN = 1.0e-15
 Z_BOSE_MAX = 0.999_999
 NEWTON_TOL = 1.0e-6
 NEWTON_MAXITER = 200
 
-# "ideal_gases" (default C++ kernel) or "mpmath".
-POLYLOG_BACKEND = "ideal_gases"
-
-
-def set_polylog_backend(name: str) -> str:
-    """Select the Li_n implementation."""
-    global POLYLOG_BACKEND
-    if name not in VALID_POLYLOG:
-        raise ValueError(
-            f"polylog backend {name!r}; expected one of {sorted(VALID_POLYLOG)}"
-        )
-    POLYLOG_BACKEND = name
-    return POLYLOG_BACKEND
-
-
-def _polylog_ideal_gases(n, z):
-    from ideal_gases.polylog import polylog
-
-    return polylog(float(n), z)
-
-
-def _polylog_mpmath(n, z):
-    import mpmath as mp
-
-    n_f = float(n)
-    z_arr = np.asarray(z, dtype=float)
-
-    def _one(zi: float) -> float:
-        return float(mp.re(mp.polylog(n_f, zi)))
-
-    out = np.vectorize(_one, otypes=[float])(z_arr)
-    return out if out.ndim else float(out)
-
 
 def _polylog(n, z):
-    """Real polylogarithm Li_n(z) via ``POLYLOG_BACKEND``."""
-    if POLYLOG_BACKEND == "ideal_gases":
-        return _polylog_ideal_gases(n, z)
-    if POLYLOG_BACKEND == "mpmath":
-        return _polylog_mpmath(n, z)
-    raise ValueError(
-        f"POLYLOG_BACKEND={POLYLOG_BACKEND!r}; expected one of {sorted(VALID_POLYLOG)}"
-    )
+    """Real polylogarithm Li_n(z) via the C++ kernel."""
+    return polylog(float(n), z)
 
 
 def _validate_eta(eta) -> int:

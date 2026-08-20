@@ -13,7 +13,6 @@ from ideal_gases.equilibrium import (
     equilibrium_moments,
     find_fugacity,
     find_moments,
-    set_polylog_backend,
 )
 
 
@@ -92,26 +91,13 @@ def test_broadcasting() -> None:
     assert p_v.shape == (2,)
 
 
-# -- Backend comparison (mpmath) ---------------------------------------------
-
-
-@pytest.fixture
-def _restore_backend():
-    """Restore polylog backend after test."""
-    from ideal_gases.equilibrium import POLYLOG_BACKEND
-
-    saved = POLYLOG_BACKEND
-    yield
-    set_polylog_backend(saved)
+# -- G_n versus mpmath.polylog -----------------------------------------------
 
 
 @pytest.mark.parametrize("n", [1.5, 2.5, 3.5])
 @pytest.mark.parametrize("eta", [-1, 1])
-def test_backend_comparison(n, eta, _restore_backend) -> None:
-    pytest.importorskip("mpmath")
+def test_G_matches_mpmath_polylog(n, eta, mpmath_reference) -> None:
     z_pts = np.array([0.05, 0.5, 0.99])
-    set_polylog_backend("ideal_gases")
     g_ig = np.asarray(G(n, z_pts, eta=eta), dtype=float)
-    set_polylog_backend("mpmath")
-    g_mp = np.asarray(G(n, z_pts, eta=eta), dtype=float)
+    g_mp = eta * np.asarray(mpmath_reference(n, eta * z_pts), dtype=float)
     np.testing.assert_allclose(g_ig, g_mp, rtol=1e-5, atol=1e-8)

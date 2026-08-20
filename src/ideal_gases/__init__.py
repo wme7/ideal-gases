@@ -11,7 +11,6 @@ from ideal_gases.equilibrium import (
     equilibrium_moments,
     find_fugacity,
     find_moments,
-    set_polylog_backend,
 )
 from ideal_gases.polylog import polylog
 from ideal_gases.quantum_nsf import NSFResult, QuantumNSFResult, quantum_nsf
@@ -40,5 +39,4 @@ __all__ = [
     "polylog",
     "quantum_euler",
     "quantum_nsf",
-    "set_polylog_backend",
 ]

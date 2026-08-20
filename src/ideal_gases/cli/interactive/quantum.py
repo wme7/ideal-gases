@@ -17,7 +17,6 @@ from ideal_gases.cli.interactive._widgets import (
     piecewise_ic,
 )
 from ideal_gases.cli.plot import STATISTIC_COLORS, STATISTICS, _require_matplotlib
-from ideal_gases.equilibrium import set_polylog_backend
 from ideal_gases.riemann import quantum_euler
 
 
@@ -33,20 +32,10 @@ def run_quantum_interactive(
     x_min: float,
     x_max: float,
     figure_path: Path,
-    polylog_backend: str = "ideal_gases",
 ) -> int:
     plt = _require_matplotlib(show=True)
     from matplotlib.lines import Line2D
-    from matplotlib.widgets import Button, CheckButtons, RadioButtons, Slider
-
-    set_polylog_backend(polylog_backend)
-    live_backends = ["ideal_gases"]
-    try:
-        import mpmath  # noqa: F401
-    except ImportError:
-        pass
-    else:
-        live_backends.append("mpmath")
+    from matplotlib.widgets import Button, CheckButtons, Slider
 
     ic_rho = piecewise_ic(x, x0, left.rho, right.rho)
     ic_vx = piecewise_ic(x, x0, left.u, right.u)
@@ -54,9 +43,7 @@ def run_quantum_interactive(
 
     fig = plt.figure(figsize=(7, 5.5), dpi=150)
     fig.subplots_adjust(left=0.18, bottom=0.30)
-    fig.suptitle(
-        f"Interactive quantum Riemann solver (FD / MB / BE)  [{polylog_backend}]"
-    )
+    fig.suptitle("Interactive quantum Riemann solver (FD / MB / BE)")
 
     ax_rho = fig.add_subplot(311)
     ax_vx = fig.add_subplot(312)
@@ -116,16 +103,6 @@ def run_quantum_interactive(
     ax_save = fig.add_axes([0.50, 0.9, 0.09, 0.035])
     btn_reset = Button(ax_reset, "Reset")
     btn_save = Button(ax_save, "Save")
-
-    radio: RadioButtons | None = None
-    if len(live_backends) > 1:
-        active = (
-            live_backends.index(polylog_backend)
-            if polylog_backend in live_backends
-            else 0
-        )
-        ax_backend = fig.add_axes([0.61, 0.875, 0.16, 0.08])
-        radio = RadioButtons(ax_backend, live_backends, active=active)
 
     ax_t = fig.add_axes([0.10, 0.22, 0.80, 0.03])
     ax_rho_l = fig.add_axes([0.10, 0.17, 0.35, 0.03])
@@ -258,16 +235,6 @@ def run_quantum_interactive(
     btn_save.on_clicked(save_figure)
     for check in checks:
         check.on_clicked(on_check)
-    if radio is not None:
-
-        def on_backend(label: str) -> None:
-            set_polylog_backend(label)
-            fig.suptitle(
-                f"Interactive quantum Riemann solver (FD / MB / BE)  [{label}]"
-            )
-            update()
-
-        radio.on_clicked(on_backend)
     for slider in (
         sl_t,
         sl_rho_l,

@@ -318,7 +318,7 @@ The `eta` parameter selects the statistic: `-1` Fermi, `0` classical (Maxwell-Bo
 
 ### Polylogarithm module
 
-Quantum solvers (`G`, `find_moments`, `quantum_euler`) and `polylog(n, z)` use the unified C++ kernel: Fukushima minimax Fermi–Dirac / Bose–Einstein integrals for supported half-integer orders on `z < 0` and `0 < z < 1`, with [Bhagat](https://doi.org/10.1016/S0010-4655(03)00294-7) / integer analytic branches as fallback. Compare against `mpmath` with `set_polylog_backend("mpmath")`.
+Quantum solvers (`G`, `find_moments`, `quantum_euler`) and `polylog(n, z)` use the unified C++ kernel: Fukushima minimax Fermi–Dirac / Bose–Einstein integrals for supported half-integer orders on `z < 0` and `0 < z < 1`, with [Bhagat](https://doi.org/10.1016/S0010-4655(03)00294-7) / integer analytic branches as fallback.
 
 We can use the polylogarithm module on our scripts as follows:
 
@@ -355,7 +355,6 @@ from ideal_gases import (
     polylog,
     quantum_euler,
     quantum_nsf,
-    set_polylog_backend,
 )
 ```
 
@@ -374,7 +373,6 @@ from ideal_gases import (
 | `equilibrium_moments(z, T, ...)` | Forward map (z, T) → (ρ, e) |
 | `find_fugacity(rho, T, ...)` | Invert (ρ, T) → z |
 | `find_moments(rho, e, ...)` | Invert (ρ, e) → (z, T, p) |
-| `set_polylog_backend(name)` | Switch solver Li_n backend (`"ideal_gases"` or `"mpmath"`) |
 
 ## License
 
