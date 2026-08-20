@@ -50,8 +50,8 @@ from ideal_gases.riemann import (
     RiemannResult,
     Statistic,
     adiabatic_index,
-    classical_gas,
-    quantum_gas,
+    classical_euler,
+    quantum_euler,
 )
 
 STATISTICS: tuple[Statistic, ...] = ("FD", "MB", "BE")
@@ -148,7 +148,7 @@ def _solve_classical(
     gamma: float,
 ) -> RiemannResult:
     x = _grid_from_domain(domain)
-    return classical_gas(
+    return classical_euler(
         rho_l=left.rho,
         u_l=left.u,
         p_l=left.p,
@@ -189,7 +189,7 @@ def _solve_quantum(
     statistic: Statistic,
 ) -> RiemannResult:
     x = _grid_from_domain(domain)
-    return quantum_gas(
+    return quantum_euler(
         rho_l=left.rho,
         u_l=left.u,
         t_l=left.theta,

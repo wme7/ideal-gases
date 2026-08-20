@@ -18,7 +18,7 @@ from ideal_gases.cli.interactive._widgets import (
 )
 from ideal_gases.cli.plot import STATISTIC_COLORS, STATISTICS, _require_matplotlib
 from ideal_gases.equilibrium import set_polylog_backend
-from ideal_gases.riemann import quantum_gas
+from ideal_gases.riemann import quantum_euler
 
 
 def run_quantum_interactive(
@@ -68,7 +68,7 @@ def run_quantum_interactive(
 
     solution_lines: dict[str, dict[str, Line2D]] = {}
     for stat in STATISTICS:
-        gas = quantum_gas(
+        gas = quantum_euler(
             left.rho,
             left.u,
             left.theta,
@@ -234,7 +234,7 @@ def run_quantum_interactive(
             if not visible:
                 continue
 
-            gas = quantum_gas(
+            gas = quantum_euler(
                 rho_l_val,
                 vx_l_val,
                 theta_l_val,

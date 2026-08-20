@@ -7,8 +7,8 @@ import pytest
 from ideal_gases.riemann import (
     RHO_FLOOR,
     adiabatic_index,
-    classical_gas,
-    quantum_gas,
+    classical_euler,
+    quantum_euler,
 )
 
 
@@ -17,7 +17,7 @@ def test_adiabatic_index_monatomic() -> None:
 
 
 def test_classical_sod_shock_tube() -> None:
-    result = classical_gas(
+    result = classical_euler(
         rho_l=1.0,
         u_l=0.0,
         p_l=1.0,
@@ -38,7 +38,7 @@ def test_classical_sod_shock_tube() -> None:
 
 
 def test_classical_default_grid_from_dx() -> None:
-    result = classical_gas(
+    result = classical_euler(
         rho_l=1.0,
         u_l=0.0,
         p_l=1.0,
@@ -58,7 +58,7 @@ def test_classical_default_grid_from_dx() -> None:
 def test_classical_t_end_zero_keeps_initial_states() -> None:
     x = np.linspace(0.0, 1.0, 21)
     x0 = 0.5
-    result = classical_gas(
+    result = classical_euler(
         rho_l=1.0,
         u_l=0.0,
         p_l=1.0,
@@ -82,7 +82,7 @@ def test_classical_vacuum_left() -> None:
     x = np.linspace(0.0, 1.0, 51)
     x0 = 0.5
     with np.errstate(divide="ignore", invalid="ignore"):
-        result = classical_gas(
+        result = classical_euler(
             rho_l=0.0,
             u_l=0.0,
             p_l=0.0,
@@ -104,7 +104,7 @@ def test_classical_vacuum_right() -> None:
     x = np.linspace(0.0, 1.0, 51)
     x0 = 0.5
     with np.errstate(divide="ignore", invalid="ignore"):
-        result = classical_gas(
+        result = classical_euler(
             rho_l=1.0,
             u_l=0.0,
             p_l=1.0,
@@ -125,7 +125,7 @@ def test_classical_vacuum_right() -> None:
 def test_classical_vacuum_middle_from_strong_rarefaction() -> None:
     x = np.linspace(0.0, 1.0, 201)
     with np.errstate(divide="ignore", invalid="ignore"):
-        result = classical_gas(
+        result = classical_euler(
             rho_l=1.0,
             u_l=-5.0,
             p_l=0.4,
@@ -144,7 +144,7 @@ def test_classical_vacuum_middle_from_strong_rarefaction() -> None:
 def test_classical_left_shock_right_rarefaction() -> None:
     """Reverse Sod: high-pressure right state drives a left-going shock."""
     x = np.linspace(0.0, 1.0, 201)
-    result = classical_gas(
+    result = classical_euler(
         rho_l=0.125,
         u_l=0.0,
         p_l=0.1,
@@ -164,7 +164,7 @@ def test_classical_left_shock_right_rarefaction() -> None:
 
 def test_classical_toro4_shock_contact_rarefaction() -> None:
     x = np.linspace(0.0, 1.0, 201)
-    result = classical_gas(
+    result = classical_euler(
         rho_l=5.99924,
         u_l=19.5975,
         p_l=460.894,
@@ -188,7 +188,7 @@ def test_quantum_mb_matches_classical_pressures() -> None:
     rho_l, rho_r = 1.0, 0.5
     x = np.linspace(0.0, 1.0, 41)
 
-    classical = classical_gas(
+    classical = classical_euler(
         rho_l=rho_l,
         u_l=0.0,
         p_l=rho_l * t_l,
@@ -199,7 +199,7 @@ def test_quantum_mb_matches_classical_pressures() -> None:
         gamma=adiabatic_index(n),
         x=x,
     )
-    quantum = quantum_gas(
+    quantum = quantum_euler(
         rho_l=rho_l,
         u_l=0.0,
         t_l=t_l,
@@ -219,7 +219,7 @@ def test_quantum_mb_matches_classical_pressures() -> None:
 
 
 def test_quantum_fd_runs() -> None:
-    result = quantum_gas(
+    result = quantum_euler(
         rho_l=1.0,
         u_l=0.0,
         t_l=1.0,
@@ -240,7 +240,7 @@ def test_quantum_fd_runs() -> None:
 
 
 def test_quantum_be_runs() -> None:
-    result = quantum_gas(
+    result = quantum_euler(
         rho_l=1.0,
         u_l=0.0,
         t_l=1.0,
@@ -263,7 +263,7 @@ def test_quantum_be_runs() -> None:
 def test_quantum_fd_near_zero_left_density() -> None:
     x = np.linspace(0.0, 1.0, 21)
     with np.errstate(divide="ignore", invalid="ignore", over="ignore"):
-        result = quantum_gas(
+        result = quantum_euler(
             rho_l=0.0,
             u_l=0.0,
             t_l=1.0,
@@ -285,7 +285,7 @@ def test_quantum_fd_near_zero_left_density() -> None:
 def test_quantum_fd_near_zero_right_density() -> None:
     x = np.linspace(0.0, 1.0, 21)
     with np.errstate(divide="ignore", invalid="ignore", over="ignore"):
-        result = quantum_gas(
+        result = quantum_euler(
             rho_l=1.0,
             u_l=0.0,
             t_l=1.0,

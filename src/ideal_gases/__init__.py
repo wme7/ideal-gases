@@ -18,8 +18,8 @@ from ideal_gases.quantum_nsf import NSFResult, QuantumNSFResult, quantum_nsf
 from ideal_gases.riemann import (
     RiemannResult,
     adiabatic_index,
-    classical_gas,
-    quantum_gas,
+    classical_euler,
+    quantum_euler,
 )
 
 __version__ = version("ideal_gases")
@@ -32,13 +32,13 @@ __all__ = [
     "QuantumNSFResult",
     "RiemannResult",
     "adiabatic_index",
-    "classical_gas",
+    "classical_euler",
     "classical_nsf",
     "equilibrium_moments",
     "find_fugacity",
     "find_moments",
     "polylog",
-    "quantum_gas",
+    "quantum_euler",
     "quantum_nsf",
     "set_polylog_backend",
 ]

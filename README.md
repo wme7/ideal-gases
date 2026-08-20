@@ -4,7 +4,7 @@
 [![Publish](https://github.com/wme7/ideal-gases/actions/workflows/publish.yml/badge.svg)](https://github.com/wme7/ideal-gases/actions/workflows/publish.yml)
 [![PyPI](https://img.shields.io/pypi/v/ideal-gases)](https://pypi.org/project/ideal-gases/)
 
-Exact Riemann solvers for classical and quantum Euler gases, with a fast polylogarithm kernel used to resolve the quantum equation of state.
+Exact Riemann solvers for classical and quantum Euler gases, 1-D Navier–Stokes–Fourier (NSF) solvers, and a fast polylogarithm kernel used to resolve the quantum equation of state.
 
 This repository ports the MATLAB implementation found in [this thesis](https://doi.org/10.6342/NTU.2015.00509) to Python 3.11. The polylog function has been ported from the MATLAB implementation to C++ and the Toro exact Riemann solver has been extended to support Fermi–Dirac (FD), Bose–Einstein (BE), and Maxwell–Boltzmann (MB) statistics.
 
@@ -190,16 +190,16 @@ yields the following plot:
 
 ## Python module
 
-Import `ideal_gases` to compute classical and quantum gas solutions in your own scripts.
+Import `ideal_gases` to compute classical and quantum Euler and NSF solutions in your own scripts.
 
-### Classical Sod shock tube
+### Classical Euler
 
 ```python
 import numpy as np
-from ideal_gases import classical_gas
+from ideal_gases import classical_euler
 
 x = np.linspace(0.0, 1.0, 101)
-result = classical_gas(
+result = classical_euler(
     rho_l=1.0,
     u_l=0.0,
     p_l=1.0,
@@ -219,10 +219,10 @@ Left and right states are given in terms of density `rho`, velocity `u`, and tem
 
 ```python
 import numpy as np
-from ideal_gases import quantum_gas
+from ideal_gases import quantum_euler
 
 x = np.linspace(0.0, 1.0, 101)
-result = quantum_gas(
+result = quantum_euler(
     rho_l=1.0,
     u_l=0.0,
     t_l=1.0,
@@ -241,6 +241,60 @@ result = quantum_gas(
 This returns a `RiemannResult` object that contains the solution fields: `x`, `rho`, `ux`, `p`, `e`, `z` (fugacity), `t` (temperature), `mach`, `entropy`.
 
 In the classical limit, MB statistics with `h → 0` recover the ideal-gas behaviour (pressures `p = rho * theta`).
+
+### Classical NSF
+
+1-D Navier–Stokes–Fourier for a monatomic ideal gas. Same Sod left/right states as the classical Euler example; `dim` in `{1, 2, 3}` sets `γ = (dim+2)/dim` (unlike Euler's free `gamma`). `kn` is the Knudsen number used by the Chapman–Enskog closure `μ = kn ρ T`.
+
+```python
+import numpy as np
+from ideal_gases import classical_nsf
+
+x = np.linspace(0.0, 1.0, 101)
+result = classical_nsf(
+    rho_l=1.0,
+    u_l=0.0,
+    p_l=1.0,
+    rho_r=0.125,
+    u_r=0.0,
+    p_r=0.1,
+    t_end=0.2,
+    dim=3,
+    kn=0.01,
+    x=x,
+    x0=0.5,
+)
+```
+
+This returns a `ClassicalNSFResult` object that contains the cell-centered fields: `rho`, `u`, `t` (temperature), `p`, `q` (heat flux).
+
+### Quantum NSF (FD / BE / MB)
+
+1-D Navier–Stokes–Fourier with the quantum EOS. Same left/right states as the quantum Euler example; `dim` replaces Euler's `n`, and `kn` sets the Chapman–Enskog viscosity `μ = kn p(z)`.
+
+```python
+import numpy as np
+from ideal_gases import quantum_nsf
+
+x = np.linspace(0.0, 1.0, 101)
+result = quantum_nsf(
+    rho_l=1.0,
+    u_l=0.0,
+    t_l=1.0,
+    rho_r=0.125,
+    u_r=0.0,
+    t_r=0.25,
+    t_end=0.20,
+    dim=2,
+    h=0.1,
+    kn=0.01,
+    statistic="FD", # "FD", "BE", or "MB"
+    x=x,
+    x0=0.5,
+)
+```
+
+This returns a `QuantumNSFResult` object (`NSFResult` is an alias) that contains: `rho`, `u`, `t`, `p`, `z` (fugacity), `q` (heat flux).
 
 ### Equilibrium inversions
 
@@ -264,7 +318,7 @@ The `eta` parameter selects the statistic: `-1` Fermi, `0` classical (Maxwell-Bo
 
 ### Polylogarithm module
 
-Quantum solvers (`G`, `find_moments`, `quantum_gas`) and `polylog(n, z)` use the unified C++ kernel: Fukushima minimax Fermi–Dirac / Bose–Einstein integrals for supported half-integer orders on `z < 0` and `0 < z < 1`, with [Bhagat](https://doi.org/10.1016/S0010-4655(03)00294-7) / integer analytic branches as fallback. Compare against `mpmath` with `set_polylog_backend("mpmath")`.
+Quantum solvers (`G`, `find_moments`, `quantum_euler`) and `polylog(n, z)` use the unified C++ kernel: Fukushima minimax Fermi–Dirac / Bose–Einstein integrals for supported half-integer orders on `z < 0` and `0 < z < 1`, with [Bhagat](https://doi.org/10.1016/S0010-4655(03)00294-7) / integer analytic branches as fallback. Compare against `mpmath` with `set_polylog_backend("mpmath")`.
 
 We can use the polylogarithm module on our scripts as follows:
 
@@ -289,14 +343,18 @@ yields the following plot:
 ```python
 from ideal_gases import (
     G,
+    ClassicalNSFResult,
+    QuantumNSFResult,
     RiemannResult,
     adiabatic_index,
-    classical_gas,
+    classical_euler,
+    classical_nsf,
     equilibrium_moments,
     find_fugacity,
     find_moments,
     polylog,
-    quantum_gas,
+    quantum_euler,
+    quantum_nsf,
     set_polylog_backend,
 )
 ```
@@ -305,9 +363,13 @@ from ideal_gases import (
 |--------|------|
 | `polylog(n, z)` | Fast C++ polylogarithm (Fukushima + Bhagat/integer fallback) |
 | `adiabatic_index(n)` | Returns γ = (n + 2) / n |
-| `classical_gas(...)` | Classical ideal-gas exact Riemann solver |
-| `quantum_gas(...)` | Quantum EOS + Toro exact Riemann solver |
-| `RiemannResult` | Solution profiles on the spatial grid |
+| `classical_euler(...)` | Classical ideal-gas exact Euler Riemann solver |
+| `quantum_euler(...)` | Quantum EOS + Toro exact Euler Riemann solver |
+| `classical_nsf(...)` | 1-D classical Navier–Stokes–Fourier solver |
+| `quantum_nsf(...)` | 1-D quantum Navier–Stokes–Fourier solver |
+| `RiemannResult` | Euler solution profiles on the spatial grid |
+| `ClassicalNSFResult` | Classical NSF fields (`rho`, `u`, `t`, `p`, `q`) |
+| `QuantumNSFResult` | Quantum NSF fields (`rho`, `u`, `t`, `p`, `z`, `q`) |
 | `G(n, z, eta)` | Bose / Fermi / classical partition function |
 | `equilibrium_moments(z, T, ...)` | Forward map (z, T) → (ρ, e) |
 | `find_fugacity(rho, T, ...)` | Invert (ρ, T) → z |

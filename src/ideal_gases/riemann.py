@@ -27,8 +27,8 @@ DEFAULT_X0 = 0.5
 __all__ = [
     "RiemannResult",
     "adiabatic_index",
-    "classical_gas",
-    "quantum_gas",
+    "classical_euler",
+    "quantum_euler",
 ]
 
 
@@ -72,7 +72,7 @@ def adiabatic_index(n_gas_dofs: float) -> float:
     return (n_gas_dofs + 2.0) / n_gas_dofs
 
 
-def classical_gas(
+def classical_euler(
     rho_l: float,
     u_l: float,
     p_l: float,
@@ -106,7 +106,7 @@ def classical_gas(
     )
 
 
-def quantum_gas(
+def quantum_euler(
     rho_l: float,
     u_l: float,
     t_l: float,

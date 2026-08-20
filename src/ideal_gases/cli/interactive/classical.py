@@ -17,7 +17,7 @@ from ideal_gases.cli.interactive._widgets import (
     piecewise_ic,
 )
 from ideal_gases.cli.plot import _require_matplotlib
-from ideal_gases.riemann import classical_gas
+from ideal_gases.riemann import classical_euler
 
 
 def run_classical_interactive(
@@ -35,7 +35,7 @@ def run_classical_interactive(
     plt = _require_matplotlib(show=True)
     from matplotlib.widgets import Button, Slider
 
-    result = classical_gas(
+    result = classical_euler(
         left.rho,
         left.u,
         left.p,
@@ -146,7 +146,7 @@ def run_classical_interactive(
         ic_line_vx.set_ydata(piecewise_ic(x, x0, vx_l_val, vx_r_val))
         ic_line_p.set_ydata(piecewise_ic(x, x0, p_l_val, p_r_val))
 
-        gas = classical_gas(
+        gas = classical_euler(
             rho_l_val,
             vx_l_val,
             p_l_val,

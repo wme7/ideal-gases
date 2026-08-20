@@ -36,10 +36,10 @@ def test_interactive_quantum_runs_with_defaults() -> None:
 
 def test_interactive_classical_seeds_gamma_from_cli() -> None:
     with patch(
-        "ideal_gases.cli.interactive.classical.classical_gas",
+        "ideal_gases.cli.interactive.classical.classical_euler",
         wraps=__import__(
-            "ideal_gases.riemann", fromlist=["classical_gas"]
-        ).classical_gas,
+            "ideal_gases.riemann", fromlist=["classical_euler"]
+        ).classical_euler,
     ) as solve:
         exit_code = main(
             [
@@ -57,10 +57,10 @@ def test_interactive_classical_seeds_gamma_from_cli() -> None:
 
 def test_interactive_classical_uses_default_gamma_without_flags() -> None:
     with patch(
-        "ideal_gases.cli.interactive.classical.classical_gas",
+        "ideal_gases.cli.interactive.classical.classical_euler",
         wraps=__import__(
-            "ideal_gases.riemann", fromlist=["classical_gas"]
-        ).classical_gas,
+            "ideal_gases.riemann", fromlist=["classical_euler"]
+        ).classical_euler,
     ) as solve:
         exit_code = main(["interactive", "classical", "--nx", "21"])
     assert exit_code == 0
@@ -83,10 +83,10 @@ def test_interactive_classical_loads_config(tmp_path: Path) -> None:
         encoding="utf-8",
     )
     with patch(
-        "ideal_gases.cli.interactive.classical.classical_gas",
+        "ideal_gases.cli.interactive.classical.classical_euler",
         wraps=__import__(
-            "ideal_gases.riemann", fromlist=["classical_gas"]
-        ).classical_gas,
+            "ideal_gases.riemann", fromlist=["classical_euler"]
+        ).classical_euler,
     ) as solve:
         exit_code = main(
             [
@@ -118,8 +118,10 @@ def test_interactive_quantum_loads_config(tmp_path: Path) -> None:
         encoding="utf-8",
     )
     with patch(
-        "ideal_gases.cli.interactive.quantum.quantum_gas",
-        wraps=__import__("ideal_gases.riemann", fromlist=["quantum_gas"]).quantum_gas,
+        "ideal_gases.cli.interactive.quantum.quantum_euler",
+        wraps=__import__(
+            "ideal_gases.riemann", fromlist=["quantum_euler"]
+        ).quantum_euler,
     ) as solve:
         exit_code = main(
             [
