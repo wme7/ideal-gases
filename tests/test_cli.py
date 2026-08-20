@@ -649,11 +649,9 @@ def test_cli_polylog_backend_argparse() -> None:
 
     parser = build_parser()
     args = parser.parse_args(["interactive", "quantum"])
-    assert args.polylog_backend == "fukushima"
-    args = parser.parse_args(
-        ["interactive", "quantum", "--polylog-backend", "ideal_gases"]
-    )
     assert args.polylog_backend == "ideal_gases"
+    args = parser.parse_args(["interactive", "quantum", "--polylog-backend", "mpmath"])
+    assert args.polylog_backend == "mpmath"
     args = parser.parse_args(
         [
             "fugacity",
@@ -664,13 +662,13 @@ def test_cli_polylog_backend_argparse() -> None:
             "--n",
             "3",
             "--polylog-backend",
-            "mpmath",
+            "ideal_gases",
         ]
     )
-    assert args.polylog_backend == "mpmath"
+    assert args.polylog_backend == "ideal_gases"
 
 
-def test_cli_fukushima_backend_runs(
+def test_cli_default_polylog_backend_runs(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     code = main(
@@ -686,8 +684,6 @@ def test_cli_fukushima_backend_runs(
             "6",
             "--statistic",
             "FD",
-            "--polylog-backend",
-            "fukushima",
         ]
     )
     assert code == 0

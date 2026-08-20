@@ -5,11 +5,12 @@ Contributor documentation for building, testing, linting, and releasing `ideal-g
 ## Project layout
 
 ```
-cpp/          C++ polylog library and pybind11 bindings
-matlab/       Original MATLAB reference solvers and plotting scripts
-scripts/      Python utilities (e.g. solution plots)
-src/ideal_gases/    Python package
-tests/        pytest suite
+cpp/              C++ polylog library and pybind11 bindings
+cpp/fukushima/    Fukushima 2015/2020 Fortran reference drivers (xfdh, xbeh)
+matlab/           Original MATLAB reference solvers and plotting scripts
+scripts/          Python utilities (e.g. solution plots)
+src/ideal_gases/  Python package
+tests/            pytest suite
 ```
 
 ## Developer install

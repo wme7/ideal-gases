@@ -10,7 +10,6 @@
 #include <stdexcept>
 #include <vector>
 
-#include "fukushima.h"
 #include "polylog.h"
 
 namespace py = pybind11;
@@ -39,44 +38,14 @@ py::array_t<double> Polylog1d(
   return result;
 }
 
-double PolylogFukushimaScalar(double n, double z) {
-  return quantum::FukushimaPolyLog(n, z);
-}
-
-py::array_t<double> PolylogFukushima1d(
-    double n, py::array_t<double, py::array::c_style | py::array::forcecast> z) {
-  const py::buffer_info buffer = z.request();
-  if (buffer.ndim != 1) {
-    throw std::invalid_argument("z must be a one-dimensional array");
-  }
-
-  auto result = py::array_t<double>(buffer.size);
-  const py::buffer_info out_buffer = result.request();
-
-  const auto* z_ptr = static_cast<const double*>(buffer.ptr);
-  auto* out_ptr = static_cast<double*>(out_buffer.ptr);
-
-  const std::vector<double> z_vec(z_ptr, z_ptr + buffer.size);
-  std::vector<double> out_vec;
-  quantum::FukushimaPolyLog(n, z_vec, &out_vec);
-  std::copy(out_vec.begin(), out_vec.end(), out_ptr);
-  return result;
-}
-
 }  // namespace
 
 PYBIND11_MODULE(_polylog, m) {
-  m.doc() = "Fast polylogarithm kernels implemented in C++.";
+  m.doc() = "Fast polylogarithm kernel implemented in C++.";
 
   m.def("polylog", &PolylogScalar, py::arg("n"), py::arg("z"),
         "Evaluate PolyLog(n, z) for scalar z.");
 
   m.def("polylog_1d", &Polylog1d, py::arg("n"), py::arg("z"),
         "Evaluate PolyLog(n, z) for a contiguous 1-D array.");
-
-  m.def("polylog_fukushima", &PolylogFukushimaScalar, py::arg("n"), py::arg("z"),
-        "Evaluate Fukushima PolyLog(n, z) for scalar z.");
-
-  m.def("polylog_fukushima_1d", &PolylogFukushima1d, py::arg("n"), py::arg("z"),
-        "Evaluate Fukushima PolyLog(n, z) for a contiguous 1-D array.");
 }

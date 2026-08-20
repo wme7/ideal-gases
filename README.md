@@ -264,7 +264,7 @@ The `eta` parameter selects the statistic: `-1` Fermi, `0` classical (Maxwell-Bo
 
 ### Polylogarithm module
 
-Quantum solvers (`G`, `find_moments`, `quantum_gas`) default to Fukushima's minimax Fermi–Dirac / Bose–Einstein integrals. `polylog(n, z)` remains the [Bhagat](https://doi.org/10.1016/S0010-4655(03)00294-7) / Sommerfeld kernel, used by `scripts/plot_polylogarithms.py` and as a fallback for orders or arguments Fukushima does not cover. Switch with `set_polylog_backend("ideal_gases")` or `"mpmath"`.
+Quantum solvers (`G`, `find_moments`, `quantum_gas`) and `polylog(n, z)` use the unified C++ kernel: Fukushima minimax Fermi–Dirac / Bose–Einstein integrals for supported half-integer orders on `z < 0` and `0 < z < 1`, with [Bhagat](https://doi.org/10.1016/S0010-4655(03)00294-7) / integer analytic branches as fallback. Compare against `mpmath` with `set_polylog_backend("mpmath")`.
 
 We can use the polylogarithm module on our scripts as follows:
 
@@ -303,7 +303,7 @@ from ideal_gases import (
 
 | Symbol | Role |
 |--------|------|
-| `polylog(n, z)` | Fast polylogarithm (scalar or NumPy array) |
+| `polylog(n, z)` | Fast C++ polylogarithm (Fukushima + Bhagat/integer fallback) |
 | `adiabatic_index(n)` | Returns γ = (n + 2) / n |
 | `classical_gas(...)` | Classical ideal-gas exact Riemann solver |
 | `quantum_gas(...)` | Quantum EOS + Toro exact Riemann solver |
@@ -312,7 +312,7 @@ from ideal_gases import (
 | `equilibrium_moments(z, T, ...)` | Forward map (z, T) → (ρ, e) |
 | `find_fugacity(rho, T, ...)` | Invert (ρ, T) → z |
 | `find_moments(rho, e, ...)` | Invert (ρ, e) → (z, T, p) |
-| `set_polylog_backend(name)` | Switch solver Li_n backend (`"fukushima"`, `"ideal_gases"`, `"mpmath"`) |
+| `set_polylog_backend(name)` | Switch solver Li_n backend (`"ideal_gases"` or `"mpmath"`) |
 
 ## License
 

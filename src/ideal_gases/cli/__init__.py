@@ -97,11 +97,11 @@ def _add_classical_solver_args(parser: argparse.ArgumentParser) -> None:
 def _add_polylog_backend_arg(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--polylog-backend",
-        choices=("ideal_gases", "mpmath", "fukushima"),
-        default="fukushima",
+        choices=("ideal_gases", "mpmath"),
+        default="ideal_gases",
         help=(
-            "Li_n implementation (default: fukushima). "
-            "ideal_gases is the Bhagat/Kuhnert kernel."
+            "Li_n implementation (default: ideal_gases, the unified C++ kernel). "
+            "mpmath is a high-precision reference."
         ),
     )
 

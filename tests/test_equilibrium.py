@@ -106,11 +106,12 @@ def _restore_backend():
 
 
 @pytest.mark.parametrize("n", [1.5, 2.5, 3.5])
-def test_backend_comparison(n, _restore_backend) -> None:
-    mpmath = pytest.importorskip("mpmath")  # noqa: F841
+@pytest.mark.parametrize("eta", [-1, 1])
+def test_backend_comparison(n, eta, _restore_backend) -> None:
+    pytest.importorskip("mpmath")
     z_pts = np.array([0.05, 0.5, 0.99])
     set_polylog_backend("ideal_gases")
-    g_ig = np.asarray(G(n, z_pts, eta=-1), dtype=float)
+    g_ig = np.asarray(G(n, z_pts, eta=eta), dtype=float)
     set_polylog_backend("mpmath")
-    g_mp = np.asarray(G(n, z_pts, eta=-1), dtype=float)
+    g_mp = np.asarray(G(n, z_pts, eta=eta), dtype=float)
     np.testing.assert_allclose(g_ig, g_mp, rtol=1e-5, atol=1e-8)

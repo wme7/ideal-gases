@@ -58,7 +58,7 @@ STATISTICS: tuple[Statistic, ...] = ("FD", "MB", "BE")
 
 
 def _apply_polylog_backend(args: argparse.Namespace) -> None:
-    name = getattr(args, "polylog_backend", None) or "fukushima"
+    name = getattr(args, "polylog_backend", None) or "ideal_gases"
     set_polylog_backend(name)
 
 

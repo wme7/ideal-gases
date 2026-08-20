@@ -33,14 +33,20 @@ def run_quantum_interactive(
     x_min: float,
     x_max: float,
     figure_path: Path,
-    polylog_backend: str = "fukushima",
+    polylog_backend: str = "ideal_gases",
 ) -> int:
     plt = _require_matplotlib(show=True)
     from matplotlib.lines import Line2D
     from matplotlib.widgets import Button, CheckButtons, RadioButtons, Slider
 
     set_polylog_backend(polylog_backend)
-    live_backends = ["ideal_gases", "fukushima"]
+    live_backends = ["ideal_gases"]
+    try:
+        import mpmath  # noqa: F401
+    except ImportError:
+        pass
+    else:
+        live_backends.append("mpmath")
 
     ic_rho = piecewise_ic(x, x0, left.rho, right.rho)
     ic_vx = piecewise_ic(x, x0, left.u, right.u)
